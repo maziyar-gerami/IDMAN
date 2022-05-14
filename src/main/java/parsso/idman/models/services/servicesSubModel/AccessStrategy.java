@@ -150,7 +150,7 @@ public class AccessStrategy {
       accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
     }
 
-    accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && (boolean) jsonObject.get("enabled"));
+    accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && Boolean.parseBoolean(jsonObject.get("enabled").toString()));
 
     accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled"));
 

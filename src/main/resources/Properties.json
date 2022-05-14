@@ -20,7 +20,7 @@
         "groupFA": "سایر",
         "groupEN": "Other",
         "helpEN": "If This attribute is on, the user can access his/her profile information",
-        "helpFA": "این خصوصیت در صورتی که فعال باشد، کاربر عادی توانایی تغییر اطلاعات پروفایل کاربری خود را دارد",
+        "helpFA": "در صورتی که این خصوصیت فعال باشد، کاربر عادی توانایی تغییر اطلاعات پروفایل کاربری خود را دارد.",
         "type": {
             "class": "switch"
         }
@@ -33,7 +33,7 @@
         "groupFA": "گذرواژه",
         "groupEN": "Password",
         "helpEN": "Default password in 'password' field absence when importing users via excel file",
-        "helpFA": "گذرواژه پیشفرض در صورد وارد نکردن گذرواژه در فایل مربوط به وارد کردن کاربران بصورت فایل",
+        "helpFA": "گذرواژه پیشفرض در صورت وارد نکردن گذرواژه در فایل مربوط به وارد کردن کاربران به صورت فایل",
         "type": {
             "class": "string"
         }
@@ -59,7 +59,7 @@
         "groupFA": "سایر",
         "groupEN": "Other",
         "helpEN": "This switch states the status of skyroom virtual class",
-        "helpFA": "این تنظیم نمایش دهنده وضعیت فعال بودن کلاس مجازی اسکای روم است",
+        "helpFA": "این تنظیم نمایش دهنده وضعیت فعال بودن کلاس مجازی اسکای روم است.",
         "type": {
             "class": "switch"
         }
@@ -115,7 +115,7 @@
         "groupFA": "پیامک",
         "groupEN": "Instant Message",
         "helpEN": "This attribute specifiy the digits' number of instant message validation code",
-        "helpFA": "این خصوصیت تعداد ارقام کد پیامکی را مشخص می کند",
+        "helpFA": "این خصوصیت تعداد ارقام کد پیامکی را مشخص می کند.",
         "type": {
             "class": "integer"
         }
@@ -202,7 +202,7 @@
         "_id": "password.change.limit.number",
         "value": "3",
         "descriptionEN": "Password change limit in each day",
-        "descriptionFA": "حدکثر تعداد تغییر گذرواژه در یک روز",
+        "descriptionFA": "حداکثر تعداد تغییر گذرواژه در یک روز",
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "Password change limit in each day",
@@ -271,20 +271,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "Holds the number of seconds after which the password failures are purged from the failure counter, even though no successful authentication occurred",
-        "helpFA": "زمانی را بر حسب زمان مشخص می کند که عمل وارد کردن تعداد مشخصی پسورد اشتباه اتفاق بیوفتد. تعداد پسورد های اشتباه در پارامتر تعداد گذرواژه اشتباه وارد شده است.",
-        "type": {
-            "class": "integer"
-        }
-    },
-    {
-        "_id": "pwdGraceAuthNLimit",
-        "value": "2",
-        "descriptionEN": "Password Grace Authentication limit",
-        "descriptionFA": "تعداد دفعاتی که کاربر با گذرواژه تاریخ گذشته می تواند وارد شود",
-        "groupFA": "گذر واژه",
-        "groupEN": "Password",
-        "helpEN": "This attribute specifies the number of times an expired password can be used to authenticate",
-        "helpFA": "این خصوصیت تعداد دفعاتی که یک گذرواژه منقضی شده می تواند مورد احراز هویت قرار گیرد را مشخص می کند",
+        "helpFA": "زمانی را بر حسب ثانیه مشخص می کند که تعداد گذرواژه های اشتباه برای قفل شدن کاربر باید در این مدت زمان وارد شود.",
         "type": {
             "class": "integer"
         }
@@ -297,7 +284,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "This attribute specifies the maximum number of used passwords",
-        "helpFA": "این خصوصیت تعداد گذرواژه های ذخیره شده ی اخیر را مشخص می کند",
+        "helpFA": "این خصوصیت تعداد گذرواژه های ذخیره شده ی اخیر را مشخص می کند.",
         "type": {
             "class": "integer"
         }
@@ -310,7 +297,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "IF this attribute switched on, the correct password may not be used to authenticate after a specified number of consecutive failed bind attempts.",
-        "helpFA": "در صورتی که این سویچ روشن باشد، پسورد صحیح نمی تواند برای احراز هویت پس از تعداد مشخصی وارد احراز هویت تا پایان زمان مشخص شده مورد استفاده قرار گیرد",
+        "helpFA": "در صورتی که این سویچ روشن باشد، حتی با وارد کردن پسورد صحیح هم، پس از تعداد مشخصی پسورد اشتباه نمی توان تا مدت مشخصی لاگین کرد.",
         "type": {
             "class": "switch"
         }
@@ -323,7 +310,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "When quality checking is enabled, this attribute holds the minimum number of characters that must be used in a password",
-        "helpFA": "زمانی خصوصیت بررسی کیفیت فعال باشد، این خصوصیت حداقل کاراکترهایی که برای پسورد باید در نظر گرفته شود را مشخص می کند",
+        "helpFA": "در صورتیکه خصوصیت بررسی کیفیت گذرواژه فعال باشد، این خصوصیت حداقل کاراکترهایی که برای پسورد باید در نظر گرفته شود را مشخص می کند.",
         "type": {
             "class": "integer"
         }
@@ -336,7 +323,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "This attribute specifies the number of consecutive failed bind attempts after which the password may not be used to authenticate",
-        "helpFA": "این خصوصیت تعداد دفعاتی که وارد کردن گذرواژه اشتباه برای قفل شدن حساب کاربری لازم است را مشخص می کند.",
+        "helpFA": "این خصوصیت تعداد دفعات وارد کردن گذرواژه اشتباه برای قفل شدن حساب کاربری را مشخص می کند.",
         "type": {
             "class": "integer"
         }
@@ -349,7 +336,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "Holds the number of seconds after which a modified password will expire",
-        "helpFA": "عمر پسورد بر حسب ثانیه",
+        "helpFA": "طول عمر پسورد بر حسب ثانیه",
         "type": {
             "class": "integer"
         }
@@ -362,7 +349,7 @@
         "groupFA": "گذر واژه",
         "groupEN": "Password",
         "helpEN": "Holds the number of seconds that the password cannot be used to authenticate due to too many failed bind attempts.",
-        "helpFA": "مدت زمانی که کاربر پس از وارد کردن مدوام گذرواژه اشتباه نمی تواند با گذرواژه صحیح وارد شود (بر حسی ثانیه",
+        "helpFA": "مدت زمانی که کاربر پس از وارد کردن مدوام گذرواژه اشتباه نمی تواند با گذرواژه صحیح وارد شود (بر حسب ثانیه)",
         "type": {
             "class": "integer"
         }
@@ -400,7 +387,7 @@
         "groupFA" : "گذرواژه",
         "groupEN" : "Password",
         "helpEN" : "This attribute specifies if the password should containg small alphabet",
-        "helpFA" : "این متغیر مشخص می کند که آیا پسورد شامل حروف کوچک الفبای انگلیسی باشد.",
+        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف کوچک الفبای انگلیسی باشد.",
         "type" : {
             "class" : "switch"
         },
@@ -413,7 +400,7 @@
         "groupFA" : "گذرواژه",
         "groupEN" : "Password",
         "helpEN" : "This attribute specifies if the password should containg capital alphabet",
-        "helpFA" : "این متغیر مشخص می کند که آیا پسورد شامل حروف بزرگ الفبای انگلیسی باشد.",
+        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف بزرگ الفبای انگلیسی باشد.",
         "type" : {
             "class" : "switch"
         },
@@ -426,7 +413,7 @@
         "groupFA" : "گذرواژه",
         "groupEN" : "Password",
         "helpEN" : "This attribute specifies if the password should containg at least one number",
-        "helpFA" : "این متغیر مشخص می کند که آیا گذرواژه شامل حداقل یک عدد باشد.",
+        "helpFA" : "این متغیر بررسی می کند که گذرواژه شامل حداقل یک عدد باشد.",
         "type" : {
             "class" : "switch"
         },
@@ -439,7 +426,7 @@
         "groupFA" : "گذرواژه",
         "groupEN" : "Password",
         "helpEN" : "This attribute specifies if the length of password",
-        "helpFA" : "این متغیر طول گذرواژه مشخص می کند",
+        "helpFA" : "این متغیر طول گذرواژه را مشخص می کند.",
         "type" : {
             "class" : "integer"
         },
@@ -453,11 +440,25 @@
         "groupFA" : "گذرواژه",
         "groupEN" : "Password",
         "helpEN" : "This attribute specifies if the password should contain special charachters",
-        "helpFA" : "این متغیر مشخص می کند که آیا پسورد شامل حروف بزرگ کاراکترهای خاص باشد.",
+        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف بزرگ کاراکترهای خاص باشد.",
         "type" : {
             "class" : "switch"
         },
         "value" : "false"
+    },
+    {
+        "_id" : "qr.devices.path",
+        "value" : "/etc/cas/config/qrdevices.json",
+        "descriptionEN" : "Qr devices's saving file path",
+        "descriptionFA" : "محل ذخیره سازی فایل حاوی دستگاههای ذخیره شده با QR",
+        "groupFA" : "ذخیره سازی",
+        "groupEN" : "Storage",
+        "helpEN" : "Specifes the path of the JSON file containing users' devices information",
+        "helpFA" : "آدرس قرارگیری فایل JSON که حاوی اطلاعات دستگاههای کاربران است را مشخص می کند",
+        "type" : {
+            "class" : "path"
+        },
+        "_class" : "parsso.idman.models.other.Setting"
     }
 
 ]

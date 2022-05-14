@@ -63,10 +63,6 @@ public class RetrieveSettings {
             setting.setValue(pwd.getPwdFailureCountInterval());
             break;
 
-          case ("pwdGraceAuthNLimit"):
-            setting.setValue(pwd.getPwdGraceAuthNLimit());
-            break;
-
           case ("pwdInHistory"):
             setting.setValue(pwd.getPwdInHistory());
             break;

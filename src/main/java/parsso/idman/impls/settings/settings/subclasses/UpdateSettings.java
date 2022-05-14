@@ -36,7 +36,6 @@ public class UpdateSettings {
       Setting storedSetting = mongoTemplate.findOne(new Query(Criteria.where("_id").is(property.get_id())),
           Setting.class, Variables.col_properties);
       if (property.get_id().equals("pwdFailureCountInterval") ||
-          property.get_id().equals("pwdGraceAuthNLimit") ||
           property.get_id().equals("pwdInHistory") ||
           property.get_id().equals("pwdLockout") ||
           property.get_id().equals("pwdMaxFailure") ||
@@ -45,10 +44,6 @@ public class UpdateSettings {
         switch (property.get_id()) {
           case "pwdFailureCountInterval":
             storedSetting.setValue(ldapPasswords.getPwdFailureCountInterval());
-            break;
-
-          case "pwdGraceAuthNLimit":
-            storedSetting.setValue(ldapPasswords.getPwdGraceAuthNLimit());
             break;
 
           case "pwdInHistory":

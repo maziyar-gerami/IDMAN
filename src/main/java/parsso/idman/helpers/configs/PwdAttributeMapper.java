@@ -17,9 +17,6 @@ public class PwdAttributeMapper implements AttributesMapper<PWD> {
     pwd.setPwdFailureCountInterval(null != attributes.get("pwdFailureCountInterval")
         ? attributes.get("pwdFailureCountInterval").get().toString()
         : null);
-    pwd.setPwdGraceAuthNLimit(
-        null != attributes.get("pwdGraceAuthNLimit") ? attributes.get("pwdGraceAuthNLimit").get().toString()
-            : null);
     pwd.setPwdInHistory(
         null != attributes.get("pwdInHistory") ? attributes.get("pwdInHistory").get().toString() : null);
     pwd.setPwdLockout(null != attributes.get("pwdLockout") ? attributes.get("pwdLockout").get().toString() : null);
