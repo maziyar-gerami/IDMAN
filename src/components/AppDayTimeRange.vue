@@ -2,16 +2,16 @@
   <div class="formgrid grid">
     <div class="field col-4">
       <div class="field p-fluid">
-        <Checkbox id="selectAll" v-model="selectAll" @input="selectAllHelper()" :binary="true" />
-        <label for="selectAll" class="mx-2 mb-0">{{ $t("selectAll") }}</label>
+        <Checkbox :id="scope + 'SelectAll'" v-model="selectAll" @input="selectAllHelper()" :binary="true" />
+        <label :for="scope + 'SelectAll'" class="mx-2 mb-0">{{ $t("selectAll") }}</label>
       </div>
     </div>
   </div>
   <div v-for="i in [...Array(7).keys()]" v-bind:key="i" class="formgrid grid">
     <div class="field col-4">
       <div class="mx-3">
-        <Checkbox :id="'select' + i" v-model="checkbox[i]" :binary="true" @input="check(i)" />
-        <label :for="'select' + i" class="mx-2 mb-0">{{ $t("daysArray[" + i + "]") }}</label>
+        <Checkbox :id="scope + 'Select' + i" v-model="checkbox[i]" :binary="true" @input="check(i)" />
+        <label :for="scope + 'Select' + i" class="mx-2 mb-0">{{ $t("daysArray[" + i + "]") }}</label>
       </div>
     </div>
     <div class="field col-8">
@@ -32,7 +32,8 @@ export default {
   name: "AppDayTimeRange",
   props: {
     startDateId: String,
-    endDateId: String
+    endDateId: String,
+    scope: String
   },
   data () {
     return {

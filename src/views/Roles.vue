@@ -12,10 +12,14 @@
             <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
           </template>
         </Toolbar>
-        <DataTable :value="users" filterDisplay="menu" dataKey="_id" :loading="loading" scrollDirection="vertical"
-        v-model:selection="selectedUsers" class="p-datatable-gridlines" :rowHover="true" :filters="filters"
-        responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" paginatorPosition="top"
-        :paginator="true" :rows="20" :rowsPerPageOptions="[10,20,50,100,500]" :pageLinkSize="5">
+        <DataTable :value="users" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" v-model:filters="filters" :loading="loading"
+        v-model:selection="selectedUsers" :filters="filters" class="p-datatable-gridlines" :rowHover="true"
+        responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" scrollDirection="vertical">
+          <template #header>
+            <div class="flex justify-content-center flex-column sm:flex-row">
+              <Paginator v-model:rows="rowsPerPage" v-model:totalRecords="totalRecordsCount" @page="onPaginatorEvent($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
+            </div>
+          </template>
           <template #empty>
             <div class="text-right">
               {{ $t("noUsersFound") }}
@@ -110,6 +114,9 @@ export default {
         }
       ],
       selectedRoleOption: {},
+      rowsPerPage: 20,
+      newPageNumber: 1,
+      totalRecordsCount: 20,
       loading: true,
       filters: null
     }
@@ -124,6 +131,11 @@ export default {
         _id: { value: null, matchMode: FilterMatchMode.CONTAINS },
         displayName: { value: null, matchMode: FilterMatchMode.CONTAINS }
       }
+    },
+    onPaginatorEvent (event) {
+      this.newPageNumber = event.page + 1
+      this.rowsPerPage = event.rows
+      this.rolesRequestMaster("getUsers")
     },
     rolesRequestMaster (command) {
       const vm = this
@@ -144,36 +156,40 @@ export default {
           url: "/api/users",
           method: "GET",
           params: {
-            searchUid: vm.usersFilters._id,
-            searchDisplayName: vm.usersFilters.displayName,
+            userId: vm.usersFilters._id,
+            displayName: vm.usersFilters.displayName,
+            sort: "role",
+            page: String(vm.newPageNumber),
+            count: String(vm.rowsPerPage),
             lang: langCode
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            for (const i in res.data.data) {
-              if (res.data.data[i].role === "SUPERUSER") {
-                res.data.data[i].roleFa = "مدیر کل"
-                res.data.data[i].icon = "color: #dc3545;"
-                superAdminTempList.push(res.data.data[i])
-              } else if (res.data.data[i].role === "SUPPORTER") {
-                res.data.data[i].roleFa = "پشتیبانی"
-                res.data.data[i].icon = "color: #28a745;"
-                supporterTempList.push(res.data.data[i])
-              } else if (res.data.data[i].role === "ADMIN") {
-                res.data.data[i].roleFa = "مدیر"
-                res.data.data[i].icon = "color: #007bff;"
-                adminTempList.push(res.data.data[i])
-              } else if (res.data.data[i].role === "PRESENTER") {
-                res.data.data[i].roleFa = "ارائه دهنده"
-                res.data.data[i].icon = "color: #00f7f7;"
-                presenterTempList.push(res.data.data[i])
-              } else if (res.data.data[i].role === "USER") {
-                res.data.data[i].roleFa = "کاربر"
-                res.data.data[i].icon = "color: #ffc107;"
-                userTempList.push(res.data.data[i])
+            for (const i in res.data.data.userList) {
+              if (res.data.data.userList[i].role === "SUPERUSER") {
+                res.data.data.userList[i].roleFa = "مدیر کل"
+                res.data.data.userList[i].icon = "color: #dc3545;"
+                superAdminTempList.push(res.data.data.userList[i])
+              } else if (res.data.data.userList[i].role === "SUPPORTER") {
+                res.data.data.userList[i].roleFa = "پشتیبانی"
+                res.data.data.userList[i].icon = "color: #28a745;"
+                supporterTempList.push(res.data.data.userList[i])
+              } else if (res.data.data.userList[i].role === "ADMIN") {
+                res.data.data.userList[i].roleFa = "مدیر"
+                res.data.data.userList[i].icon = "color: #007bff;"
+                adminTempList.push(res.data.data.userList[i])
+              } else if (res.data.data.userList[i].role === "PRESENTER") {
+                res.data.data.userList[i].roleFa = "ارائه دهنده"
+                res.data.data.userList[i].icon = "color: #00f7f7;"
+                presenterTempList.push(res.data.data.userList[i])
+              } else if (res.data.data.userList[i].role === "USER") {
+                res.data.data.userList[i].roleFa = "کاربر"
+                res.data.data.userList[i].icon = "color: #ffc107;"
+                userTempList.push(res.data.data.userList[i])
               }
             }
             vm.users = superAdminTempList.concat(supporterTempList, adminTempList, presenterTempList, userTempList)
+            vm.totalRecordsCount = res.data.data.size
             vm.loading = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

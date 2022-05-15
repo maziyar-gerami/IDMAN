@@ -215,7 +215,6 @@
                         <label for="createServiceBuffer.logo">{{ $t("logo") }}</label>
                         <FileUpload id="createServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
                         @select="fileUploadHelper($event, 'create', 'logo')" />
-                        <input id="createLogoFile" type="file" class="hidden" name="file">
                       </div>
                     </div>
                   </div>
@@ -344,7 +343,7 @@
                   <div v-if="createServiceBuffer.dailyAccessType.id === 'DAY'" class="formgrid grid">
                     <div class="field col">
                       <div class="field p-fluid">
-                        <AppDayTimeRange startDateId="createServiceBuffer.dailyAccess.start" endDateId="createServiceBuffer.dailyAccess.end" />
+                        <AppDayTimeRange startDateId="createServiceBuffer.dailyAccess.start" endDateId="createServiceBuffer.dailyAccess.end" scope="create" />
                       </div>
                     </div>
                   </div>
@@ -463,60 +462,409 @@
               <ProgressSpinner />
             </div>
             <div v-else>
-              <div class="formgrid grid">
-                <div class="field col">
-                  <div class="field p-fluid">
-                    <label for="editService.id">{{ $t("id") }}<span style="color: red;"> * </span></label>
-                    <InputText id="editService.id" type="text" :class="editServiceErrors.id" v-model="editServiceBuffer.id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" />
-                    <small>{{ $t("inputEnglishFilterText") }}</small>
-                  </div>
-                </div>
-                <div class="field col">
-                  <div class="field p-fluid">
-                    <label for="editService.name">{{ $t("persianName") }}<span style="color: red;"> * </span></label>
-                    <InputText id="editService.name" type="text" :class="editServiceErrors.name" v-model="editServiceBuffer.name" @keypress="persianInputFilter($event)" @paste="persianInputFilter($event)" />
-                    <small>{{ $t("inputPersianFilterText") }}</small>
-                  </div>
-                </div>
-              </div>
-              <div class="formgrid grid">
-                <div class="field col">
-                  <div class="field p-fluid">
-                    <label for="editService.description">{{ $t("description") }}</label>
-                    <Textarea v-model="editServiceBuffer.description" :autoResize="true" rows="3" />
-                  </div>
-                </div>
-              </div>
-              <div class="formgrid grid">
-                <div class="field col">
-                  <div class="field p-fluid">
-                    <label for="editService.usersList">{{ $t("addUsers") }}</label>
-                    <div v-if="editServiceUsersLoader" class="text-center">
-                      <ProgressSpinner />
+              <TabView v-model:activeIndex="tabActiveIndexEdit">
+                <TabPanel :header="$t('basicSettings')">
+                  <h4>{{ $t("serviceInformation") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col-6">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.id">{{ $t("id") }}</label>
+                        <InputText id="editServiceBuffer.id" type="text" v-model="editServiceBuffer.id" :disabled="true" />
+                      </div>
                     </div>
-                    <PickList v-else v-model="editServiceBuffer.usersListBuffer" dataKey="_id" :dir="$store.state.reverseDirection">
-                      <template #sourceheader>
-                        {{ $t("nonMemberUsersList") }}
-                        <InputText type="text" class="my-2" :placeholder="$t('search')" v-model="editServiceBuffer.nonMemberSearch" @input="editServiceUsersSearch('source')" />
-                      </template>
-                      <template #targetheader>
-                        {{ $t("memberUsersList") }}
-                        <InputText type="text" class="my-2" :placeholder="$t('search')" v-model="editServiceBuffer.memberSearch" @input="editServiceUsersSearch('target')" />
-                      </template>
-                      <template #item="slotProps">
-                        <div class="p-caritem">
-                          {{ slotProps.item._id }}
-                          <div>
-                            <span class="p-caritem-vin">{{ slotProps.item.displayName }}</span>
-                          </div>
-                        </div>
-                      </template>
-                    </PickList>
                   </div>
-                </div>
-              </div>
-              <Button :label="$t('confirm')" class="p-button-success mx-1" @click="editServiceCheckup()" />
-              <Button :label="$t('back')" class="p-button-danger mx-1" @click="resetState('editService')" />
+                  <div class="formgrid grid">
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.enabled" class="flex">{{ $t("enableService") }}</label>
+                        <InputSwitch id="editServiceBuffer.accessStrategy.enabled" v-model="editServiceBuffer.accessStrategy.enabled" />
+                      </div>
+                    </div>
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.ssoEnabled" class="flex">{{ $t("allowSSO") }}</label>
+                        <InputSwitch id="editServiceBuffer.accessStrategy.ssoEnabled" v-model="editServiceBuffer.accessStrategy.ssoEnabled" />
+                      </div>
+                    </div>
+                    <div class="field col-4">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.serviceType">{{ $t("serviceType") }}</label>
+                        <Dropdown id="editServiceBuffer.serviceType" :options="['CAS','SAML','Oauth2']" v-model="editServiceBuffer.serviceType" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.name">{{ $t("serviceName") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.name" type="text" :class="editServiceErrors.name" v-model="editServiceBuffer.name" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" />
+                        <small>{{ $t("inputEnglishFilterText") }}</small>
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.description">{{ $t("serviceFarsiName") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.description" type="text" :class="editServiceErrors.description" v-model="editServiceBuffer.description" @keypress="persianInputFilter($event)" @paste="persianInputFilter($event)" />
+                        <small>{{ $t("inputPersianFilterText") }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.serviceId">{{ $t("serviceID") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.serviceId" type="text" :class="editServiceErrors.serviceId" v-model="editServiceBuffer.serviceId" />
+                        <small>{{ $t("serviceURLText1") }}</small>
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.extraInfo.url">{{ $t("serviceURL") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.extraInfo.url" type="text" :class="editServiceErrors.extraInfo.url" v-model="editServiceBuffer.extraInfo.url" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="editServiceBuffer.serviceType === 'SAML'" class="formgrid grid">
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.metadataLocation" class="flex">Metadata Location</label>
+                        <div class="field-radiobutton">
+                          <RadioButton id="metadataLocationAddress" name="metadataLocation" value="address" v-model="editServiceBuffer.metadataLocationOption" />
+                          <label for="metadataLocationAddress" class="mx-2">{{ $t("url") }}</label>
+                        </div>
+                        <div class="field-radiobutton">
+                          <RadioButton id="metadataLocationFile" name="metadataLocation" value="file" v-model="editServiceBuffer.metadataLocationOption" />
+                          <label for="metadataLocationFile" class="mx-2">{{ $t("file") }}</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field col-6">
+                      <div v-if="editServiceBuffer.metadataLocationOption === 'address'" class="field p-fluid">
+                        <InputText id="editServiceBuffer.metadataLocation" type="text" :class="editServiceErrors.metadataLocation" v-model="editServiceBuffer.metadataLocation" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                      <div v-else-if="editServiceBuffer.metadataLocationOption === 'file'" class="field p-fluid">
+                        <FileUpload id="editServiceBuffer.metadataLocation" mode="basic" name="file" :chooseLabel="$t('selectFile')"
+                        @select="fileUploadHelper($event, 'edit', 'metadata')" :class="editServiceErrors.metadataLocation" />
+                        <input id="editMetadataFile" type="file" class="hidden" name="file">
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="editServiceBuffer.serviceType === 'Oauth2'" class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.clientId">Client Id<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.clientId" type="text" :class="editServiceErrors.clientId" v-model="editServiceBuffer.clientId" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.clientSecret">Client Secret<span style="color: red;"> * </span></label>
+                        <div class="p-inputgroup">
+                          <InputText id="editServiceBuffer.clientSecret" v-model="editServiceBuffer.clientSecret" :class="editServiceErrors.clientSecret" />
+                          <Button @click="generateSecret()">{{ $t("generateSecret") }}</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="editServiceBuffer.serviceType === 'Oauth2'" class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.supportedGrantTypes">Supported Grant Types<span style="color: red;"> * </span></label>
+                        <MultiSelect id="editServiceBuffer.supportedGrantTypes" v-model="editServiceBuffer.supportedGrantTypes[1]" :class="editServiceErrors.supportedGrantTypes"
+                        :options="['none', 'authorization_code', 'password', 'client_credentials', 'refresh_token', 'uma_ticket']" :placeholder="$t('select')">
+                          <template #value="slotProps">
+                            <div class="inline-flex align-items-center py-1 px-2 bg-primary text-primary border-round mr-2" v-for="option of slotProps.value" :key="option">
+                              <div>{{option}}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                              <div class="p-1">{{ $t("select") }}</div>
+                            </template>
+                          </template>
+                          <template #option="slotProps">
+                            <div class="flex align-items-center">
+                              <div>{{slotProps.option}}</div>
+                            </div>
+                          </template>
+                        </MultiSelect>
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.supportedResponseTypes">Supported Response Types<span style="color: red;"> * </span></label>
+                        <MultiSelect id="editServiceBuffer.supportedResponseTypes" v-model="editServiceBuffer.supportedResponseTypes[1]" :class="editServiceErrors.supportedResponseTypes"
+                        :options="['none', 'code', 'token', 'device_code', 'idtoken_token', 'id_token']" :placeholder="$t('select')">
+                          <template #value="slotProps">
+                            <div class="inline-flex align-items-center py-1 px-2 bg-primary text-primary border-round mr-2" v-for="option of slotProps.value" :key="option">
+                              <div>{{option}}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                              <div class="p-1">{{ $t("select") }}</div>
+                            </template>
+                          </template>
+                          <template #option="slotProps">
+                            <div class="flex align-items-center">
+                              <div>{{slotProps.option}}</div>
+                            </div>
+                          </template>
+                        </MultiSelect>
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("referenceLinks") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.logoAddress">{{ $t("logo") }}</label>
+                        <InputText id="editServiceBuffer.logoAddress" type="text" v-model="editServiceBuffer.logo" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <FileUpload id="editServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
+                        @select="fileUploadHelper($event, 'edit', 'logo')" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.informationUrl">{{ $t("informationURL") }}</label>
+                        <InputText id="editServiceBuffer.informationUrl" type="text" v-model="editServiceBuffer.informationUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.privacyUrl">{{ $t("privacyURL") }}</label>
+                        <InputText id="editServiceBuffer.privacyUrl" type="text" v-model="editServiceBuffer.privacyUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("contacts") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.contacts.name">{{ $t("name") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.contacts.name" type="text" :class="editServiceErrors.contacts.name" v-model="editServiceBuffer.contacts[1][0].name" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.contacts.email">{{ $t("email") }}<span style="color: red;"> * </span></label>
+                        <InputText id="editServiceBuffer.contacts.email" type="text" :class="editServiceErrors.contacts.email" v-model="editServiceBuffer.contacts[1][0].email" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.contacts.phone">{{ $t("mobile") }}</label>
+                        <InputText id="editServiceBuffer.contacts.phone" type="text" v-model="editServiceBuffer.contacts[1][0].phone" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.contacts.department">{{ $t("department") }}</label>
+                        <InputText id="editServiceBuffer.contacts.department" type="text" v-model="editServiceBuffer.contacts[1][0].department" />
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("logoutOptions") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.logoutType">{{ $t("logoutType") }}</label>
+                        <Dropdown id="editServiceBuffer.logoutType" :options="['NONE','BACK_CHANNEL','FRONT_CHANNEL']" v-model="editServiceBuffer.logoutType" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.logoutUrl">{{ $t("logoutURL") }}</label>
+                        <InputText id="editServiceBuffer.logoutUrl" type="text" v-model="editServiceBuffer.logoutUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                  </div>
+                  <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editServiceCheckup()" />
+                  <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
+                </TabPanel>
+                <TabPanel :header="$t('accessSettings')">
+                  <h4>{{ $t("groupsAccess") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.requiredAttributes.ou">{{ $t("groups") }}</label>
+                        <MultiSelect id="editServiceBuffer.accessStrategy.requiredAttributes.ou" v-model="editServiceBuffer.accessStrategy.requiredAttributes.ou[1]" :options="groups"
+                        :placeholder="$t('select')" :filter="true" :emptyMessage="$t('noGroupsFound')" :emptyFilterMessage="$t('noGroupsFound')" optionLabel="name">
+                          <template #value="slotProps">
+                            <div class="inline-flex align-items-center py-1 px-2 bg-primary text-primary border-round mr-2" v-for="option of slotProps.value" :key="option.id">
+                              <div>{{option.name}}</div>
+                            </div>
+                            <template v-if="!slotProps.value || slotProps.value.length === 0">
+                              <div class="p-1">{{ $t("select") }}</div>
+                            </template>
+                          </template>
+                          <template #option="slotProps">
+                            <div class="flex align-items-center">
+                              <div>{{slotProps.option.name}}</div>
+                            </div>
+                          </template>
+                        </MultiSelect>
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("usersAccess") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <AppListBox :label="$t('users')" :list="users" :searchParameters="['_id', 'displayName']" :loader="editServiceUsersLoader"
+                        secondParameter="displayName" :parentList="true" @toggleRecord="editServiceAllUsersToggle" firstParameter="_id" type="list" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <AppListBox :label="$t('authorizedUsers')" :list="editServiceBuffer.accessStrategy.requiredAttributes.uid[1]" :searchParameters="['_id', 'displayName']" type="authorize"
+                        secondParameter="displayName" :parentList="false" @toggleRecord="editServiceAllUsersToggle" firstParameter="_id" :loader="editServiceUsersLoader" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <AppListBox :label="$t('bannedUsers')" :list="editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]" :searchParameters="['_id', 'displayName']" type="ban"
+                        secondParameter="displayName" :parentList="false" @toggleRecord="editServiceAllUsersToggle" firstParameter="_id" :loader="editServiceUsersLoader" />
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("dailyBasedAccess") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col-6">
+                      <div class="field p-fluid" :dir="$store.state.reverseDirection">
+                        <SelectButton v-model="editServiceBuffer.dailyAccessType" :options="[{id: 'URL', name: $t('urlBased')}, {id: 'DAY', name: $t('dayBased')}]" optionLabel="name" />
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="editServiceBuffer.dailyAccessType.id === 'DAY'" class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <AppDayTimeRange startDateId="editServiceBuffer.dailyAccess.start" endDateId="editServiceBuffer.dailyAccess.end" scope="edit" />
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="editServiceBuffer.dailyAccessType.id === 'URL'" class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.endpointUrl">{{ $t("url") }}</label>
+                        <InputText id="editServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="editServiceBuffer.accessStrategy.endpointUrl" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.acceptableResponseCodes">{{ $t("acceptableResponseCodes") }}</label>
+                        <InputText id="editServiceBuffer.accessStrategy.acceptableResponseCodes" type="text" v-model="editServiceBuffer.accessStrategy.acceptableResponseCodes" placeholder="200,202" />
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("timeBasedAccess") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.startDate">{{ $t("startDate") }}</label>
+                        <InputText id="editServiceBuffer.startDate" type="text" class="datePickerFa" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.endDate">{{ $t("endDate") }}</label>
+                        <InputText id="editServiceBuffer.endDate" type="text" class="datePickerFa" />
+                      </div>
+                    </div>
+                  </div>
+                  <h4>{{ $t("attributeBasedAccess") }}</h4>
+                  <div v-for="(attribute, index) in editServiceBuffer.attributeList" v-bind:key="index" class="formgrid grid">
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <label v-if="index === 0">{{ $t("attributeName") }}</label>
+                        <InputText v-model="attribute.name" type="text" placeholder="name" />
+                      </div>
+                    </div>
+                    <div class="field col-8">
+                      <div class="field p-fluid">
+                        <label v-if="index === 0">{{ $t("attributeValue") }}</label>
+                        <InputText v-model="attribute.value" type="text" placeholder="value1,value2,value3" />
+                      </div>
+                    </div>
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <Button v-if="index !== 0" @click="attributeHelper('edit', 'remove', index)" icon="bx bx-x bx-sm" v-tooltip.top="$t('delete')" class="p-button-rounded p-button-danger p-button-outlined p-button-sm" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="formgrid grid">
+                    <div class="field col-2">
+                      <div class="field p-fluid">
+                        <Button :label="$t('add')" icon="bx bx-plus bx-sm" class="p-button-success" @click="attributeHelper('edit', 'add')" />
+                      </div>
+                    </div>
+                  </div>
+                  <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editServiceCheckup()" />
+                  <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
+                </TabPanel>
+                <TabPanel :header="$t('authenticationSettings')">
+                  <h4>{{ $t("multi-factorAuthentication") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders">{{ $t("activation") }}</label>
+                        <Dropdown id="editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders"
+                        v-model="editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders"
+                        :options="multifactorAuthenticationProvidersOptions" optionLabel="name" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.multifactorPolicy.failureMode">Failure Mode</label>
+                        <Dropdown id="editServiceBuffer.multifactorPolicy.failureMode" :options="['NONE', 'CLOSED', 'OPEN', 'PHANTOM']"
+                        v-model="editServiceBuffer.multifactorPolicy.failureMode" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid" style="display: grid;">
+                        <label for="editServiceBuffer.multifactorPolicy.bypassEnabled">Bypass Enabled</label>
+                        <ToggleButton id="editServiceBuffer.multifactorPolicy.bypassEnabled" onIcon="pi pi-check"
+                        v-model="editServiceBuffer.multifactorPolicy.bypassEnabled" offIcon="pi pi-times" />
+                      </div>
+                    </div>
+                  </div>
+                  <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editServiceCheckup()" />
+                  <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
+                </TabPanel>
+                <TabPanel :header="$t('notificationSettings')">
+                  <h4>{{ $t("notifications") }}</h4>
+                  <div class="formgrid grid">
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.extraInfo.notificationApiURL">{{ $t("apiAddress") }}</label>
+                        <InputText id="editServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="editServiceBuffer.extraInfo.notificationApiURL" />
+                      </div>
+                    </div>
+                    <div class="field col">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.extraInfo.notificationApiKey">{{ $t("apiKey") }}</label>
+                        <InputText id="editServiceBuffer.extraInfo.notificationApiKey" type="text" v-model="editServiceBuffer.extraInfo.notificationApiKey" />
+                      </div>
+                    </div>
+                  </div>
+                  <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editServiceCheckup()" />
+                  <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
+                </TabPanel>
+              </TabView>
             </div>
           </TabPanel>
         </TabView>
@@ -579,8 +927,21 @@ export default {
         }
       },
       editServiceErrors: {
-        id: "",
-        name: ""
+        name: "",
+        serviceId: "",
+        description: "",
+        metadataLocation: "",
+        clientId: "",
+        clientSecret: "",
+        supportedGrantTypes: "",
+        supportedResponseTypes: "",
+        contacts: {
+          name: "",
+          email: ""
+        },
+        extraInfo: {
+          url: ""
+        }
       },
       createServiceBuffer: {
         serviceType: "CAS",
@@ -665,7 +1026,90 @@ export default {
           notificationApiKey: null
         }
       },
-      editServiceBuffer: {},
+      editServiceBuffer: {
+        serviceType: "CAS",
+        logoFile: null,
+        metadataFile: null,
+        dailyAccessType: {
+          id: "DAY",
+          name: this.$t("dayBased")
+        },
+        attributeList: [
+          {
+            name: "",
+            value: ""
+          }
+        ],
+        id: "",
+        name: "",
+        serviceId: "",
+        description: "",
+        metadataLocation: "",
+        metadataLocationOption: "address",
+        clientId: "",
+        clientSecret: "",
+        supportedGrantTypes: [
+          "java.util.HashSet",
+          ["authorization_code"]
+        ],
+        supportedResponseTypes: [
+          "java.util.HashSet",
+          ["code"]
+        ],
+        logo: null,
+        informationUrl: null,
+        privacyUrl: null,
+        logoutType: "BACK_CHANNEL",
+        logoutUrl: null,
+        contacts: [
+          "java.util.ArrayList",
+          [
+            {
+              name: "",
+              email: "",
+              phone: null,
+              department: null
+            }
+          ]
+        ],
+        accessStrategy: {
+          enabled: true,
+          ssoEnabled: true,
+          unauthorizedRedirectUrl: null,
+          endpointUrl: null,
+          acceptableResponseCodes: null,
+          requiredAttributes: {
+            uid: [
+              "java.util.HashSet",
+              []
+            ],
+            ou: [
+              "java.util.HashSet",
+              []
+            ]
+          },
+          rejectedAttributes: {
+            uid: [
+              "java.util.HashSet",
+              []
+            ]
+          }
+        },
+        multifactorPolicy: {
+          multifactorAuthenticationProviders: {
+            value: "",
+            name: this.$t("disabled")
+          },
+          bypassEnabled: false,
+          failureMode: null
+        },
+        extraInfo: {
+          url: "",
+          dailyAccess: null,
+          notificationApiURL: null,
+          notificationApiKey: null
+        }
+      },
       tabActiveIndexList: 0,
       tabActiveIndexCreate: 0,
       tabActiveIndexEdit: 0,
@@ -677,10 +1121,12 @@ export default {
       createServiceUsersLoader: false,
       editServiceLoader: false,
       editServiceUsersLoader: false,
+      persianDate: null,
       persianRex: null
     }
   },
   mounted () {
+    this.persianDate = require("persian-date/dist/persian-date")
     this.persianRex = require("persian-rex/dist/persian-rex")
     this.servicesRequestMaster("getServices")
   },
@@ -716,16 +1162,172 @@ export default {
       } else if (command === "getService") {
         this.editServiceLoader = true
         this.axios({
-          url: "/api/services",
+          url: "/api/services/" + vm.editServiceBuffer.id,
           method: "GET",
           params: {
-            id: vm.editServiceBuffer.id,
             lang: langCode
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.editServiceBuffer = res.data.data
-            vm.baseServiceId = res.data.data.id
+            vm.editServiceBuffer.accessStrategy.enabled = res.data.accessStrategy.enabled
+            vm.editServiceBuffer.accessStrategy.ssoEnabled = res.data.accessStrategy.ssoEnabled
+            vm.editServiceBuffer.name = res.data.name
+            res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
+            vm.editServiceBuffer.serviceId = res.data.serviceId
+            vm.editServiceBuffer.description = res.data.description
+            vm.editServiceBuffer.extraInfo.url = res.data.extraInfo.url
+            if (typeof res.data.metadataLocation !== "undefined") {
+              vm.editServiceBuffer.serviceType = "SAML"
+              vm.editServiceBuffer.metadataLocation = res.data.metadataLocation
+            }
+            if (typeof res.data.clientId !== "undefined" && typeof res.data.clientSecret !== "undefined") {
+              vm.editServiceBuffer.serviceType = "Oauth2"
+              vm.editServiceBuffer.clientId = res.data.clientId
+              vm.editServiceBuffer.clientSecret = res.data.clientSecret
+              vm.editServiceBuffer.supportedGrantTypes[1] = res.data.supportedGrantTypes[1]
+              vm.editServiceBuffer.supportedResponseTypes[1] = res.data.supportedResponseTypes[1]
+            }
+
+            if (typeof res.data.logo !== "undefined") {
+              vm.editServiceBuffer.logo = res.data.logo
+            }
+            if (typeof res.data.informationUrl !== "undefined") {
+              vm.editServiceBuffer.informationUrl = res.data.informationUrl
+            }
+            if (typeof res.data.privacyUrl !== "undefined") {
+              vm.editServiceBuffer.privacyUrl = res.data.privacyUrl
+            }
+
+            vm.editServiceBuffer.contacts[1][0].name = res.data.contacts[1][0].name
+            vm.editServiceBuffer.contacts[1][0].email = res.data.contacts[1][0].email
+            if (typeof res.data.contacts[1][0].phone !== "undefined") {
+              vm.editServiceBuffer.contacts[1][0].phone = res.data.contacts[1][0].phone
+            }
+            if (typeof res.data.contacts[1][0].department !== "undefined") {
+              vm.editServiceBuffer.contacts[1][0].department = res.data.contacts[1][0].department
+            }
+
+            if (typeof res.data.logoutUrl !== "undefined") {
+              vm.editServiceBuffer.logoutUrl = res.data.logoutUrl
+            }
+            vm.editServiceBuffer.logoutType = res.data.logoutType
+
+            if (typeof res.data.accessStrategy.unauthorizedRedirectUrl !== "undefined") {
+              vm.editServiceBuffer.accessStrategy.unauthorizedRedirectUrl = res.data.accessStrategy.unauthorizedRedirectUrl
+            }
+
+            if (typeof res.data.accessStrategy.requiredAttributes !== "undefined") {
+              if (typeof res.data.accessStrategy.requiredAttributes.ou !== "undefined") {
+                for (const i in res.data.accessStrategy.requiredAttributes.ou[1]) {
+                  for (const j in vm.groups) {
+                    if (res.data.accessStrategy.requiredAttributes.ou[1][i] === vm.groups[j].id) {
+                      vm.editServiceBuffer.accessStrategy.requiredAttributes.ou[1].push(vm.groups[j])
+                      break
+                    }
+                  }
+                }
+              }
+              if (typeof res.data.accessStrategy.requiredAttributes.uid !== "undefined") {
+                for (const i in res.data.accessStrategy.requiredAttributes.uid[1]) {
+                  for (const j in vm.users) {
+                    if (res.data.accessStrategy.requiredAttributes.uid[1][i] === vm.users[j]._id) {
+                      vm.editServiceBuffer.accessStrategy.requiredAttributes.uid[1].push(vm.users[j])
+                      break
+                    }
+                  }
+                }
+              }
+              const tempAattributeList = []
+              const tempRequiredAttribute = Object.entries(res.data.accessStrategy.requiredAttributes)
+              for (const i in tempRequiredAttribute) {
+                if (tempRequiredAttribute[i][0] !== "@class" && tempRequiredAttribute[i][0] !== "ou" && tempRequiredAttribute[i][0] !== "uid") {
+                  tempAattributeList.push({ name: tempRequiredAttribute[i][0], value: tempRequiredAttribute[i][1][1].join(",") })
+                }
+              }
+              if (tempAattributeList.length > 0) {
+                vm.editServiceBuffer.attributeList = tempAattributeList
+              }
+            }
+
+            if (typeof res.data.accessStrategy.rejectedAttributes !== "undefined") {
+              if (typeof res.data.accessStrategy.rejectedAttributes.uid !== "undefined") {
+                for (const i in res.data.accessStrategy.rejectedAttributes.uid[1]) {
+                  for (const j in vm.users) {
+                    if (res.data.accessStrategy.rejectedAttributes.uid[1][i] === vm.users[j]._id) {
+                      vm.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1].push(vm.users[j])
+                      break
+                    }
+                  }
+                }
+              }
+            }
+
+            if (typeof res.data.extraInfo.dailyAccess !== "undefined") {
+              vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
+              if (res.data.extraInfo.dailyAccess.length > 0) {
+                for (const i in res.data.extraInfo.dailyAccess) {
+                  document.getElementById("editSelect" + res.data.extraInfo.dailyAccess[i].weekDay).checked = true
+                  document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.extraInfo.dailyAccess[i].weekDay).value =
+                    vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute))
+                  document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.extraInfo.dailyAccess[i].weekDay).value =
+                    vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute))
+                }
+                if (res.data.extraInfo.dailyAccess.length === 7) {
+                  document.getElementById("editSelectAll").checked = true
+                }
+              }
+            } else if (typeof res.data.accessStrategy.endpointUrl !== "undefined") {
+              vm.editServiceBuffer.dailyAccessType = { id: "URL", name: vm.$t("urlBased") }
+              vm.editServiceBuffer.accessStrategy.endpointUrl = res.data.accessStrategy.endpointUrl
+              if (typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined") {
+                vm.editServiceBuffer.accessStrategy.acceptableResponseCodes = res.data.accessStrategy.acceptableResponseCodes
+              }
+            }
+
+            if (typeof res.data.accessStrategy.startingDateTime !== "undefined") {
+              const seTime = res.data.accessStrategy.startingDateTime
+              vm.persianDate.toCalendar("gregorian")
+              // eslint-disable-next-line new-cap
+              const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
+                seTime.substring(11, 13), seTime.substring(14, 16), seTime.substring(17, 19), seTime.substring(20, 23)])
+              document.getElementById("createServiceBuffer.startDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
+            }
+            if (typeof res.data.accessStrategy.endingDateTime !== "undefined") {
+              const seTime = res.data.accessStrategy.endingDateTime
+              vm.persianDate.toCalendar("gregorian")
+              // eslint-disable-next-line new-cap
+              const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
+                seTime.substring(11, 13), seTime.substring(14, 16), seTime.substring(17, 19), seTime.substring(20, 23)])
+              document.getElementById("createServiceBuffer.endDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
+            }
+
+            if (typeof res.data.multifactorPolicy !== "undefined") {
+              if (typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== "undefined") {
+                if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]") {
+                  vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-simple", name: vm.$t("smsCode") }
+                } else if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-gauth\"]]") {
+                  vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-gauth", name: this.$t("oneTimePassword") }
+                } else if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-u2f\"]]") {
+                  vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-u2f", name: this.$t("hardwareToken") }
+                }
+              }
+              if (typeof res.data.multifactorPolicy.bypassEnabled !== "undefined") {
+                vm.editServiceBuffer.multifactorPolicy.bypassEnabled = res.data.multifactorPolicy.bypassEnabled
+              }
+              if (typeof res.data.multifactorPolicy.failureMode !== "undefined") {
+                vm.editServiceBuffer.multifactorPolicy.failureMode = res.data.multifactorPolicy.failureMode
+              }
+            }
+
+            if (typeof res.data.extraInfo.notificationApiURL !== "undefined") {
+              vm.editServiceBuffer.extraInfo.notificationApiURL = res.data.extraInfo.notificationApiURL
+            }
+            if (typeof res.data.extraInfo.notificationApiKey !== "undefined") {
+              vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.extraInfo.notificationApiKey
+            }
             vm.editServiceLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -762,7 +1364,7 @@ export default {
           this.createServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
         }
         for (let i = 0; i < 7; ++i) {
-          if (document.getElementById("select" + i).checked) {
+          if (document.getElementById("createSelect" + i).checked) {
             const tempDailyAccessStart = document.getElementById("createServiceBuffer.dailyAccess.start" + i).value.split(":")
             const tempDailyAccessEnd = document.getElementById("createServiceBuffer.dailyAccess.end" + i).value.split(":")
             if (tempDailyAccessStart[0] === "") {
@@ -959,6 +1561,7 @@ export default {
             ["java.util.HashSet", this.createServiceBuffer.attributeList[i].value.split(",")]
           }
         }
+        this.createServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.createServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
 
         let serviceType = ""
         if (this.createServiceBuffer.serviceType === "CAS") {
@@ -1037,64 +1640,297 @@ export default {
           vm.createServiceLoader = false
         })
       } else if (command === "editService") {
-        this.editServiceBuffer.usersAddList = []
-        this.editServiceBuffer.usersRemoveList = []
-        const usersAddListTemp = this.editServiceBuffer.usersListBuffer[1].filter(a => !this.editServiceBuffer.usersList[1].map(b => b._id).includes(a._id))
-        const usersRemoveListTemp = this.editServiceBuffer.usersListBuffer[0].filter(a => !this.editServiceBuffer.usersList[0].map(b => b._id).includes(a._id))
-        for (const i in usersAddListTemp) {
-          this.editServiceBuffer.usersAddList.push(usersAddListTemp[i]._id)
-        }
-        for (const i in usersRemoveListTemp) {
-          this.editServiceBuffer.usersRemoveList.push(usersRemoveListTemp[i]._id)
-        }
+        let serviceData = {}
         this.editServiceLoader = true
+        const ouTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
+            ouTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1][i].id)
+          }
+          this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] = ouTemp
+        }
+        const userAddTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1]) {
+            userAddTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1][i]._id)
+          }
+          this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = userAddTemp
+        }
+        const userBanTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]) {
+            userBanTemp.push(this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1][i]._id)
+          }
+          this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
+        }
+        for (let i = 0; i < 7; ++i) {
+          if (document.getElementById("editSelect" + i).checked) {
+            const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
+            const tempDailyAccessEnd = document.getElementById("editServiceBuffer.dailyAccess.end" + i).value.split(":")
+            if (tempDailyAccessStart[0] === "") {
+              tempDailyAccessStart[0] = "0"
+              tempDailyAccessStart.push("00")
+            } else if (typeof tempDailyAccessStart[1] === "undefined") {
+              tempDailyAccessStart.push("00")
+            }
+            if (tempDailyAccessEnd[0] === "") {
+              tempDailyAccessEnd[0] = "23"
+              tempDailyAccessEnd.push("59")
+            } else if (typeof tempDailyAccessEnd[1] === "undefined") {
+              tempDailyAccessEnd.push("00")
+            }
+            tempDailyAccessStart[0] = this.faNumToEnNum(tempDailyAccessStart[0])
+            tempDailyAccessStart[1] = this.faNumToEnNum(tempDailyAccessStart[1])
+            tempDailyAccessEnd[0] = this.faNumToEnNum(tempDailyAccessEnd[0])
+            tempDailyAccessEnd[1] = this.faNumToEnNum(tempDailyAccessEnd[1])
+            const tempDailyAccessDay = {
+              weekDay: i,
+              period: {
+                from: {
+                  hour: tempDailyAccessStart[0],
+                  minute: tempDailyAccessStart[1]
+                },
+                to: {
+                  hour: tempDailyAccessEnd[0],
+                  minute: tempDailyAccessEnd[1]
+                }
+              }
+            }
+            this.editServiceBuffer.extraInfo.dailyAccess.push(tempDailyAccessDay)
+          }
+        }
+        if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
+          const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
+          const dateStart = dateStartTemp[0].split(" ")
+          let dateStartFinal
+          dateStart[dateStart.length - 1] = this.faNumToEnNum(dateStart[dateStart.length - 1])
+          dateStart[dateStart.length - 3] = this.faNumToEnNum(dateStart[dateStart.length - 3])
+
+          switch (dateStart[dateStart.length - 2]) {
+            case "فروردین":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3]
+              break
+            case "اردیبهشت":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3]
+              break
+            case "خرداد":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3]
+              break
+            case "تیر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3]
+              break
+            case "مرداد":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3]
+              break
+            case "شهریور":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3]
+              break
+            case "مهر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3]
+              break
+            case "آبان":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3]
+              break
+            case "آذر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3]
+              break
+            case "دی":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3]
+              break
+            case "بهمن":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3]
+              break
+            case "اسفند":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3]
+              break
+            default:
+              console.log("Wrong Input for Month")
+          }
+
+          const dateEndTemp = document.getElementsByName("dateEnd")[0].value.split("  ")
+          const dateEnd = dateEndTemp[0].split(" ")
+          let dateEndFinal
+          dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
+          dateEnd[dateEnd.length - 3] = this.faNumToEnNum(dateEnd[dateEnd.length - 3])
+
+          switch (dateEnd[dateEnd.length - 2]) {
+            case "فروردین":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3]
+              break
+            case "اردیبهشت":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3]
+              break
+            case "خرداد":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3]
+              break
+            case "تیر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3]
+              break
+            case "مرداد":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3]
+              break
+            case "شهریور":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3]
+              break
+            case "مهر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3]
+              break
+            case "آبان":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3]
+              break
+            case "آذر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3]
+              break
+            case "دی":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3]
+              break
+            case "بهمن":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3]
+              break
+            case "اسفند":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3]
+              break
+            default:
+              console.log("Wrong Input for Month")
+          }
+
+          let timeStart = dateStartTemp[1].split(":")
+          let timeEnd = dateEndTemp[1].split(":")
+
+          timeStart = this.faNumToEnNum(timeStart[0]) + ":" + this.faNumToEnNum(timeStart[1])
+          timeEnd = this.faNumToEnNum(timeEnd[0]) + ":" + this.faNumToEnNum(timeEnd[1])
+
+          const dateS = dateStartFinal.split("-")
+          const dateE = dateEndFinal.split("-")
+
+          if (parseInt(dateS[1]) < 7) {
+            timeStart = timeStart + ":00.000+04:30"
+          } else {
+            timeStart = timeStart + ":00.000+03:30"
+          }
+
+          if (parseInt(dateE[1]) < 7) {
+            timeEnd = timeEnd + ":00.000+04:30"
+          } else {
+            timeEnd = timeEnd + ":00.000+03:30"
+          }
+
+          let TempS = timeStart.split(":")
+          let TempE = timeEnd.split(":")
+          if (TempS[0].length === 1) {
+            TempS[0] = "0" + TempS[0]
+            timeStart = ""
+            for (let i = 0; i < TempS.length; ++i) {
+              timeStart = timeStart + TempS[i] + ":"
+            }
+            timeStart = timeStart.substring(0, timeStart.length - 1)
+          }
+          if (TempE[0].length === 1) {
+            TempE[0] = "0" + TempE[0]
+            timeEnd = ""
+            for (let i = 0; i < TempE.length; ++i) {
+              timeEnd = timeEnd + TempE[i] + ":"
+            }
+            timeEnd = timeEnd.substring(0, timeEnd.length - 1)
+          }
+
+          TempS = dateStartFinal.split("-")
+          TempE = dateEndFinal.split("-")
+          if (TempS[1].length === 1) {
+            TempS[1] = "0" + TempS[1]
+          }
+          if (TempS[2].length === 1) {
+            TempS[2] = "0" + TempS[2]
+          }
+          if (TempE[1].length === 1) {
+            TempE[1] = "0" + TempE[1]
+          }
+          if (TempE[2].length === 1) {
+            TempE[2] = "0" + TempE[2]
+          }
+
+          dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
+          dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
+
+          this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
+          this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
+        }
+        for (const i in this.editServiceBuffer.attributeList) {
+          if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
+            this.editServiceBuffer.accessStrategy.requiredAttributes[this.editServiceBuffer.attributeList[i].name] =
+            ["java.util.HashSet", this.editServiceBuffer.attributeList[i].value.split(",")]
+          }
+        }
+        this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
+
+        let serviceType = ""
+        if (this.editServiceBuffer.serviceType === "CAS") {
+          serviceType = "cas"
+          serviceData = JSON.stringify({
+            name: vm.editServiceBuffer.name,
+            serviceId: vm.editServiceBuffer.serviceId,
+            extraInfo: vm.editServiceBuffer.extraInfo,
+            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
+            description: vm.editServiceBuffer.description,
+            logo: vm.editServiceBuffer.logo,
+            informationUrl: vm.editServiceBuffer.informationUrl,
+            privacyUrl: vm.editServiceBuffer.privacyUrl,
+            logoutType: vm.editServiceBuffer.logoutType,
+            logoutUrl: vm.editServiceBuffer.logoutUrl,
+            accessStrategy: vm.editServiceBuffer.accessStrategy,
+            contacts: vm.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        } else if (this.editServiceBuffer.serviceType === "SAML") {
+          serviceType = "saml"
+          serviceData = JSON.stringify({
+            name: vm.editServiceBuffer.name,
+            serviceId: vm.editServiceBuffer.serviceId,
+            extraInfo: vm.editServiceBuffer.extraInfo,
+            metadataLocation: vm.editServiceBuffer.metadataLocation,
+            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
+            description: vm.editServiceBuffer.description,
+            logo: vm.editServiceBuffer.logo,
+            informationUrl: vm.editServiceBuffer.informationUrl,
+            privacyUrl: vm.editServiceBuffer.privacyUrl,
+            logoutType: vm.editServiceBuffer.logoutType,
+            logoutUrl: vm.editServiceBuffer.logoutUrl,
+            accessStrategy: vm.editServiceBuffer.accessStrategy,
+            contacts: vm.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        } else if (this.editServiceBuffer.serviceType === "Oauth2") {
+          serviceType = "oauth"
+          serviceData = JSON.stringify({
+            name: vm.editServiceBuffer.name,
+            serviceId: vm.editServiceBuffer.serviceId,
+            clientId: vm.editServiceBuffer.clientId,
+            clientSecret: vm.editServiceBuffer.clientSecret,
+            supportedGrantTypes: vm.editServiceBuffer.supportedGrantTypes,
+            supportedResponseTypes: vm.editServiceBuffer.supportedResponseTypes,
+            extraInfo: vm.editServiceBuffer.extraInfo,
+            metadataLocation: vm.editServiceBuffer.metadataLocation,
+            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
+            description: vm.editServiceBuffer.description,
+            logo: vm.editServiceBuffer.logo,
+            informationUrl: vm.editServiceBuffer.informationUrl,
+            privacyUrl: vm.editServiceBuffer.privacyUrl,
+            logoutType: vm.editServiceBuffer.logoutType,
+            logoutUrl: vm.editServiceBuffer.logoutUrl,
+            accessStrategy: vm.editServiceBuffer.accessStrategy,
+            contacts: vm.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        }
         this.axios({
-          url: "/api/services/" + vm.baseServiceId,
+          url: "/api/service/" + vm.editServiceBuffer.id + "/" + serviceType,
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           params: {
             lang: langCode
           },
-          data: JSON.stringify({
-            id: vm.editServiceBuffer.id,
-            name: vm.editServiceBuffer.name,
-            description: vm.editServiceBuffer.description
-          }).replace(/\\\\/g, "\\")
+          data: serviceData
         }).then((res) => {
           if (res.data.status.code === 200) {
-            this.axios({
-              url: "/api/users/service/" + vm.editServiceBuffer.id,
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              params: {
-                lang: langCode
-              },
-              data: JSON.stringify({
-                add: vm.editServiceBuffer.usersAddList,
-                remove: vm.editServiceBuffer.usersRemoveList
-              }).replace(/\\\\/g, "\\")
-            }).then((res1) => {
-              if (res1.data.status.code === 200) {
-                vm.editServiceLoader = false
-                vm.resetState("editService")
-                vm.servicesRequestMaster("getServices")
-              } else if (res1.data.status.code === 207) {
-                vm.alertPromptMaster(res1.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
-                vm.editServiceLoader = false
-                vm.resetState("editService")
-                vm.servicesRequestMaster("getServices")
-              } else {
-                vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                vm.editServiceLoader = false
-                vm.resetState("editService")
-                vm.servicesRequestMaster("getServices")
-              }
-            }).catch(() => {
-              vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              vm.editServiceLoader = false
-              vm.resetState("editService")
-              vm.servicesRequestMaster("getServices")
-            })
+            vm.editServiceLoader = false
+            vm.resetState("editService")
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
@@ -1206,6 +2042,43 @@ export default {
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.createServiceUsersLoader = false
+        })
+      } else if (command === "initiateGroupsEdit") {
+        this.editServiceLoader = true
+        this.axios({
+          url: "/api/groups",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          vm.groups = res.data.data
+          vm.editServiceLoader = false
+          vm.servicesRequestMaster("initiateUsersEdit")
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.editServiceLoader = false
+        })
+      } else if (command === "initiateUsersEdit") {
+        this.editServiceUsersLoader = true
+        this.axios({
+          url: "/api/users",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.users = res.data.data
+            vm.editServiceUsersLoader = false
+            vm.servicesRequestMaster("getService")
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.editServiceUsersLoader = false
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.editServiceUsersLoader = false
         })
       }
     },
@@ -1453,30 +2326,181 @@ export default {
       }
     },
     editService (id) {
-      /* this.editServiceBuffer.id = id
+      this.editServiceBuffer.id = id
       this.editServiceFlag = true
       if (this.createServiceFlag) {
         this.tabActiveIndex = 2
       } else {
         this.tabActiveIndex = 1
       }
-      this.servicesRequestMaster("getService")
-      this.servicesRequestMaster("getUsersEditService") */
+      this.servicesRequestMaster("initiateGroupsEdit")
     },
     editServiceCheckup () {
+      const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       let errorCount = 0
-      if (this.editServiceBuffer.id === "") {
-        this.editServiceErrors.id = "p-invalid"
-        errorCount += 1
-      } else {
-        this.editServiceErrors.id = ""
-      }
       if (this.editServiceBuffer.name === "") {
         this.editServiceErrors.name = "p-invalid"
         errorCount += 1
       } else {
         this.editServiceErrors.name = ""
       }
+      if (this.editServiceBuffer.serviceId === "") {
+        this.editServiceErrors.serviceId = "p-invalid"
+        errorCount += 1
+      } else {
+        for (let i = 0; i < this.editServiceBuffer.serviceId.length; ++i) {
+          if (i === 0) {
+            if (this.editServiceBuffer.serviceId[i] === "\\" &&
+            this.editServiceBuffer.serviceId[i + 1] !== "\\") {
+              this.editServiceErrors.serviceId = "p-invalid"
+              errorCount += 1
+              break
+            } else {
+              this.editServiceErrors.serviceId = ""
+            }
+          } else if (i === this.editServiceBuffer.serviceId.length - 1) {
+            if (this.editServiceBuffer.serviceId[i] === "\\" &&
+            this.editServiceBuffer.serviceId[i - 1] !== "\\") {
+              this.editServiceErrors.serviceId = "p-invalid"
+              errorCount += 1
+              break
+            } else {
+              this.editServiceErrors.serviceId = ""
+            }
+          } else {
+            if (this.editServiceBuffer.serviceId[i] === "\\" &&
+            this.editServiceBuffer.serviceId[i + 1] !== "\\" &&
+            this.editServiceBuffer.serviceId[i - 1] !== "\\") {
+              this.editServiceErrors.serviceId = "p-invalid"
+              errorCount += 1
+              break
+            } else {
+              this.editServiceErrors.serviceId = ""
+            }
+          }
+        }
+      }
+      if (this.editServiceBuffer.description === "") {
+        this.editServiceErrors.description = "p-invalid"
+        errorCount += 1
+      } else {
+        this.editServiceErrors.description = ""
+      }
+      if (this.editServiceBuffer.extraInfo.url === "") {
+        this.editServiceErrors.extraInfo.url = "p-invalid"
+        errorCount += 1
+      } else {
+        this.editServiceErrors.extraInfo.url = ""
+      }
+      if (this.editServiceBuffer.contacts[1][0].name === "") {
+        this.editServiceErrors.contacts.name = "p-invalid"
+        errorCount += 1
+      } else {
+        this.editServiceErrors.contacts.name = ""
+      }
+      if (this.editServiceBuffer.contacts[1][0].email === "") {
+        this.editServiceErrors.contacts.email = "p-invalid"
+        errorCount += 1
+      } else {
+        if (!emailRegex.test(this.editServiceBuffer.contacts[1][0].email)) {
+          this.editServiceErrors.contacts.email = "p-invalid"
+          errorCount += 1
+        } else {
+          this.editServiceErrors.contacts.email = ""
+        }
+      }
+
+      if (this.editServiceBuffer.serviceType === "SAML") {
+        if (this.editServiceBuffer.metadataLocationOption === "address") {
+          if (this.editServiceBuffer.metadataLocation === "") {
+            this.editServiceErrors.metadataLocation = "p-invalid"
+            errorCount += 1
+          } else {
+            this.editServiceErrors.metadataLocation = ""
+          }
+        } else if (this.editServiceBuffer.metadataLocationOption === "file") {
+          const metadataFileBodyFormData = new FormData()
+          metadataFileBodyFormData.append("file", this.editServiceBuffer.metadataFile)
+          const vm = this
+          this.editServiceLoader = true
+          this.axios({
+            url: "/api/services/metadata",
+            method: "POST",
+            headers: { "Content-Type": "multipart/form-data" },
+            data: metadataFileBodyFormData
+          }).then((res) => {
+            if (res.data === "") {
+              vm.editServiceErrors.metadataLocation = "p-invalid"
+              errorCount += 1
+            } else {
+              vm.editServiceErrors.metadataLocation = ""
+            }
+            vm.editServiceLoader = false
+          }).catch(() => {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.editServiceLoader = false
+          })
+        }
+      } else if (this.editServiceBuffer.serviceType === "Oauth2") {
+        if (this.editServiceBuffer.clientId === "") {
+          this.editServiceErrors.clientId = "p-invalid"
+          errorCount += 1
+        } else {
+          this.editServiceErrors.clientId = ""
+        }
+        if (this.editServiceBuffer.clientSecret === "") {
+          this.editServiceErrors.clientSecret = "p-invalid"
+          errorCount += 1
+        } else {
+          this.editServiceErrors.clientSecret = ""
+        }
+        if (this.editServiceBuffer.supportedGrantTypes[1].length === 0) {
+          this.editServiceErrors.supportedGrantTypes = "p-invalid"
+          errorCount += 1
+        } else {
+          this.editServiceErrors.supportedGrantTypes = ""
+        }
+        if (this.editServiceBuffer.supportedResponseTypes[1].length === 0) {
+          this.editServiceErrors.supportedResponseTypes = "p-invalid"
+          errorCount += 1
+        } else {
+          this.editServiceErrors.supportedResponseTypes = ""
+        }
+      }
+
+      const i = setInterval(function () {
+        if (this.editServiceLoader === false) {
+          clearInterval(i)
+        }
+      }, 500)
+
+      if (this.editServiceBuffer.logoFile !== null) {
+        const logoFileBodyFormData = new FormData()
+        logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
+        const vm = this
+        this.editServiceLoader = true
+        this.axios({
+          url: "/api/services/icon",
+          method: "POST",
+          headers: { "Content-Type": "multipart/form-data" },
+          data: logoFileBodyFormData
+        }).then((res) => {
+          if (res.data !== "") {
+            vm.editServiceBuffer.logo = res.data
+          }
+          vm.editServiceLoader = false
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.editServiceLoader = false
+        })
+      }
+
+      const j = setInterval(function () {
+        if (this.editServiceLoader === false) {
+          clearInterval(j)
+        }
+      }, 500)
+
       if (errorCount > 0) {
         this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
@@ -1509,27 +2533,185 @@ export default {
       if (command === "createService") {
         this.tabActiveIndexList = 0
         this.createServiceFlag = false
-        /* this.createServiceBuffer = {
+        this.createServiceBuffer = {
+          serviceType: "CAS",
+          logoFile: null,
+          metadataFile: null,
+          dailyAccessType: {
+            id: "DAY",
+            name: this.$t("dayBased")
+          },
+          attributeList: [
+            {
+              name: "",
+              value: ""
+            }
+          ],
           id: "",
           name: "",
+          serviceId: "",
           description: "",
-          usersCount: null,
-          usersList: [[], []]
-        } */
+          metadataLocation: "",
+          metadataLocationOption: "address",
+          clientId: "",
+          clientSecret: "",
+          supportedGrantTypes: [
+            "java.util.HashSet",
+            ["authorization_code"]
+          ],
+          supportedResponseTypes: [
+            "java.util.HashSet",
+            ["code"]
+          ],
+          logo: null,
+          informationUrl: null,
+          privacyUrl: null,
+          logoutType: "BACK_CHANNEL",
+          logoutUrl: null,
+          contacts: [
+            "java.util.ArrayList",
+            [
+              {
+                name: "",
+                email: "",
+                phone: null,
+                department: null
+              }
+            ]
+          ],
+          accessStrategy: {
+            enabled: true,
+            ssoEnabled: true,
+            unauthorizedRedirectUrl: null,
+            endpointUrl: null,
+            acceptableResponseCodes: null,
+            requiredAttributes: {
+              uid: [
+                "java.util.HashSet",
+                []
+              ],
+              ou: [
+                "java.util.HashSet",
+                []
+              ]
+            },
+            rejectedAttributes: {
+              uid: [
+                "java.util.HashSet",
+                []
+              ]
+            }
+          },
+          multifactorPolicy: {
+            multifactorAuthenticationProviders: {
+              value: "",
+              name: this.$t("disabled")
+            },
+            bypassEnabled: false,
+            failureMode: null
+          },
+          extraInfo: {
+            url: "",
+            dailyAccess: null,
+            notificationApiURL: null,
+            notificationApiKey: null
+          }
+        }
       } else if (command === "editService") {
         this.tabActiveIndexList = 0
         this.editServiceFlag = false
-        /* this.editServiceBuffer = {
+        this.editServiceBuffer = {
+          serviceType: "CAS",
+          logoFile: null,
+          metadataFile: null,
+          dailyAccessType: {
+            id: "DAY",
+            name: this.$t("dayBased")
+          },
+          attributeList: [
+            {
+              name: "",
+              value: ""
+            }
+          ],
           id: "",
           name: "",
+          serviceId: "",
           description: "",
-          usersCount: null,
-          usersList: [[], []]
-        } */
+          metadataLocation: "",
+          metadataLocationOption: "address",
+          clientId: "",
+          clientSecret: "",
+          supportedGrantTypes: [
+            "java.util.HashSet",
+            ["authorization_code"]
+          ],
+          supportedResponseTypes: [
+            "java.util.HashSet",
+            ["code"]
+          ],
+          logo: null,
+          informationUrl: null,
+          privacyUrl: null,
+          logoutType: "BACK_CHANNEL",
+          logoutUrl: null,
+          contacts: [
+            "java.util.ArrayList",
+            [
+              {
+                name: "",
+                email: "",
+                phone: null,
+                department: null
+              }
+            ]
+          ],
+          accessStrategy: {
+            enabled: true,
+            ssoEnabled: true,
+            unauthorizedRedirectUrl: null,
+            endpointUrl: null,
+            acceptableResponseCodes: null,
+            requiredAttributes: {
+              uid: [
+                "java.util.HashSet",
+                []
+              ],
+              ou: [
+                "java.util.HashSet",
+                []
+              ]
+            },
+            rejectedAttributes: {
+              uid: [
+                "java.util.HashSet",
+                []
+              ]
+            }
+          },
+          multifactorPolicy: {
+            multifactorAuthenticationProviders: {
+              value: "",
+              name: this.$t("disabled")
+            },
+            bypassEnabled: false,
+            failureMode: null
+          },
+          extraInfo: {
+            url: "",
+            dailyAccess: null,
+            notificationApiURL: null,
+            notificationApiKey: null
+          }
+        }
       }
     },
-    generateSecret () {
-      this.createServiceBuffer.clientSecret = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+    generateSecret (scope) {
+      if (scope === "create") {
+        this.createServiceBuffer.clientSecret = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      } else if (scope === "edit") {
+        this.editServiceBuffer.clientSecret = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+      }
     },
     createServiceAllUsersToggle (user, type, command) {
       if (type === "list") {
@@ -1554,6 +2736,12 @@ export default {
         } else if (command === "remove") {
           this.createServiceBuffer.attributeList.splice(index, 1)
         }
+      } else if (scope === "edit") {
+        if (command === "add") {
+          this.editServiceBuffer.attributeList.push({ name: "", value: "" })
+        } else if (command === "remove") {
+          this.editServiceBuffer.attributeList.splice(index, 1)
+        }
       }
     },
     fileUploadHelper (event, scope, command) {
@@ -1562,6 +2750,12 @@ export default {
           this.createServiceBuffer.metadataFile = event.files[0]
         } else if (command === "logo") {
           this.createServiceBuffer.logoFile = event.files[0]
+        }
+      } else if (scope === "edit") {
+        if (command === "metadata") {
+          this.editServiceBuffer.metadataFile = event.files[0]
+        } else if (command === "logo") {
+          this.editServiceBuffer.logoFile = event.files[0]
         }
       }
     },
@@ -1654,6 +2848,34 @@ export default {
         }
       }
       return sEn
+    },
+    enNumToFaNum: function (str) {
+      const s = str.split("")
+      let sFa = ""
+      for (let i = 0; i < s.length; ++i) {
+        if (s[i] === "۰" || s[i] === "0") {
+          sFa = sFa + "۰"
+        } else if (s[i] === "۱" || s[i] === "1") {
+          sFa = sFa + "۱"
+        } else if (s[i] === "۲" || s[i] === "2") {
+          sFa = sFa + "۲"
+        } else if (s[i] === "۳" || s[i] === "3") {
+          sFa = sFa + "۳"
+        } else if (s[i] === "۴" || s[i] === "4") {
+          sFa = sFa + "۴"
+        } else if (s[i] === "۵" || s[i] === "5") {
+          sFa = sFa + "۵"
+        } else if (s[i] === "۶" || s[i] === "6") {
+          sFa = sFa + "۶"
+        } else if (s[i] === "۷" || s[i] === "7") {
+          sFa = sFa + "۷"
+        } else if (s[i] === "۸" || s[i] === "8") {
+          sFa = sFa + "۸"
+        } else if (s[i] === "۹" || s[i] === "9") {
+          sFa = sFa + "۹"
+        }
+      }
+      return sFa
     }
   }
 }

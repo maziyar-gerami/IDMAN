@@ -31,13 +31,12 @@
                 <div class="field col-9"></div>
               </div>
               <div class="formgrid grid">
-                <div class="field col">
+                <div class="field col-6">
                   <div class="field p-fluid">
                     <label for="user._id">{{ $t("id") }}</label>
                     <InputText id="user._id" type="text" :class="userErrors._id" v-model="user._id" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :disabled="true" />
                   </div>
                 </div>
-                <div class="field col"></div>
               </div>
               <div class="formgrid grid">
                 <div class="field col">

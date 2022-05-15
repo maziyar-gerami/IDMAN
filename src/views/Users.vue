@@ -24,7 +24,7 @@
             </Toolbar>
             <DataTable :value="users" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" v-model:filters="filters" :loading="loading"
             v-model:selection="selectedUsers" :filters="filters" class="p-datatable-gridlines" :rowHover="true"
-            responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" scrollDirection="vertical" >
+            responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" scrollDirection="vertical">
               <template #header>
                 <div class="flex justify-content-between flex-column sm:flex-row">
                   <div>
