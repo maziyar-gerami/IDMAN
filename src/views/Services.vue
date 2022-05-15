@@ -70,6 +70,13 @@
                 <TabPanel :header="$t('basicSettings')">
                   <h4>{{ $t("serviceInformation") }}</h4>
                   <div class="formgrid grid">
+                    <div class="field col-4">
+                      <div class="field p-fluid">
+                        <label for="createServiceBuffer.serviceType">{{ $t("serviceType") }}</label>
+                        <Dropdown id="createServiceBuffer.serviceType" :options="['CAS','SAML','Oauth2']" v-model="createServiceBuffer.serviceType" />
+                      </div>
+                    </div>
+                    <div class="field col-2"></div>
                     <div class="field col-2">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.enabled" class="flex">{{ $t("enableService") }}</label>
@@ -82,12 +89,7 @@
                         <InputSwitch id="createServiceBuffer.accessStrategy.ssoEnabled" v-model="createServiceBuffer.accessStrategy.ssoEnabled" />
                       </div>
                     </div>
-                    <div class="field col-4">
-                      <div class="field p-fluid">
-                        <label for="createServiceBuffer.serviceType">{{ $t("serviceType") }}</label>
-                        <Dropdown id="createServiceBuffer.serviceType" :options="['CAS','SAML','Oauth2']" v-model="createServiceBuffer.serviceType" />
-                      </div>
-                    </div>
+                    <div class="field col-2"></div>
                   </div>
                   <div class="formgrid grid">
                     <div class="field col">
@@ -159,7 +161,7 @@
                         <label for="createServiceBuffer.clientSecret">Client Secret<span style="color: red;"> * </span></label>
                         <div class="p-inputgroup">
                           <InputText id="createServiceBuffer.clientSecret" v-model="createServiceBuffer.clientSecret" :class="createServiceErrors.clientSecret" />
-                          <Button @click="generateSecret()">{{ $t("generateSecret") }}</Button>
+                          <Button @click="generateSecret('create')">{{ $t("generateSecret") }}</Button>
                         </div>
                       </div>
                     </div>
@@ -352,6 +354,7 @@
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.endpointUrl">{{ $t("url") }}</label>
                         <InputText id="createServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="createServiceBuffer.accessStrategy.endpointUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
@@ -403,6 +406,15 @@
                       </div>
                     </div>
                   </div>
+                  <div class="formgrid grid">
+                    <div class="field col-6">
+                      <div class="field p-fluid">
+                        <label for="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl">{{ $t("unauthorizedRedirectUrl") }}</label>
+                        <InputText id="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                  </div>
                   <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="createServiceCheckup()" />
                   <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('createService')" />
                 </TabPanel>
@@ -442,6 +454,7 @@
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.extraInfo.notificationApiURL">{{ $t("apiAddress") }}</label>
                         <InputText id="createServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="createServiceBuffer.extraInfo.notificationApiURL" />
+                        <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
@@ -466,14 +479,13 @@
                 <TabPanel :header="$t('basicSettings')">
                   <h4>{{ $t("serviceInformation") }}</h4>
                   <div class="formgrid grid">
-                    <div class="field col-6">
+                    <div class="field col-4">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.id">{{ $t("id") }}</label>
                         <InputText id="editServiceBuffer.id" type="text" v-model="editServiceBuffer.id" :disabled="true" />
                       </div>
                     </div>
-                  </div>
-                  <div class="formgrid grid">
+                    <div class="field col-2"></div>
                     <div class="field col-2">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.enabled" class="flex">{{ $t("enableService") }}</label>
@@ -486,12 +498,7 @@
                         <InputSwitch id="editServiceBuffer.accessStrategy.ssoEnabled" v-model="editServiceBuffer.accessStrategy.ssoEnabled" />
                       </div>
                     </div>
-                    <div class="field col-4">
-                      <div class="field p-fluid">
-                        <label for="editServiceBuffer.serviceType">{{ $t("serviceType") }}</label>
-                        <Dropdown id="editServiceBuffer.serviceType" :options="['CAS','SAML','Oauth2']" v-model="editServiceBuffer.serviceType" />
-                      </div>
-                    </div>
+                    <div class="field col-2"></div>
                   </div>
                   <div class="formgrid grid">
                     <div class="field col">
@@ -563,7 +570,7 @@
                         <label for="editServiceBuffer.clientSecret">Client Secret<span style="color: red;"> * </span></label>
                         <div class="p-inputgroup">
                           <InputText id="editServiceBuffer.clientSecret" v-model="editServiceBuffer.clientSecret" :class="editServiceErrors.clientSecret" />
-                          <Button @click="generateSecret()">{{ $t("generateSecret") }}</Button>
+                          <Button @click="generateSecret('edit')">{{ $t("generateSecret") }}</Button>
                         </div>
                       </div>
                     </div>
@@ -623,7 +630,7 @@
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
-                        <label for="editServiceBuffer.logo"> </label>
+                        <label for="editServiceBuffer.logo">&nbsp;</label>
                         <FileUpload id="editServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
                         @select="fileUploadHelper($event, 'edit', 'logo')" />
                       </div>
@@ -763,6 +770,7 @@
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.endpointUrl">{{ $t("url") }}</label>
                         <InputText id="editServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="editServiceBuffer.accessStrategy.endpointUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
@@ -814,6 +822,15 @@
                       </div>
                     </div>
                   </div>
+                  <div class="formgrid grid">
+                    <div class="field col-6">
+                      <div class="field p-fluid">
+                        <label for="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl">{{ $t("unauthorizedRedirectUrl") }}</label>
+                        <InputText id="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" />
+                        <small>{{ $t("serviceURLText2") }}</small>
+                      </div>
+                    </div>
+                  </div>
                   <Button :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editServiceCheckup()" />
                   <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
                 </TabPanel>
@@ -853,6 +870,7 @@
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.extraInfo.notificationApiURL">{{ $t("apiAddress") }}</label>
                         <InputText id="editServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="editServiceBuffer.extraInfo.notificationApiURL" />
+                        <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
