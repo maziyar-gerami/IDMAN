@@ -632,8 +632,8 @@ export default {
           if (res.data.status.code === 200) {
             vm.createGroupBuffer.usersList = [[], []]
             vm.createGroupBuffer.usersListBuffer = [[], []]
-            vm.createGroupBuffer.usersList[0] = res.data.data
-            vm.createGroupBuffer.usersListBuffer[0] = res.data.data
+            vm.createGroupBuffer.usersList[0] = res.data.data.userList
+            vm.createGroupBuffer.usersListBuffer[0] = res.data.data.userList
             vm.createGroupUsersLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -665,8 +665,8 @@ export default {
                 vm.editGroupBuffer.usersListBuffer = [[], []]
                 vm.editGroupBuffer.usersList[1] = res1.data.data.userList
                 vm.editGroupBuffer.usersListBuffer[1] = res1.data.data.userList
-                vm.editGroupBuffer.usersList[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
-                vm.editGroupBuffer.usersListBuffer[0] = res.data.data.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
+                vm.editGroupBuffer.usersList[0] = res.data.data.userList.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
+                vm.editGroupBuffer.usersListBuffer[0] = res.data.data.userList.filter(a => !res1.data.data.userList.map(b => b._id).includes(a._id))
                 vm.editGroupUsersLoader = false
               } else {
                 vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")

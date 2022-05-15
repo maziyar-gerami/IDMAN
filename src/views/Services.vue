@@ -311,7 +311,7 @@
                   <div class="formgrid grid">
                     <div class="field col">
                       <div class="field p-fluid">
-                        <AppListBox :label="$t('users')" :list="users" :searchParameters="['_id', 'displayName']" :loader="createServiceUsersLoader"
+                        <AppListBox :label="$t('users')" :list="createUsers" :searchParameters="['_id', 'displayName']" :loader="createServiceUsersLoader"
                         secondParameter="displayName" :parentList="true" @toggleRecord="createServiceAllUsersToggle" firstParameter="_id" type="list" />
                       </div>
                     </div>
@@ -623,6 +623,7 @@
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
+                        <label for="editServiceBuffer.logo"> </label>
                         <FileUpload id="editServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
                         @select="fileUploadHelper($event, 'edit', 'logo')" />
                       </div>
@@ -721,7 +722,7 @@
                   <div class="formgrid grid">
                     <div class="field col">
                       <div class="field p-fluid">
-                        <AppListBox :label="$t('users')" :list="users" :searchParameters="['_id', 'displayName']" :loader="editServiceUsersLoader"
+                        <AppListBox :label="$t('users')" :list="editUsers" :searchParameters="['_id', 'displayName']" :loader="editServiceUsersLoader"
                         secondParameter="displayName" :parentList="true" @toggleRecord="editServiceAllUsersToggle" firstParameter="_id" type="list" />
                       </div>
                     </div>
@@ -890,6 +891,8 @@ export default {
       services: [],
       groups: [],
       users: [],
+      createUsers: [],
+      editUsers: [],
       selectedServices: [],
       multifactorAuthenticationProvidersOptions: [
         {
@@ -1264,25 +1267,27 @@ export default {
               }
             }
 
-            if (typeof res.data.data.extraInfo.dailyAccess !== "undefined") {
-              vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
-              if (res.data.data.extraInfo.dailyAccess.length > 0) {
-                for (const i in res.data.data.extraInfo.dailyAccess) {
-                  document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
-                  document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
-                    vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
-                  document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
-                    vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
+            if (typeof res.data.data.extraInfo !== "undefined") {
+              if (typeof res.data.data.extraInfo.dailyAccess !== "undefined") {
+                vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
+                if (res.data.data.extraInfo.dailyAccess.length > 0) {
+                  for (const i in res.data.data.extraInfo.dailyAccess) {
+                    document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
+                    document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                      vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
+                    document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                      vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
+                  }
+                  if (res.data.data.extraInfo.dailyAccess.length === 7) {
+                    document.getElementById("editSelectAll").checked = true
+                  }
                 }
-                if (res.data.data.extraInfo.dailyAccess.length === 7) {
-                  document.getElementById("editSelectAll").checked = true
+              } else if (typeof res.data.data.accessStrategy.endpointUrl !== "undefined") {
+                vm.editServiceBuffer.dailyAccessType = { id: "URL", name: vm.$t("urlBased") }
+                vm.editServiceBuffer.accessStrategy.endpointUrl = res.data.data.accessStrategy.endpointUrl
+                if (typeof res.data.data.accessStrategy.acceptableResponseCodes !== "undefined") {
+                  vm.editServiceBuffer.accessStrategy.acceptableResponseCodes = res.data.data.accessStrategy.acceptableResponseCodes
                 }
-              }
-            } else if (typeof res.data.data.accessStrategy.endpointUrl !== "undefined") {
-              vm.editServiceBuffer.dailyAccessType = { id: "URL", name: vm.$t("urlBased") }
-              vm.editServiceBuffer.accessStrategy.endpointUrl = res.data.data.accessStrategy.endpointUrl
-              if (typeof res.data.data.accessStrategy.acceptableResponseCodes !== "undefined") {
-                vm.editServiceBuffer.accessStrategy.acceptableResponseCodes = res.data.data.accessStrategy.acceptableResponseCodes
               }
             }
 
@@ -1324,11 +1329,13 @@ export default {
               }
             }
 
-            if (typeof res.data.data.extraInfo.notificationApiURL !== "undefined") {
-              vm.editServiceBuffer.extraInfo.notificationApiURL = res.data.data.extraInfo.notificationApiURL
-            }
-            if (typeof res.data.data.extraInfo.notificationApiKey !== "undefined") {
-              vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.data.extraInfo.notificationApiKey
+            if (typeof res.data.data.extraInfo !== "undefined") {
+              if (typeof res.data.data.extraInfo.notificationApiURL !== "undefined") {
+                vm.editServiceBuffer.extraInfo.notificationApiURL = res.data.data.extraInfo.notificationApiURL
+              }
+              if (typeof res.data.data.extraInfo.notificationApiKey !== "undefined") {
+                vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.data.extraInfo.notificationApiKey
+              }
             }
             vm.editServiceLoader = false
           } else {
@@ -1336,8 +1343,7 @@ export default {
             vm.editServiceLoader = false
             vm.resetState("editService")
           }
-        }).catch((err) => {
-          console.log(err.message)
+        }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
           vm.resetState("editService")
@@ -2036,7 +2042,8 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.users = res.data.data
+            vm.users = res.data.data.userList
+            vm.createUsers = res.data.data.userList
             vm.createServiceUsersLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -2072,7 +2079,8 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.users = res.data.data
+            vm.users = res.data.data.userList
+            vm.editUsers = res.data.data.userList
             vm.editServiceUsersLoader = false
             vm.servicesRequestMaster("getService")
           } else {
@@ -2332,9 +2340,9 @@ export default {
       this.editServiceBuffer.id = id
       this.editServiceFlag = true
       if (this.createServiceFlag) {
-        this.tabActiveIndex = 2
+        this.tabActiveIndexList = 2
       } else {
-        this.tabActiveIndex = 1
+        this.tabActiveIndexList = 1
       }
       this.servicesRequestMaster("initiateGroupsEdit")
     },
@@ -2723,13 +2731,29 @@ export default {
         } else if (command === "remove") {
           this.createServiceBuffer.accessStrategy.rejectedAttributes.uid[1].push(user)
         }
-        this.users = this.users.filter((item) => item._id !== user._id)
+        this.createUsers = this.createUsers.filter((item) => item._id !== user._id)
       } else if (type === "authorize") {
-        this.users.push(user)
+        this.createUsers.push(user)
         this.createServiceBuffer.accessStrategy.requiredAttributes.uid[1] = this.createServiceBuffer.accessStrategy.requiredAttributes.uid[1].filter((item) => item._id !== user._id)
       } else if (type === "ban") {
-        this.users.push(user)
+        this.createUsers.push(user)
         this.createServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = this.createServiceBuffer.accessStrategy.rejectedAttributes.uid[1].filter((item) => item._id !== user._id)
+      }
+    },
+    editServiceAllUsersToggle (user, type, command) {
+      if (type === "list") {
+        if (command === "add") {
+          this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1].push(user)
+        } else if (command === "remove") {
+          this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1].push(user)
+        }
+        this.editUsers = this.editUsers.filter((item) => item._id !== user._id)
+      } else if (type === "authorize") {
+        this.editUsers.push(user)
+        this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1].filter((item) => item._id !== user._id)
+      } else if (type === "ban") {
+        this.editUsers.push(user)
+        this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1].filter((item) => item._id !== user._id)
       }
     },
     attributeHelper (scope, command, index) {
@@ -2852,7 +2876,7 @@ export default {
       }
       return sEn
     },
-    enNumToFaNum: function (str) {
+    enNumToFaNum (str) {
       const s = str.split("")
       let sFa = ""
       for (let i = 0; i < s.length; ++i) {
