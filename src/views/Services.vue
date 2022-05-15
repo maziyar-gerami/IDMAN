@@ -1169,70 +1169,70 @@ export default {
           }
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.editServiceBuffer.accessStrategy.enabled = res.data.accessStrategy.enabled
-            vm.editServiceBuffer.accessStrategy.ssoEnabled = res.data.accessStrategy.ssoEnabled
-            vm.editServiceBuffer.name = res.data.name
-            res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
-            vm.editServiceBuffer.serviceId = res.data.serviceId
-            vm.editServiceBuffer.description = res.data.description
-            if (typeof res.data.extraInfo !== "undefined") {
-              vm.editServiceBuffer.extraInfo.url = res.data.extraInfo.url
+            vm.editServiceBuffer.accessStrategy.enabled = res.data.data.accessStrategy.enabled
+            vm.editServiceBuffer.accessStrategy.ssoEnabled = res.data.data.accessStrategy.ssoEnabled
+            vm.editServiceBuffer.name = res.data.data.name
+            res.data.data.serviceId = res.data.data.serviceId.replace(/\\/g, "\\\\")
+            vm.editServiceBuffer.serviceId = res.data.data.serviceId
+            vm.editServiceBuffer.description = res.data.data.description
+            if (typeof res.data.data.extraInfo !== "undefined") {
+              vm.editServiceBuffer.extraInfo.url = res.data.data.extraInfo.url
             }
-            if (typeof res.data.metadataLocation !== "undefined") {
+            if (typeof res.data.data.metadataLocation !== "undefined") {
               vm.editServiceBuffer.serviceType = "SAML"
-              vm.editServiceBuffer.metadataLocation = res.data.metadataLocation
+              vm.editServiceBuffer.metadataLocation = res.data.data.metadataLocation
             }
-            if (typeof res.data.clientId !== "undefined" && typeof res.data.clientSecret !== "undefined") {
+            if (typeof res.data.data.clientId !== "undefined" && typeof res.data.data.clientSecret !== "undefined") {
               vm.editServiceBuffer.serviceType = "Oauth2"
-              vm.editServiceBuffer.clientId = res.data.clientId
-              vm.editServiceBuffer.clientSecret = res.data.clientSecret
-              vm.editServiceBuffer.supportedGrantTypes[1] = res.data.supportedGrantTypes[1]
-              vm.editServiceBuffer.supportedResponseTypes[1] = res.data.supportedResponseTypes[1]
+              vm.editServiceBuffer.clientId = res.data.data.clientId
+              vm.editServiceBuffer.clientSecret = res.data.data.clientSecret
+              vm.editServiceBuffer.supportedGrantTypes[1] = res.data.data.supportedGrantTypes[1]
+              vm.editServiceBuffer.supportedResponseTypes[1] = res.data.data.supportedResponseTypes[1]
             }
 
-            if (typeof res.data.logo !== "undefined") {
-              vm.editServiceBuffer.logo = res.data.logo
+            if (typeof res.data.data.logo !== "undefined") {
+              vm.editServiceBuffer.logo = res.data.data.logo
             }
-            if (typeof res.data.informationUrl !== "undefined") {
-              vm.editServiceBuffer.informationUrl = res.data.informationUrl
+            if (typeof res.data.data.informationUrl !== "undefined") {
+              vm.editServiceBuffer.informationUrl = res.data.data.informationUrl
             }
-            if (typeof res.data.privacyUrl !== "undefined") {
-              vm.editServiceBuffer.privacyUrl = res.data.privacyUrl
-            }
-
-            vm.editServiceBuffer.contacts[1][0].name = res.data.contacts[1][0].name
-            vm.editServiceBuffer.contacts[1][0].email = res.data.contacts[1][0].email
-            if (typeof res.data.contacts[1][0].phone !== "undefined") {
-              vm.editServiceBuffer.contacts[1][0].phone = res.data.contacts[1][0].phone
-            }
-            if (typeof res.data.contacts[1][0].department !== "undefined") {
-              vm.editServiceBuffer.contacts[1][0].department = res.data.contacts[1][0].department
+            if (typeof res.data.data.privacyUrl !== "undefined") {
+              vm.editServiceBuffer.privacyUrl = res.data.data.privacyUrl
             }
 
-            if (typeof res.data.logoutUrl !== "undefined") {
-              vm.editServiceBuffer.logoutUrl = res.data.logoutUrl
+            vm.editServiceBuffer.contacts[1][0].name = res.data.data.contacts[1][0].name
+            vm.editServiceBuffer.contacts[1][0].email = res.data.data.contacts[1][0].email
+            if (typeof res.data.data.contacts[1][0].phone !== "undefined") {
+              vm.editServiceBuffer.contacts[1][0].phone = res.data.data.contacts[1][0].phone
             }
-            vm.editServiceBuffer.logoutType = res.data.logoutType
-
-            if (typeof res.data.accessStrategy.unauthorizedRedirectUrl !== "undefined") {
-              vm.editServiceBuffer.accessStrategy.unauthorizedRedirectUrl = res.data.accessStrategy.unauthorizedRedirectUrl
+            if (typeof res.data.data.contacts[1][0].department !== "undefined") {
+              vm.editServiceBuffer.contacts[1][0].department = res.data.data.contacts[1][0].department
             }
 
-            if (typeof res.data.accessStrategy.requiredAttributes !== "undefined") {
-              if (typeof res.data.accessStrategy.requiredAttributes.ou !== "undefined") {
-                for (const i in res.data.accessStrategy.requiredAttributes.ou[1]) {
+            if (typeof res.data.data.logoutUrl !== "undefined") {
+              vm.editServiceBuffer.logoutUrl = res.data.data.logoutUrl
+            }
+            vm.editServiceBuffer.logoutType = res.data.data.logoutType
+
+            if (typeof res.data.data.accessStrategy.unauthorizedRedirectUrl !== "undefined") {
+              vm.editServiceBuffer.accessStrategy.unauthorizedRedirectUrl = res.data.data.accessStrategy.unauthorizedRedirectUrl
+            }
+
+            if (typeof res.data.data.accessStrategy.requiredAttributes !== "undefined") {
+              if (typeof res.data.data.accessStrategy.requiredAttributes.ou !== "undefined") {
+                for (const i in res.data.data.accessStrategy.requiredAttributes.ou[1]) {
                   for (const j in vm.groups) {
-                    if (res.data.accessStrategy.requiredAttributes.ou[1][i] === vm.groups[j].id) {
+                    if (res.data.data.accessStrategy.requiredAttributes.ou[1][i] === vm.groups[j].id) {
                       vm.editServiceBuffer.accessStrategy.requiredAttributes.ou[1].push(vm.groups[j])
                       break
                     }
                   }
                 }
               }
-              if (typeof res.data.accessStrategy.requiredAttributes.uid !== "undefined") {
-                for (const i in res.data.accessStrategy.requiredAttributes.uid[1]) {
+              if (typeof res.data.data.accessStrategy.requiredAttributes.uid !== "undefined") {
+                for (const i in res.data.data.accessStrategy.requiredAttributes.uid[1]) {
                   for (const j in vm.users) {
-                    if (res.data.accessStrategy.requiredAttributes.uid[1][i] === vm.users[j]._id) {
+                    if (res.data.data.accessStrategy.requiredAttributes.uid[1][i] === vm.users[j]._id) {
                       vm.editServiceBuffer.accessStrategy.requiredAttributes.uid[1].push(vm.users[j])
                       break
                     }
@@ -1240,7 +1240,7 @@ export default {
                 }
               }
               const tempAattributeList = []
-              const tempRequiredAttribute = Object.entries(res.data.accessStrategy.requiredAttributes)
+              const tempRequiredAttribute = Object.entries(res.data.data.accessStrategy.requiredAttributes)
               for (const i in tempRequiredAttribute) {
                 if (tempRequiredAttribute[i][0] !== "@class" && tempRequiredAttribute[i][0] !== "ou" && tempRequiredAttribute[i][0] !== "uid") {
                   tempAattributeList.push({ name: tempRequiredAttribute[i][0], value: tempRequiredAttribute[i][1][1].join(",") })
@@ -1251,11 +1251,11 @@ export default {
               }
             }
 
-            if (typeof res.data.accessStrategy.rejectedAttributes !== "undefined") {
-              if (typeof res.data.accessStrategy.rejectedAttributes.uid !== "undefined") {
-                for (const i in res.data.accessStrategy.rejectedAttributes.uid[1]) {
+            if (typeof res.data.data.accessStrategy.rejectedAttributes !== "undefined") {
+              if (typeof res.data.data.accessStrategy.rejectedAttributes.uid !== "undefined") {
+                for (const i in res.data.data.accessStrategy.rejectedAttributes.uid[1]) {
                   for (const j in vm.users) {
-                    if (res.data.accessStrategy.rejectedAttributes.uid[1][i] === vm.users[j]._id) {
+                    if (res.data.data.accessStrategy.rejectedAttributes.uid[1][i] === vm.users[j]._id) {
                       vm.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1].push(vm.users[j])
                       break
                     }
@@ -1264,38 +1264,38 @@ export default {
               }
             }
 
-            if (typeof res.data.extraInfo.dailyAccess !== "undefined") {
+            if (typeof res.data.data.extraInfo.dailyAccess !== "undefined") {
               vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
-              if (res.data.extraInfo.dailyAccess.length > 0) {
-                for (const i in res.data.extraInfo.dailyAccess) {
-                  document.getElementById("editSelect" + res.data.extraInfo.dailyAccess[i].weekDay).checked = true
-                  document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.extraInfo.dailyAccess[i].weekDay).value =
-                    vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.from.minute))
-                  document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.extraInfo.dailyAccess[i].weekDay).value =
-                    vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.extraInfo.dailyAccess[i].period.to.minute))
+              if (res.data.data.extraInfo.dailyAccess.length > 0) {
+                for (const i in res.data.data.extraInfo.dailyAccess) {
+                  document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
+                  document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                    vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
+                  document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                    vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
                 }
-                if (res.data.extraInfo.dailyAccess.length === 7) {
+                if (res.data.data.extraInfo.dailyAccess.length === 7) {
                   document.getElementById("editSelectAll").checked = true
                 }
               }
-            } else if (typeof res.data.accessStrategy.endpointUrl !== "undefined") {
+            } else if (typeof res.data.data.accessStrategy.endpointUrl !== "undefined") {
               vm.editServiceBuffer.dailyAccessType = { id: "URL", name: vm.$t("urlBased") }
-              vm.editServiceBuffer.accessStrategy.endpointUrl = res.data.accessStrategy.endpointUrl
-              if (typeof res.data.accessStrategy.acceptableResponseCodes !== "undefined") {
-                vm.editServiceBuffer.accessStrategy.acceptableResponseCodes = res.data.accessStrategy.acceptableResponseCodes
+              vm.editServiceBuffer.accessStrategy.endpointUrl = res.data.data.accessStrategy.endpointUrl
+              if (typeof res.data.data.accessStrategy.acceptableResponseCodes !== "undefined") {
+                vm.editServiceBuffer.accessStrategy.acceptableResponseCodes = res.data.data.accessStrategy.acceptableResponseCodes
               }
             }
 
-            if (typeof res.data.accessStrategy.startingDateTime !== "undefined") {
-              const seTime = res.data.accessStrategy.startingDateTime
+            if (typeof res.data.data.accessStrategy.startingDateTime !== "undefined") {
+              const seTime = res.data.data.accessStrategy.startingDateTime
               vm.persianDate.toCalendar("gregorian")
               // eslint-disable-next-line new-cap
               const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
                 seTime.substring(11, 13), seTime.substring(14, 16), seTime.substring(17, 19), seTime.substring(20, 23)])
               document.getElementById("createServiceBuffer.startDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
             }
-            if (typeof res.data.accessStrategy.endingDateTime !== "undefined") {
-              const seTime = res.data.accessStrategy.endingDateTime
+            if (typeof res.data.data.accessStrategy.endingDateTime !== "undefined") {
+              const seTime = res.data.data.accessStrategy.endingDateTime
               vm.persianDate.toCalendar("gregorian")
               // eslint-disable-next-line new-cap
               const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
@@ -1303,32 +1303,32 @@ export default {
               document.getElementById("createServiceBuffer.endDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
             }
 
-            if (typeof res.data.multifactorPolicy !== "undefined") {
-              if (typeof res.data.multifactorPolicy.multifactorAuthenticationProviders !== "undefined") {
-                if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]") {
+            if (typeof res.data.data.multifactorPolicy !== "undefined") {
+              if (typeof res.data.data.multifactorPolicy.multifactorAuthenticationProviders !== "undefined") {
+                if (res.data.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-simple\"]]") {
                   vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-simple", name: vm.$t("smsCode") }
-                } else if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-gauth\"]]") {
+                } else if (res.data.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-gauth\"]]") {
                   vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-gauth", name: this.$t("oneTimePassword") }
-                } else if (res.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
-                res.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-u2f\"]]") {
+                } else if (res.data.data.multifactorPolicy.multifactorAuthenticationProviders[0] === "java.util.LinkedHashSet" &&
+                res.data.data.multifactorPolicy.multifactorAuthenticationProviders[1][0] === "[\"java.util.LinkedHashSet\",[\"mfa-u2f\"]]") {
                   vm.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = { value: "mfa-u2f", name: this.$t("hardwareToken") }
                 }
               }
-              if (typeof res.data.multifactorPolicy.bypassEnabled !== "undefined") {
-                vm.editServiceBuffer.multifactorPolicy.bypassEnabled = res.data.multifactorPolicy.bypassEnabled
+              if (typeof res.data.data.multifactorPolicy.bypassEnabled !== "undefined") {
+                vm.editServiceBuffer.multifactorPolicy.bypassEnabled = res.data.data.multifactorPolicy.bypassEnabled
               }
-              if (typeof res.data.multifactorPolicy.failureMode !== "undefined") {
-                vm.editServiceBuffer.multifactorPolicy.failureMode = res.data.multifactorPolicy.failureMode
+              if (typeof res.data.data.multifactorPolicy.failureMode !== "undefined") {
+                vm.editServiceBuffer.multifactorPolicy.failureMode = res.data.data.multifactorPolicy.failureMode
               }
             }
 
-            if (typeof res.data.extraInfo.notificationApiURL !== "undefined") {
-              vm.editServiceBuffer.extraInfo.notificationApiURL = res.data.extraInfo.notificationApiURL
+            if (typeof res.data.data.extraInfo.notificationApiURL !== "undefined") {
+              vm.editServiceBuffer.extraInfo.notificationApiURL = res.data.data.extraInfo.notificationApiURL
             }
-            if (typeof res.data.extraInfo.notificationApiKey !== "undefined") {
-              vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.extraInfo.notificationApiKey
+            if (typeof res.data.data.extraInfo.notificationApiKey !== "undefined") {
+              vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.data.extraInfo.notificationApiKey
             }
             vm.editServiceLoader = false
           } else {
