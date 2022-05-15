@@ -12,6 +12,7 @@ import parsso.idman.impls.users.oprations.retrieve.sub.FullAttributes;
 import parsso.idman.impls.users.oprations.retrieve.sub.MainAttributes;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.models.users.User.ListUsers;
 import parsso.idman.repos.UserRepo;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
   }
 
   @Override
-  public List<UsersExtraInfo> mainAttributes(int page, int number, String sort, String role, String userId, String displayName) {
+  public ListUsers mainAttributes(int page, int number, String sort, String role, String userId, String displayName) {
     return new MainAttributes(mongoTemplate, ldapTemplate, BASE_DN).get(page, number, sort, role,userId,displayName);
   }
 

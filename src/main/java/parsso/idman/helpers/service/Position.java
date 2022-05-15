@@ -1,7 +1,9 @@
 package parsso.idman.helpers.service;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Field;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import parsso.idman.helpers.Variables;
@@ -21,14 +23,8 @@ public class Position {
   }
 
   public int lastPosition() {
-    List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
-    int maxPosition = 0;
-    for (MicroService microservice : microservices) {
-      if (microservice.getPosition() > maxPosition)
-        maxPosition = microservice.getPosition();
-
-    }
-    return maxPosition;
+    Query query = new Query().with(Sort.by(Sort.Direction.DESC, "position")).limit(1);
+    return mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo).getPosition();
   }
 
   public HttpStatus increase(String id) {

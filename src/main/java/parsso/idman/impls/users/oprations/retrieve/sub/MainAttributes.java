@@ -5,19 +5,15 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.ldap.filter.OrFilter;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.impls.users.oprations.retrieve.helper.MongoQuery;
 import parsso.idman.impls.users.oprations.retrieve.helper.UsersCount;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.models.users.User.ListUsers;
 import parsso.idman.repos.SystemRefresh;
 
-import javax.naming.directory.SearchControls;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class MainAttributes {
@@ -38,7 +34,7 @@ public class MainAttributes {
     BASE_DN = base_dn;
   }
 
-  public List<UsersExtraInfo> get(int page, int number, String sort, String role, String userId, String displayName) {
+  public ListUsers get(int page, int number, String sort, String role, String userId, String displayName) {
     Query query = new Query();
 
     if (!userId.equals("")) {
@@ -58,12 +54,15 @@ public class MainAttributes {
     }
 
     if (page == -1 && number == -1) {
-      return mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
+      return new ListUsers((int)(mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo)),
+      mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo), 1);
     }
 
-    else
-      return mongoTemplate.find(query.skip((page - 1) * number).limit(number), UsersExtraInfo.class,
-          Variables.col_usersExtraInfo);
+    else{
+      int count = (int) mongoTemplate.count(query, UsersExtraInfo.class,Variables.col_usersExtraInfo);
+      return new ListUsers(count,
+      mongoTemplate.find(query.skip((page-1)*number).limit(number), UsersExtraInfo.class, Variables.col_usersExtraInfo), (int) Math.ceil(count/number)+1);
+    }
   }
 
   public UsersExtraInfo get(String userId) {

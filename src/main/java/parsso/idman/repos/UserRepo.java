@@ -23,7 +23,7 @@ public class UserRepo {
     }
 
     public interface Retrieve {
-      List<UsersExtraInfo> mainAttributes(int page, int number, String sort, String role, String UserId, String displayName);
+      ListUsers mainAttributes(int page, int number, String sort, String role, String UserId, String displayName);
 
       List<User> fullAttributes();
 
