@@ -70,26 +70,24 @@
                 <TabPanel :header="$t('basicSettings')">
                   <h4>{{ $t("serviceInformation") }}</h4>
                   <div class="formgrid grid">
-                    <div class="field col-4">
+                    <div class="field col-6">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.serviceType">{{ $t("serviceType") }}</label>
                         <Dropdown id="createServiceBuffer.serviceType" :options="['CAS','SAML','Oauth2']" v-model="createServiceBuffer.serviceType" />
                       </div>
                     </div>
-                    <div class="field col-2"></div>
-                    <div class="field col-2">
+                    <div class="field col-3">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.enabled" class="flex">{{ $t("enableService") }}</label>
                         <InputSwitch id="createServiceBuffer.accessStrategy.enabled" v-model="createServiceBuffer.accessStrategy.enabled" />
                       </div>
                     </div>
-                    <div class="field col-2">
+                    <div class="field col-3">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.ssoEnabled" class="flex">{{ $t("allowSSO") }}</label>
                         <InputSwitch id="createServiceBuffer.accessStrategy.ssoEnabled" v-model="createServiceBuffer.accessStrategy.ssoEnabled" />
                       </div>
                     </div>
-                    <div class="field col-2"></div>
                   </div>
                   <div class="formgrid grid">
                     <div class="field col">
@@ -479,26 +477,24 @@
                 <TabPanel :header="$t('basicSettings')">
                   <h4>{{ $t("serviceInformation") }}</h4>
                   <div class="formgrid grid">
-                    <div class="field col-4">
+                    <div class="field col-6">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.id">{{ $t("id") }}</label>
                         <InputText id="editServiceBuffer.id" type="text" v-model="editServiceBuffer.id" :disabled="true" />
                       </div>
                     </div>
-                    <div class="field col-2"></div>
-                    <div class="field col-2">
+                    <div class="field col-3">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.enabled" class="flex">{{ $t("enableService") }}</label>
                         <InputSwitch id="editServiceBuffer.accessStrategy.enabled" v-model="editServiceBuffer.accessStrategy.enabled" />
                       </div>
                     </div>
-                    <div class="field col-2">
+                    <div class="field col-3">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.ssoEnabled" class="flex">{{ $t("allowSSO") }}</label>
                         <InputSwitch id="editServiceBuffer.accessStrategy.ssoEnabled" v-model="editServiceBuffer.accessStrategy.ssoEnabled" />
                       </div>
                     </div>
-                    <div class="field col-2"></div>
                   </div>
                   <div class="formgrid grid">
                     <div class="field col">
