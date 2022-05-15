@@ -1175,7 +1175,9 @@ export default {
             res.data.serviceId = res.data.serviceId.replace(/\\/g, "\\\\")
             vm.editServiceBuffer.serviceId = res.data.serviceId
             vm.editServiceBuffer.description = res.data.description
-            vm.editServiceBuffer.extraInfo.url = res.data.extraInfo.url
+            if (typeof res.data.extraInfo !== "undefined") {
+              vm.editServiceBuffer.extraInfo.url = res.data.extraInfo.url
+            }
             if (typeof res.data.metadataLocation !== "undefined") {
               vm.editServiceBuffer.serviceType = "SAML"
               vm.editServiceBuffer.metadataLocation = res.data.metadataLocation
@@ -1334,7 +1336,8 @@ export default {
             vm.editServiceLoader = false
             vm.resetState("editService")
           }
-        }).catch(() => {
+        }).catch((err) => {
+          console.log(err.message)
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
           vm.resetState("editService")
