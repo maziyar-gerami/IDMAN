@@ -18,16 +18,19 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.excelView.UsersExcelView;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
+import parsso.idman.repos.SystemRefresh;
 import parsso.idman.repos.UserRepo;
 
 @RestController
 public class RetrieveController extends UsersOps {
+  SystemRefresh systemRefresh;
 
   @Autowired
   public RetrieveController(
       Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      UserRepo.UsersOp.Retrieve usersOpRetrieve, SystemRefresh systemRefresh) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
+    this.systemRefresh = systemRefresh;
   }
 
   @GetMapping("/api/user")
@@ -89,6 +92,7 @@ public class RetrieveController extends UsersOps {
       @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
+        new Thread(() -> systemRefresh.refreshLockedUsers()).start();
     return new ResponseEntity<>(
         new Response(usersOpRetrieve.mainAttributes(page, n, sortType, groupFilter, searchUid,
             searchDisplayName, mobile, userStatus),

@@ -27,5 +27,28 @@ public class RoleClass {
     }
     return new Role(_id,role);
   }
+
+  public static Role getRoleId(int id) {
+    String role = null;
+    switch(id){
+      case 0:
+      role = "SUPERUSER";
+      break;
+      case 1:
+      role = "SUPPORTER";
+      break;
+      case 2:
+      role = "ADMIN";
+      break;
+      case 3:
+      role = "PRESENTER";
+      break;
+      case 4:
+      role = "USER";
+      break;
+
+    }
+    return new Role(id,role);
+  }
   
 }

@@ -17,14 +17,23 @@ import parsso.idman.repos.SystemRefresh;
 @Service
 public class SystemRefreshRepoImpl implements SystemRefresh {
 
-  @Autowired
   MongoTemplate mongoTemplate;
-  @Autowired
   UniformLogger uniformLogger;
-  @Autowired
   UserRefresh userRefresh;
-  @Autowired
   LockedUsers lockedUsers;
+
+  public SystemRefreshRepoImpl(LockedUsers lockedUsers) {
+    this.lockedUsers = lockedUsers;
+  }
+  
+  @Autowired
+  public SystemRefreshRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRefresh userRefresh, LockedUsers lockedUsers) {
+    this.mongoTemplate = mongoTemplate;
+    this.uniformLogger = uniformLogger;
+    this.userRefresh = userRefresh;
+    this.lockedUsers = lockedUsers;
+  }
+
   @Value("${spring.ldap.base.dn}")
   private String BASE_DN;
 
@@ -42,9 +51,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
 
   @Override
   public void refreshLockedUsers() {
-
     lockedUsers.refresh();
-
   }
 
   @Override

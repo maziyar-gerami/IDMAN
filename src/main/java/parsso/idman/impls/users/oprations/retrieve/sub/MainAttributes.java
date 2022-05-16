@@ -11,15 +11,12 @@ import parsso.idman.impls.users.oprations.retrieve.helper.UsersCount;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.models.users.User.ListUsers;
-import parsso.idman.repos.SystemRefresh;
-
 
 import java.util.List;
 
 public class MainAttributes {
   final MongoTemplate mongoTemplate;
   LdapTemplate ldapTemplate;
-  SystemRefresh systemRefresh;
   final String BASE_DN;
 
   public MainAttributes(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, String base_dn) {
@@ -28,9 +25,8 @@ public class MainAttributes {
     BASE_DN = base_dn;
   }
 
-  public MainAttributes(MongoTemplate mongoTemplate, SystemRefresh systemRefresh, String base_dn) {
+  public MainAttributes(MongoTemplate mongoTemplate, String base_dn) {
     this.mongoTemplate = mongoTemplate;
-    this.systemRefresh = systemRefresh;
     BASE_DN = base_dn;
   }
 
@@ -46,7 +42,7 @@ public class MainAttributes {
     }
 
     if (!role.equals("")) {
-      query.addCriteria(Criteria.where("roleClass.role").is(role));
+      query.addCriteria(Criteria.where("roleClass.role").is(role.toUpperCase()));
     }
 
     if (sort.equalsIgnoreCase("role")) {
@@ -74,8 +70,6 @@ public class MainAttributes {
 
   public User.ListUsers get(int page, int nCount, String sortType, String groupFilter, String searchUid,
       String searchDisplayName, String mobile, String userStatus) {
-
-    new Thread(() -> systemRefresh.refreshLockedUsers()).start();
 
     int skip = (page - 1) * nCount;
 
