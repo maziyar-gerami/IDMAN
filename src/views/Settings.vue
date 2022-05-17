@@ -14,6 +14,13 @@
             </template>
             <template #end>
               <Button icon="bx bx-save bx-sm" class="p-button mx-1" @click="settingsRequestMaster('getBackup')" v-tooltip.top="$t('getBackup')" />
+              <Button icon="bx bx-sync bx-sm" class="p-button-warning mx-1" @click="toggleRefresh($event)" v-tooltip.top="$t('refresh')" />
+              <OverlayPanel ref="refresh">
+                <div class="p-inputgroup mx-1">
+                  <Button icon="bx bx-sync bx-sm" @click="refreshHelper()" v-tooltip.top="$t('refresh')" />
+                  <Dropdown v-model="selectedRefresh" :options="refreshList" optionLabel="name" :placeholder="$t('select')" />
+                </div>
+              </OverlayPanel>
               <Button icon="bx bx-reset bx-sm" class="p-button-danger mx-1" @click="backupHelper('reset')" v-tooltip.top="$t('reset')" />
             </template>
           </Toolbar>
@@ -52,8 +59,27 @@ export default {
   data () {
     return {
       settings: [],
+      refreshList: [
+        {
+          value: "services",
+          name: this.$t("refreshServices")
+        },
+        {
+          value: "users",
+          name: this.$t("refreshUsers")
+        },
+        {
+          value: "captcha",
+          name: this.$t("refreshCAPTCHA")
+        },
+        {
+          value: "",
+          name: this.$t("refreshAll")
+        }
+      ],
       backupList: [],
       selectedBackup: {},
+      selectedRefresh: {},
       tabActiveIndex: 0,
       loading: false
     }
@@ -240,6 +266,30 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
         })
+      } else if (command === "refresh") {
+        this.loading = true
+        this.axios({
+          url: "/api/refresh",
+          method: "GET",
+          params: {
+            type: vm.selectedRefresh.value,
+            lang: langCode
+          }
+        }).then((res) => {
+          if (typeof res.data.status !== "undefined") {
+            if (res.data.status.code === 200) {
+              vm.alertPromptMaster(res.data.status.result, "", "pi-check-circle", "#A2E1B1")
+            } else {
+              vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
+            }
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-check-circle", "#FDB5BA")
+          }
+          vm.loading = false
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-check-circle", "#FDB5BA")
+          vm.loading = false
+        })
       }
     },
     alertPromptMaster (title, message, icon, background) {
@@ -319,6 +369,16 @@ export default {
       } else if (command === "reset") {
         this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("reset"), "pi-question-circle", "#F0EAAA", this.settingsRequestMaster, "reset")
       }
+    },
+    refreshHelper () {
+      if (Object.keys(this.selectedRefresh).length !== 0) {
+        this.confirmPromptMaster(this.$t("confirmPromptText"), this.selectedRefresh.name, "pi-question-circle", "#F0EAAA", this.settingsRequestMaster, "refresh")
+      } else {
+        this.alertPromptMaster(this.$t("noRefreshSelected"), "", "pi-exclamation-triangle", "#FDB5BA")
+      }
+    },
+    toggleRefresh (event) {
+      this.$refs.refresh.toggle(event)
     }
   }
 }

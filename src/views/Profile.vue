@@ -42,14 +42,14 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.displayName">{{ $t("persianName") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user.displayName" type="text" :class="userErrors.displayName" v-model="user.displayName" @keypress="persianInputFilter($event)" @paste="persianInputFilter($event)" />
+                    <InputText id="user.displayName" type="text" :class="userErrors.displayName" v-model="user.displayName" @keypress="persianInputFilter($event)" @paste="persianInputFilter($event)" :disabled="user.profileInaccessibility" />
                     <small>{{ $t("inputPersianFilterText") }}</small>
                   </div>
                 </div>
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.employeeNumber">{{ $t("employeeNumber") }}</label>
-                    <InputText id="user.employeeNumber" type="text" v-model="user.employeeNumber" />
+                    <InputText id="user.employeeNumber" type="text" v-model="user.employeeNumber" :disabled="user.profileInaccessibility" />
                   </div>
                 </div>
               </div>
@@ -57,14 +57,14 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.firstName">{{ $t("englishFirstName") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user.firstName" type="text" :class="userErrors.firstName" v-model="user.firstName" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" />
+                    <InputText id="user.firstName" type="text" :class="userErrors.firstName" v-model="user.firstName" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :disabled="user.profileInaccessibility" />
                     <small>{{ $t("inputEnglishFilterText") }}</small>
                   </div>
                 </div>
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.lastName">{{ $t("englishLastName") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user.lastName" type="text" :class="userErrors.lastName" v-model="user.lastName" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" />
+                    <InputText id="user.lastName" type="text" :class="userErrors.lastName" v-model="user.lastName" @keypress="englishInputFilter($event)" @paste="englishInputFilter($event)" :disabled="user.profileInaccessibility" />
                     <small>{{ $t("inputEnglishFilterText") }}</small>
                   </div>
                 </div>
@@ -73,13 +73,13 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.mobile">{{ $t("mobile") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user.mobile" type="text" :class="userErrors.mobile" v-model="user.mobile" />
+                    <InputText id="user.mobile" type="text" :class="userErrors.mobile" v-model="user.mobile" :disabled="user.profileInaccessibility" />
                   </div>
                 </div>
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.mail">{{ $t("email") }}<span style="color: red;"> * </span></label>
-                    <InputText id="user.mail" type="text" :class="userErrors.mail" v-model="user.mail" />
+                    <InputText id="user.mail" type="text" :class="userErrors.mail" v-model="user.mail" :disabled="user.profileInaccessibility" />
                   </div>
                 </div>
               </div>
@@ -87,11 +87,11 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.description">{{ $t("description") }}</label>
-                    <Textarea id="user.description" v-model="user.description" :autoResize="true" rows="3" />
+                    <Textarea id="user.description" v-model="user.description" :autoResize="true" rows="3" :disabled="user.profileInaccessibility" />
                   </div>
                 </div>
               </div>
-              <Button id="user.editButton" :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editUserInformationCheckup()" />
+              <Button id="user.editButton" :label="$t('confirm')" class="p-button-success mt-3 mx-1" @click="editUserInformationCheckup()"  :style="user.profileInaccessibility ? 'display: none;' : ''" />
             </div>
           </TabPanel>
           <TabPanel :header="$t('editPassword')">
@@ -167,7 +167,8 @@ export default {
         description: "",
         userPassword: "",
         userPasswordRepeat: "",
-        verificationCode: ""
+        verificationCode: "",
+        profileInaccessibility: false
       },
       userErrors: {
         _id: "",
@@ -195,11 +196,11 @@ export default {
   methods: {
     profileRequestMaster (command) {
       const vm = this
-      let parameterObject = null
+      let langCode = ""
       if (this.$i18n.locale === "Fa") {
-        parameterObject = { lang: "fa" }
+        langCode = "fa"
       } else if (this.$i18n.locale === "En") {
-        parameterObject = { lang: "en" }
+        langCode = "en"
       }
       if (command === "getUser") {
         this.user = {
@@ -213,13 +214,16 @@ export default {
           description: "",
           userPassword: "",
           userPasswordRepeat: "",
-          verificationCode: ""
+          verificationCode: "",
+          profileInaccessibility: false
         }
-        const query = new URLSearchParams(parameterObject).toString()
         this.loading = true
         this.axios({
-          url: "/api/user" + "?" + query,
-          method: "GET"
+          url: "/api/user",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.loading = false
@@ -231,16 +235,7 @@ export default {
             vm.user.mail = res.data.data.mail
             vm.user.employeeNumber = res.data.data.employeeNumber
             vm.user.description = res.data.data.description
-            if (res.data.data.profileInaccessibility) {
-              document.getElementById("user.displayName").disabled = true
-              document.getElementById("user.firstName").disabled = true
-              document.getElementById("user.lastName").disabled = true
-              document.getElementById("user.mobile").disabled = true
-              document.getElementById("user.mail").disabled = true
-              document.getElementById("user.employeeNumber").disabled = true
-              document.getElementById("user.description").disabled = true
-              document.getElementById("user.editButton").style = "display: none;"
-            }
+            vm.user.profileInaccessibility = res.data.data.profileInaccessibility
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.loading = false
@@ -250,12 +245,14 @@ export default {
           vm.loading = false
         })
       } else if (command === "editUserInformation") {
-        const query = new URLSearchParams(parameterObject).toString()
         this.loading = true
         this.axios({
-          url: "/api/user" + "?" + query,
+          url: "/api/user",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
+          params: {
+            lang: langCode
+          },
           data: JSON.stringify({
             _id: vm.user._id,
             displayName: vm.user.displayName,
@@ -279,12 +276,14 @@ export default {
           vm.loading = false
         })
       } else if (command === "editUserPassword") {
-        const query = new URLSearchParams(parameterObject).toString()
         this.loading = true
         this.axios({
-          url: "/api/user/password" + "?" + query,
+          url: "/api/user/password",
           method: "PUT",
           headers: { "Content-Type": "application/json" },
+          params: {
+            lang: langCode
+          },
           data: JSON.stringify({
             newPassword: vm.user.userPassword,
             token: vm.user.verificationCode
@@ -311,10 +310,12 @@ export default {
           vm.loading = false
         })
       } else if (command === "requestVerificationCode") {
-        const query = new URLSearchParams(parameterObject).toString()
         this.axios({
-          url: "/api/user/password/request" + "?" + query,
-          method: "GET"
+          url: "/api/user/password/request",
+          method: "GET",
+          params: {
+            lang: langCode
+          }
         }).then((res) => {
           if (res.data.status.code === 200) {
             vm.setCountdown(res.data.data * 60)

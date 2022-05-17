@@ -168,6 +168,9 @@ export default {
                   label: this.$t("notifications"), icon: "bx bx-fw bxs-bell", to: "/notifications"
                 },
                 {
+                  label: this.$t("devices"), icon: "bx bx-fw bxs-devices", to: "/devices"
+                },
+                {
                   label: this.$t("reports"),
                   icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
@@ -224,6 +227,9 @@ export default {
                 },
                 {
                   label: this.$t("notifications"), icon: "bx bx-fw bxs-bell", to: "/notifications"
+                },
+                {
+                  label: this.$t("devices"), icon: "bx bx-fw bxs-devices", to: "/devices"
                 },
                 {
                   label: this.$t("reports"),

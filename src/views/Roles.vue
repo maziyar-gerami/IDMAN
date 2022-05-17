@@ -82,7 +82,7 @@ import { FilterMatchMode } from "primevue/api"
 import iziToast from "@/assets/scripts/iziToast.min.js"
 
 export default {
-  name: "Users",
+  name: "Roles",
   data () {
     return {
       users: [],

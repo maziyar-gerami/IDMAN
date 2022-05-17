@@ -701,13 +701,17 @@ export default {
             userPassword: vm.createUserBuffer.userPassword
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
-          if (res.data.status.code === 302) {
-            vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
-          } else {
+          if (res.data.status.code === 201) {
+            vm.createUserLoader = false
             vm.resetState("createUser")
             vm.usersRequestMaster("getUsers")
+          } else if (res.data.status.code === 302) {
+            vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.createUserLoader = false
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.createUserLoader = false
           }
-          vm.createUserLoader = false
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.createUserLoader = false
@@ -742,20 +746,20 @@ export default {
               description: vm.editUserBuffer.description,
               userPassword: vm.editUserBuffer.userPassword
             }).replace(/\\\\/g, "\\")
-          }).then(() => {
-            vm.editUserLoader = false
-            vm.resetState("editUser")
-            vm.usersRequestMaster("getUsers")
-          }).catch((error) => {
-            if (typeof error.response !== "undefined") {
-              if (error.response.status === 302) {
-                vm.alertPromptMaster(vm.$t("duplicatePasswordsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              } else {
-                vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              }
+          }).then((res) => {
+            if (res.data.status.code === 200) {
+              vm.editUserLoader = false
+              vm.resetState("editUser")
+              vm.usersRequestMaster("getUsers")
+            } else if (res.data.status.code === 302) {
+              vm.alertPromptMaster(vm.$t("duplicatePasswordsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.editUserLoader = false
             } else {
-              vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.editUserLoader = false
             }
+          }).catch(() => {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editUserLoader = false
           })
         } else {
@@ -779,19 +783,20 @@ export default {
               memberOf: memberOf,
               description: vm.editUserBuffer.description
             }).replace(/\\\\/g, "\\")
-          }).then(() => {
-            vm.editUserLoader = false
-            vm.resetState("editUser")
-          }).catch((error) => {
-            if (typeof error.response !== "undefined") {
-              if (error.response.status === 302) {
-                vm.alertPromptMaster(vm.$t("duplicatePasswordsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              } else {
-                vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              }
+          }).then((res) => {
+            if (res.data.status.code === 200) {
+              vm.editUserLoader = false
+              vm.resetState("editUser")
+              vm.usersRequestMaster("getUsers")
+            } else if (res.data.status.code === 302) {
+              vm.alertPromptMaster(vm.$t("duplicatePasswordsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.editUserLoader = false
             } else {
-              vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.alertPromptMaster(res.data.status.result, "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.editUserLoader = false
             }
+          }).catch(() => {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editUserLoader = false
           })
         }

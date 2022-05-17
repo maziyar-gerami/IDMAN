@@ -27,6 +27,12 @@ const routes = [
     meta: { requiresAccessLevel: 0 }
   },
   {
+    path: "/devices",
+    name: "Devices",
+    component: () => import("../views/Devices.vue"),
+    meta: { requiresAccessLevel: 2 }
+  },
+  {
     path: "/events",
     name: "Events",
     component: () => import("../views/Events.vue"),
