@@ -34,7 +34,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public HttpStatus update(String doerID, String usid, User p) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
         uniformLogger,
-        userOpRetrieve, buildAttributes, new ExcelAnalyzer(userOpRetrieve, this),
+         buildAttributes, new ExcelAnalyzer(userOpRetrieve, this), serviceRepo,
         BASE_DN)
         .update(doerID, usid, p);
   }
@@ -43,16 +43,16 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu) {
     return new GroupOfUsers(userOpRetrieve,
         new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
-            uniformLogger, userOpRetrieve,
-            buildAttributes, new ExcelAnalyzer(userOpRetrieve, this), BASE_DN))
+            uniformLogger, 
+            buildAttributes, new ExcelAnalyzer(userOpRetrieve, this),serviceRepo, BASE_DN))
         .massUsersGroupUpdate(doerID, groupId, gu);
   }
 
   @Override
   public JSONObject mass(String doerID, List<User> users) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
-        uniformLogger, userOpRetrieve,
-        buildAttributes, new ExcelAnalyzer( userOpRetrieve, this), BASE_DN)
+        uniformLogger, 
+        buildAttributes, new ExcelAnalyzer( userOpRetrieve, this), serviceRepo, BASE_DN)
         .massUpdate(doerID, users);
   }
 
@@ -72,5 +72,12 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
   public void postConstruct() throws InterruptedException{
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate)).postConstruct();
     //new PreferenceSettings(mongoTemplate).run();
+  }
+
+  @Override
+  public void updateOuIdChange(String doerID, parsso.idman.models.services.Service service, long id, String name,
+      String id2, String id3) {
+    // TODO Auto-generated method stub
+    
   }
 }

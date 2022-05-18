@@ -11,30 +11,33 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
 
+import parsso.idman.helpers.service.ServicesGroup;
 import parsso.idman.impls.groups.helper.OUAttributeMapper;
-import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.GroupRepo;
+import parsso.idman.repos.ServiceRepo;
 
 @Service
 public class RetrieveGroup implements GroupRepo.Retrieve {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
+  final ServiceRepo serviceRepo;
   @Value("${spring.ldap.base.dn}")
   protected String BASE_DN;
 
   @Autowired
-  public RetrieveGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
+  public RetrieveGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
+    this.serviceRepo = serviceRepo;
   }
 
   public Group retrieve(boolean simple, String uid) {
 
     for (Group group : retrieve()) {
       if (!simple && group.getId().equalsIgnoreCase(uid)) {
-        group.setService(new ServicesGroup(mongoTemplate).servicesOfGroup(uid));
+        group.setService(new ServicesGroup(mongoTemplate, serviceRepo). servicesOfGroup(uid));
         return group;
       } else if (simple && group.getId().equalsIgnoreCase(uid))
         return group;

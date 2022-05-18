@@ -1,25 +1,28 @@
-package parsso.idman.impls.services;
+package parsso.idman.helpers.service;
 
 import org.json.simple.JSONArray;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import parsso.idman.models.license.License;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.repos.ServiceRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class ServicesGroup {
   final MongoTemplate mongoTemplate;
+  final ServiceRepo serviceRepo;
 
-  public ServicesGroup(MongoTemplate mongoTemplate) {
+  public ServicesGroup(MongoTemplate mongoTemplate,ServiceRepo serviceRepo) {
     this.mongoTemplate = mongoTemplate;
+    this.serviceRepo = serviceRepo;
   }
 
   public License servicesOfGroup(String ouID) {
     List<MicroService> licensed = new LinkedList<>();
 
-    List<Service> allServices = new RetrieveService(mongoTemplate).listServicesFull();
+    List<Service> allServices = serviceRepo.listServicesFull();
 
     for (Service service : allServices)
       if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)

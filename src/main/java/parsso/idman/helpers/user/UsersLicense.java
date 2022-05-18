@@ -13,10 +13,10 @@ import java.util.List;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class UsersLicense {
-  ServiceRepo.Retrieve serviceRepo;
+  ServiceRepo serviceRepo;
   UserRepo.UsersOp.Retrieve usersOpRetrieve;
 
-  public UsersLicense(ServiceRepo.Retrieve serviceRepo, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+  public UsersLicense(ServiceRepo serviceRepo, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
     this.serviceRepo = serviceRepo;
     this.usersOpRetrieve = usersOpRetrieve;
   }

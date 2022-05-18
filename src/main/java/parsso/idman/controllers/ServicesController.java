@@ -30,17 +30,14 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.service.Metadata;
 import parsso.idman.helpers.service.Position;
+import parsso.idman.helpers.service.ServiceAccess;
+import parsso.idman.helpers.service.ServiceIcon;
 import parsso.idman.impls.logs.subclass.ServiceAudit;
-import parsso.idman.impls.services.DeleteService;
-import parsso.idman.impls.services.RetrieveService;
-import parsso.idman.impls.services.create.CreateService;
-import parsso.idman.impls.services.create.sublcasses.Metadata;
-import parsso.idman.impls.services.create.sublcasses.ServiceAccess;
-import parsso.idman.impls.services.create.sublcasses.ServiceIcon;
-import parsso.idman.impls.services.update.UpdateService;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.FilesStorageService;
+import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 @RestController
@@ -49,24 +46,18 @@ public class ServicesController {
   final MongoTemplate mongoTemplate;
   final FilesStorageService storageService;
   final UniformLogger uniformLogger;
-  final CreateService createService;
-  final DeleteService deleteService;
-  final UpdateService updateService;
-  final RetrieveService retrieveService;
+  final ServiceRepo serviceRepo;
 
   @Autowired
   public ServicesController(UserRepo.UsersOp.Retrieve userOpRetrieve,
       MongoTemplate mongoTemplate, FilesStorageService storageService, UniformLogger uniformLogger,
-      CreateService createService, DeleteService deleteService, UpdateService updateService,
-      RetrieveService retrieveService) {
+      ServiceRepo serviceRepo) {
     this.userOpRetrieve = userOpRetrieve;
     this.mongoTemplate = mongoTemplate;
     this.storageService = storageService;
     this.uniformLogger = uniformLogger;
-    this.createService = createService;
-    this.deleteService = deleteService;
-    this.updateService = updateService;
-    this.retrieveService = retrieveService;
+    this.serviceRepo = serviceRepo;
+
   }
 
   @Value("${base.url}")
@@ -77,7 +68,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) 
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-        retrieveService.listUserServices(
+      serviceRepo.listUserServices(
           userOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
@@ -87,7 +78,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(retrieveService.listServicesMain(),
+        new Response(serviceRepo.listServicesMain(),
           Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
@@ -97,7 +88,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
        throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-          retrieveService.retrieveService(serviceId), Variables.MODEL_SERVICE,
+      serviceRepo.retrieveService(serviceId), Variables.MODEL_SERVICE,
         HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -106,7 +97,7 @@ public class ServicesController {
         HttpServletRequest request, @RequestBody JSONObject jsonObject,
             @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
                 throws NoSuchFieldException, IllegalAccessException {
-    LinkedList<String> ls = deleteService.delete(request.getUserPrincipal().getName(), jsonObject);
+    LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
     HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
     return new ResponseEntity<>(new Response(
@@ -119,7 +110,7 @@ public class ServicesController {
       @PathVariable("system") String system, @RequestParam(
         value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, ParseException, NoSuchFieldException, IllegalAccessException {
-    long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
+    long id = serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system);
     HttpStatus httpStatus = (id == 0 ? HttpStatus.FORBIDDEN : HttpStatus.OK);
     return new ResponseEntity<>(new Response(
           null, Variables.MODEL_SERVICE, httpStatus.value(), lang),
@@ -131,9 +122,9 @@ public class ServicesController {
         HttpServletRequest request, @PathVariable("id") long id,
       @RequestBody JSONObject jsonObject, @PathVariable("system") String system,
       @RequestParam(value = "lang", defaultValue =
-          Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+          Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException, IOException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_SERVICE,
-        updateService.updateService(
+    serviceRepo.updateService(
             request.getUserPrincipal().getName(), id, jsonObject, system).value(),
         lang), HttpStatus.OK);
   }
@@ -143,7 +134,7 @@ public class ServicesController {
         @RequestParam (value = "lang",
             defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException{
       return new ResponseEntity(new Response(
-        new ServiceAudit(retrieveService, mongoTemplate).usedService(
+        new ServiceAudit(serviceRepo, mongoTemplate).usedService(
             request.getUserPrincipal().getName()),
                 Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }

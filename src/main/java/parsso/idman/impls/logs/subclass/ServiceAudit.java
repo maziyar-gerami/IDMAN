@@ -9,23 +9,23 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import parsso.idman.helpers.Variables;
-import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.repos.ServiceRepo;
 
 public class ServiceAudit {
-  final RetrieveService retrieveService;
+  final ServiceRepo serviceRepo;
   final MongoTemplate mongoTemplate;
   List<String> services;
 
 
-  public ServiceAudit(RetrieveService retrieveService, MongoTemplate mongoTemplate) {
-    this.retrieveService = retrieveService;
+  public ServiceAudit(ServiceRepo serviceRepo, MongoTemplate mongoTemplate) {
+    this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
     services = new LinkedList<>();
   }
 
   public List<JSONObject> usedService(String userId){
-    List<MicroService> microServices = retrieveService.listServicesMain();
+    List<MicroService> microServices = serviceRepo.listServicesMain();
     Query query;
     List<JSONObject> result = new LinkedList<>();
     for (MicroService microService : microServices) {

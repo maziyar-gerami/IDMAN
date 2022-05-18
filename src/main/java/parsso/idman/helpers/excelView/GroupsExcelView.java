@@ -9,11 +9,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
+import parsso.idman.helpers.service.ServicesGroup;
 import parsso.idman.impls.groups.RetrieveGroup;
-import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.GroupRepo;
+import parsso.idman.repos.ServiceRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,10 +27,12 @@ import java.util.Map;
 public class GroupsExcelView extends AbstractXlsView {
   final GroupRepo.Retrieve retrieveGroup;
   final MongoTemplate mongoTemplate;
+  final ServiceRepo serviceRepo;
 
-  public GroupsExcelView(RetrieveGroup retrieveGroup, MongoTemplate mongoTemplate) {
+  public GroupsExcelView(RetrieveGroup retrieveGroup, MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
     this.retrieveGroup = retrieveGroup;
     this.mongoTemplate = mongoTemplate;
+    this.serviceRepo = serviceRepo;
   }
 
   @Override
@@ -40,7 +43,7 @@ public class GroupsExcelView extends AbstractXlsView {
     List<Group> groups = retrieveGroup.retrieve();
 
     for (Group group : groups)
-      group.setService(new ServicesGroup(mongoTemplate).servicesOfGroup(group.getId()));
+      group.setService(new ServicesGroup(mongoTemplate,serviceRepo).servicesOfGroup(group.getId()));
 
     // create a new Excel sheet
     HSSFSheet sheet = (HSSFSheet) workbook.createSheet("grpups");

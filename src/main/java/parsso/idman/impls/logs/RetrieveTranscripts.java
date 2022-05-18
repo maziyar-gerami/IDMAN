@@ -22,16 +22,15 @@ import java.util.Objects;
 @SuppressWarnings({ "unchecked" })
 public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
-  final ServiceRepo.Retrieve serviceRepo;
+  final ServiceRepo serviceRepo;
   final MongoTemplate mongoTemplate;
 
   @Autowired
-  public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo,
+  public RetrieveTranscripts(ServiceRepo serviceRepo,
       MongoTemplate mongoTemplate,
       RetrieveGroup retrieveGroup) {
     this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
-
   }
 
   @Override

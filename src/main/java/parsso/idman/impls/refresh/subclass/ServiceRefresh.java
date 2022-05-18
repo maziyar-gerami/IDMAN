@@ -12,17 +12,19 @@ import org.springframework.http.HttpStatus;
 
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
-import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.repos.ServiceRepo;
 
 public class ServiceRefresh {
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
+  final ServiceRepo serviceRepo;
 
-  public ServiceRefresh(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
+  public ServiceRefresh(MongoTemplate mongoTemplate, UniformLogger uniformLogger, ServiceRepo serviceRepo) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
+    this.serviceRepo = serviceRepo;
   }
 
   public HttpStatus refresh(String doer) {
@@ -30,7 +32,7 @@ public class ServiceRefresh {
     mongoTemplate.getCollection(Variables.col_servicesExtraInfo);
     int i = 1;
 
-    for (parsso.idman.models.services.Service service : new RetrieveService(mongoTemplate).listServicesFull()) {
+    for (parsso.idman.models.services.Service service : serviceRepo.listServicesFull()) {
       Query query = new Query(Criteria.where("_id").is(service.getId()));
       MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class,
           Variables.col_servicesExtraInfo);
@@ -62,7 +64,7 @@ public class ServiceRefresh {
           Variables.RESULT_SUCCESS, ""));
     }
 
-    List<parsso.idman.models.services.Service> serviceList = new RetrieveService(mongoTemplate).listServicesFull();
+    List<parsso.idman.models.services.Service> serviceList = serviceRepo.listServicesFull();
     List<Long> ids = new LinkedList<>();
 
     List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);

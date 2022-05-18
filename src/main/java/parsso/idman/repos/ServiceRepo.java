@@ -1,5 +1,6 @@
 package parsso.idman.repos;
 
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("SameReturnValue")
-public class ServiceRepo {
-
-  public interface Retrieve {
-
+public interface ServiceRepo {
     List<MicroService> listUserServices(User user);
 
     List<Service> listServicesFull();
@@ -28,34 +26,22 @@ public class ServiceRepo {
 
     Service retrieveService(long id);
 
-    boolean serviceAccess(long id);
-
-    String showServicePic(HttpServletResponse response, String file);
-
-  }
-
-  public interface Delete {
-
-    LinkedList<String> delete(String doerID, JSONObject files);
-  }
-
-  @org.springframework.stereotype.Service
-  public interface Update {
+    LinkedList<String> deleteServices(String doerID, JSONObject files);
 
     String uploadMetadata(MultipartFile file);
 
-    void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu)
-        throws IOException;
-
-    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system);
-
-    String uploadIcon(MultipartFile file);
-
-  }
-
-  public interface Create {
 
     long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 
-  }
+    HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) throws IOException;
+
+    HttpStatus increasePosition(String id);
+
+    HttpStatus decreasePosition(String id);
+
+    boolean serviceAccess(long id);
+
+    String uploadIcon(MultipartFile file);
+
+    String showServicePic(HttpServletResponse response, String file);
 }

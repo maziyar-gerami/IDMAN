@@ -15,17 +15,16 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.impls.groups.helper.BuildAttribute;
 import parsso.idman.impls.groups.helper.BuildDnGroup;
-import parsso.idman.impls.services.DeleteService;
-import parsso.idman.impls.services.RetrieveService;
-import parsso.idman.impls.services.update.UpdateService;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.GroupRepo;
+import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 import javax.naming.Name;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -42,11 +41,13 @@ public class UpdateGroup implements GroupRepo.Update {
   final UserRepo.UsersOp.Retrieve usersOpRetrieve;
   final RetrieveGroup retrieveGroup;
   final CreateGroup createGroup;
+  final ServiceRepo serviceRepo;
+  final UserRepo.UsersOp.Update usersUpdate;
 
   @Autowired
   public UpdateGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
       UniformLogger uniformLogger, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      FilesStorageService filesStorageService, RetrieveGroup retrieveGroup, CreateGroup createGroup) {
+      FilesStorageService filesStorageService, RetrieveGroup retrieveGroup, CreateGroup createGroup, ServiceRepo serviceRepo, UserRepo.UsersOp.Update usersUpdate) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
@@ -54,6 +55,8 @@ public class UpdateGroup implements GroupRepo.Update {
     this.usersOpRetrieve = usersOpRetrieve;
     this.retrieveGroup = retrieveGroup;
     this.createGroup = createGroup;
+    this.serviceRepo = serviceRepo;
+    this.usersUpdate = usersUpdate;
   }
 
   public HttpStatus update(String doerID, String id, Group ou) {
@@ -112,7 +115,7 @@ public class UpdateGroup implements GroupRepo.Update {
         }
       }
 
-      List<parsso.idman.models.services.Service> services = new RetrieveService(mongoTemplate)
+      List<parsso.idman.models.services.Service> services = serviceRepo
           .listServicesWithGroups(id);
       if (services != null)
         for (parsso.idman.models.services.Service service : services) {
@@ -130,12 +133,14 @@ public class UpdateGroup implements GroupRepo.Update {
           // noinspection unchecked
           jsonObject.put("names",
               ((((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))));
-          new DeleteService(mongoTemplate, uniformLogger).delete(doerID, jsonObject);
+              serviceRepo.deleteServices(doerID, jsonObject);
 
           // create new service
 
-          new UpdateService(filesStorageService).updateOuIdChange(doerID, service, service.getId(),
-              service.getName(), id, ou.getId());
+          
+            usersUpdate.updateOuIdChange(doerID, service, service.getId(),
+                service.getName(), id, ou.getId());
+          
 
         }
 

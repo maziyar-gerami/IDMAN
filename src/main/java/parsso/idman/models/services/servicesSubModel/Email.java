@@ -1,5 +1,6 @@
 package parsso.idman.models.services.servicesSubModel;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -9,10 +10,10 @@ import lombok.Setter;
 @Setter
 
 public class Email {
-  @JsonProperty("@class")
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private String atClass;
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  private Object[] values;
+    @JsonProperty("@class")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String atClass;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Object[] values;
 
 }

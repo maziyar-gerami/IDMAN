@@ -1,4 +1,4 @@
-package parsso.idman.impls.services.create.sublcasses;
+package parsso.idman.helpers.service;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;

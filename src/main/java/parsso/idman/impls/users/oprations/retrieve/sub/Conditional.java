@@ -21,13 +21,13 @@ import java.util.List;
 public class Conditional {
   UserRepo.UsersOp.Retrieve userOpRetrieve;
   LdapTemplate ldapTemplate;
-  ServiceRepo.Retrieve serviceRepo;
+  ServiceRepo serviceRepo;
   MongoTemplate mongoTemplate;
   LogsRepo.TranscriptRepo transcriptRepo;
   String BASE_DN;
 
   public Conditional(UserRepo.UsersOp.Retrieve userOpRetrieve,
-      LogsRepo.TranscriptRepo transcriptRepo, MongoTemplate mongoTemplate, ServiceRepo.Retrieve serviceRepo) {
+      LogsRepo.TranscriptRepo transcriptRepo, MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
     this.userOpRetrieve = userOpRetrieve;
     this.transcriptRepo = transcriptRepo;
     this.serviceRepo = serviceRepo;
@@ -35,7 +35,7 @@ public class Conditional {
   }
 
   public Conditional(UserRepo.UsersOp.Retrieve userOpRetrieve,
-      MongoTemplate mongoTemplate, ServiceRepo.Retrieve serviceRepo) {
+      MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
     this.userOpRetrieve = userOpRetrieve;
     this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
