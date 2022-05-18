@@ -30,6 +30,7 @@ public interface ServiceRepo {
 
     String uploadMetadata(MultipartFile file);
 
+    public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException;
 
     long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException;
 

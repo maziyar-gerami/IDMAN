@@ -18,12 +18,8 @@ import java.util.Objects;
 @Service
 public class Position {
     final String collection = Variables.col_servicesExtraInfo;
-    MongoTemplate mongoTemplate;
-
     @Autowired
-    public Position(MongoTemplate mongoTemplate){
-        this.mongoTemplate = mongoTemplate;
-    }
+    MongoTemplate mongoTemplate;
 
     public int lastPosition() {
         List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, collection);

@@ -29,6 +29,7 @@ import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.other.GenerateUUID;
 
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +42,7 @@ public class ServiceRepoImpl implements ServiceRepo {
     final String collection = Variables.col_servicesExtraInfo;
     @Autowired
     MongoTemplate mongoTemplate;
+
     @Autowired
     CasServiceHelper casServiceHelper;
     @Autowired
@@ -286,6 +288,33 @@ public class ServiceRepoImpl implements ServiceRepo {
     }
 
     
+    @Override
+    public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException {
+
+        //Update ou
+        //userRepo.updateUsersWithSpecificOU(doerID, oldOu, newOu);
+
+        //Update text
+        String fileName = String.valueOf(sid);
+        String s1 = fileName.replaceAll("\\s+", "");
+        String filePath = name + "-" + sid + ".json";
+
+        ObjectMapper mapper = new ObjectMapper();
+        //Converting the Object to JSONString
+        String jsonString = mapper.writeValueAsString(service);
+
+        try {
+            FileWriter file = new FileWriter(getServicesFolder() + filePath, false);
+            file.write(jsonString);
+            file.close();
+            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, service, ""));
+        } catch (Exception e) {
+            e.printStackTrace();
+            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, ""));
+
+        }
+
+    }
 
     @Override
     public long createService(String doerID, JSONObject jsonObject, String system) throws IOException, ParseException {

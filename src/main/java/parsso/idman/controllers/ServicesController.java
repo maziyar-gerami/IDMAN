@@ -30,10 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
-import parsso.idman.helpers.service.Metadata;
 import parsso.idman.helpers.service.Position;
-import parsso.idman.helpers.service.ServiceAccess;
-import parsso.idman.helpers.service.ServiceIcon;
 import parsso.idman.impls.logs.subclass.ServiceAudit;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.FilesStorageService;
@@ -143,7 +140,7 @@ public class ServicesController {
   public ResponseEntity<Response> serviceAccess(@PathVariable("id") long id,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) {
     return new ResponseEntity<>(
-        new ServiceAccess(mongoTemplate)
+      serviceRepo
         .serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
   }
 
@@ -151,7 +148,7 @@ public class ServicesController {
   public ResponseEntity<Response> uploadMetadata(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = new Metadata(storageService, baseurl).upload(file);
+    String result = serviceRepo.uploadMetadata(file);;
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(
       new Response(result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
@@ -161,7 +158,7 @@ public class ServicesController {
   public ResponseEntity<Response> uploadIcon(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = new ServiceIcon(storageService, baseurl).upload(file);
+    String result = serviceRepo.uploadIcon(file);;
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(
         result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
@@ -173,9 +170,9 @@ public class ServicesController {
       @RequestParam("value") int value, @RequestParam(value = "lang",
           defaultValue = Variables.DEFAULT_LANG) String lang) {
     if (value == 1) {
-      return new ResponseEntity<>(new Position(mongoTemplate).increase(id));
+      return new ResponseEntity<>(serviceRepo.increasePosition(id));
     } else if (value == -1) {
-      return new ResponseEntity<>(new Position(mongoTemplate).decrease(id));
+      return new ResponseEntity<>(serviceRepo.decreasePosition(id));
     } else {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
@@ -203,7 +200,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(new ServiceIcon(storageService, baseurl).show(response, file),
+        new Response(serviceRepo.showServicePic(response, file),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

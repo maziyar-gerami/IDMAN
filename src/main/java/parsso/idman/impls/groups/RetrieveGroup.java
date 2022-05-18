@@ -2,6 +2,7 @@ package parsso.idman.impls.groups;
 
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,9 +12,11 @@ import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
 
-import parsso.idman.helpers.service.ServicesGroup;
+import net.minidev.json.JSONArray;
 import parsso.idman.impls.groups.helper.OUAttributeMapper;
 import parsso.idman.models.groups.Group;
+import parsso.idman.models.license.License;
+import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.ServiceRepo;
@@ -37,13 +40,29 @@ public class RetrieveGroup implements GroupRepo.Retrieve {
 
     for (Group group : retrieve()) {
       if (!simple && group.getId().equalsIgnoreCase(uid)) {
-        group.setService(new ServicesGroup(mongoTemplate, serviceRepo). servicesOfGroup(uid));
+        group.setService(servicesOfGroup(uid));
         return group;
       } else if (simple && group.getId().equalsIgnoreCase(uid))
         return group;
     }
     return null;
   }
+  public License servicesOfGroup(String ouID) {
+    List<MicroService> licensed = new LinkedList<>();
+
+    List<parsso.idman.models.services.Service> allServices = serviceRepo.listServicesFull();
+
+    for (parsso.idman.models.services.Service service : allServices)
+      if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
+        for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes()
+            .get("ou"))).get(1))
+          if (ouID.equalsIgnoreCase(name.toString()))
+            licensed.add(new MicroService(service));
+
+    return new License(licensed, null);
+
+  }
+
 
   public List<Group> retrieve(User user) {
     List<Group> groups = new ArrayList<>();
