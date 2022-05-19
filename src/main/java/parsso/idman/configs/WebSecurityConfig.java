@@ -154,7 +154,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
           .antMatchers("/api/services").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           .antMatchers("/api/groups/**").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           .antMatchers("/api/dashboard").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
-          .antMatchers("/api/googleAuth").hasAnyRole("ADMIN", "SUPPORTER", "SUPERUSER")
           .antMatchers("/api/logs/reports/users**").hasAnyRole("ADMIN", "SUPPORTER",
           "SUPERUSER")
           .antMatchers("/api/logs/audits/users**").hasAnyRole("ADMIN", "SUPPORTER",
