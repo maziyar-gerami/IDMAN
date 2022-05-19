@@ -249,10 +249,10 @@ public class ServiceRepoImpl implements ServiceRepo {
             selectedFiles = allFiles;
 
         else {
-            ArrayList<String> files = (ArrayList<String>) jsonObject.get("names");
-            for (String file : files)
+            ArrayList<Long> files = (ArrayList<Long>) jsonObject.get("names");
+            for (long file : files)
                 for (Object aFile : allFiles)
-                    if (aFile.toString().contains(file))
+                    if (aFile.toString().contains(String.valueOf(file)))
                         selectedFiles.add(aFile);
 
         }
