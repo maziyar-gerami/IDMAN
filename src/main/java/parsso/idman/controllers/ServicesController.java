@@ -32,9 +32,15 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.Position;
 import parsso.idman.impls.logs.subclass.ServiceAudit;
+import parsso.idman.impls.services.DeleteService;
+import parsso.idman.impls.services.RetrieveService;
+import parsso.idman.impls.services.create.CreateService;
+import parsso.idman.impls.services.create.sublcasses.Metadata;
+import parsso.idman.impls.services.create.sublcasses.ServiceAccess;
+import parsso.idman.impls.services.create.sublcasses.ServiceIcon;
+import parsso.idman.impls.services.update.UpdateService;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 @RestController
@@ -43,18 +49,24 @@ public class ServicesController {
   final MongoTemplate mongoTemplate;
   final FilesStorageService storageService;
   final UniformLogger uniformLogger;
-  final ServiceRepo serviceRepo;
+  final CreateService createService;
+  final DeleteService deleteService;
+  final UpdateService updateService;
+  final RetrieveService retrieveService;
 
   @Autowired
   public ServicesController(UserRepo.UsersOp.Retrieve userOpRetrieve,
       MongoTemplate mongoTemplate, FilesStorageService storageService, UniformLogger uniformLogger,
-      ServiceRepo serviceRepo) {
+      CreateService createService, DeleteService deleteService, UpdateService updateService,
+      RetrieveService retrieveService) {
     this.userOpRetrieve = userOpRetrieve;
     this.mongoTemplate = mongoTemplate;
     this.storageService = storageService;
     this.uniformLogger = uniformLogger;
-    this.serviceRepo = serviceRepo;
-
+    this.createService = createService;
+    this.deleteService = deleteService;
+    this.updateService = updateService;
+    this.retrieveService = retrieveService;
   }
 
   @Value("${base.url}")
@@ -65,7 +77,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) 
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-      serviceRepo.listUserServices(
+        retrieveService.listUserServices(
           userOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
@@ -75,7 +87,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(serviceRepo.listServicesMain(),
+        new Response(retrieveService.listServicesMain(),
           Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
@@ -85,7 +97,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
        throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-      serviceRepo.retrieveService(serviceId), Variables.MODEL_SERVICE,
+          retrieveService.retrieveService(serviceId), Variables.MODEL_SERVICE,
         HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -94,7 +106,7 @@ public class ServicesController {
         HttpServletRequest request, @RequestBody JSONObject jsonObject,
             @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
                 throws NoSuchFieldException, IllegalAccessException {
-    LinkedList<String> ls = serviceRepo.deleteServices(request.getUserPrincipal().getName(), jsonObject);
+    LinkedList<String> ls = deleteService.delete(request.getUserPrincipal().getName(), jsonObject);
     HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
     return new ResponseEntity<>(new Response(
@@ -107,7 +119,7 @@ public class ServicesController {
       @PathVariable("system") String system, @RequestParam(
         value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, ParseException, NoSuchFieldException, IllegalAccessException {
-    long id = serviceRepo.createService(request.getUserPrincipal().getName(), jsonObject, system);
+    long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
     HttpStatus httpStatus = (id == 0 ? HttpStatus.FORBIDDEN : HttpStatus.OK);
     return new ResponseEntity<>(new Response(
           null, Variables.MODEL_SERVICE, httpStatus.value(), lang),
@@ -119,9 +131,9 @@ public class ServicesController {
         HttpServletRequest request, @PathVariable("id") long id,
       @RequestBody JSONObject jsonObject, @PathVariable("system") String system,
       @RequestParam(value = "lang", defaultValue =
-          Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException, IOException {
+          Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_SERVICE,
-    serviceRepo.updateService(
+        updateService.updateService(
             request.getUserPrincipal().getName(), id, jsonObject, system).value(),
         lang), HttpStatus.OK);
   }
@@ -131,7 +143,7 @@ public class ServicesController {
         @RequestParam (value = "lang",
             defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException{
       return new ResponseEntity(new Response(
-        new ServiceAudit(serviceRepo, mongoTemplate).usedService(
+        new ServiceAudit(retrieveService, mongoTemplate).usedService(
             request.getUserPrincipal().getName()),
                 Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
@@ -140,7 +152,7 @@ public class ServicesController {
   public ResponseEntity<Response> serviceAccess(@PathVariable("id") long id,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) {
     return new ResponseEntity<>(
-      serviceRepo
+        new ServiceAccess(mongoTemplate)
         .serviceAccess(id) ? HttpStatus.OK : HttpStatus.BAD_REQUEST);
   }
 
@@ -148,7 +160,7 @@ public class ServicesController {
   public ResponseEntity<Response> uploadMetadata(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = serviceRepo.uploadMetadata(file);;
+    String result = new Metadata(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(
       new Response(result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
@@ -158,7 +170,7 @@ public class ServicesController {
   public ResponseEntity<Response> uploadIcon(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
-    String result = serviceRepo.uploadIcon(file);;
+    String result = new ServiceIcon(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(
         result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
@@ -170,9 +182,9 @@ public class ServicesController {
       @RequestParam("value") int value, @RequestParam(value = "lang",
           defaultValue = Variables.DEFAULT_LANG) String lang) {
     if (value == 1) {
-      return new ResponseEntity<>(serviceRepo.increasePosition(id));
+      return new ResponseEntity<>(new Position(mongoTemplate).increase(id));
     } else if (value == -1) {
-      return new ResponseEntity<>(serviceRepo.decreasePosition(id));
+      return new ResponseEntity<>(new Position(mongoTemplate).decrease(id));
     } else {
       return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
@@ -200,7 +212,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(serviceRepo.showServicePic(response, file),
+        new Response(new ServiceIcon(storageService, baseurl).show(response, file),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

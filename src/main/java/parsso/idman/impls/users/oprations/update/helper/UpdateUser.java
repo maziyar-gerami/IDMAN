@@ -15,20 +15,13 @@ import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.ExcelAnalyzer;
 import parsso.idman.helpers.user.Password;
-import parsso.idman.helpers.user.UserAttributeMapper;
-import parsso.idman.impls.users.oprations.retrieve.RetrieveUser;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Time;
-import parsso.idman.models.services.Service;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.ServiceRepo;
+import parsso.idman.repos.UserRepo;
+
 import javax.naming.Name;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,62 +33,34 @@ public class UpdateUser {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
+  final UserRepo.UsersOp.Retrieve userOpRetrieve;
   final BuildAttributes buildAttributes;
   final ExcelAnalyzer excelAnalyzer;
-  final ServiceRepo serviceRepo;
   final String BASE_DN;
 
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-       BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer,ServiceRepo serviceRepo,
+      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer,
       String BASE_DN) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
+    this.userOpRetrieve = userOpRetrieve;
     this.buildAttributes = buildAttributes;
     this.excelAnalyzer = excelAnalyzer;
-    this.serviceRepo = serviceRepo;
     this.BASE_DN = BASE_DN;
   }
-
-  public void updateOuIdChange(String doerID, Service service, long sid, String name, String oldOu, String newOu) throws IOException {
-
-        //Update ou
-        new UsersWithSpecificOU(uniformLogger, ldapTemplate, mongoTemplate, buildAttributes,
-        new UserAttributeMapper(mongoTemplate), BASE_DN).updateUsersWithSpecificOU(doerID, oldOu, newOu);
-
-        //Update text
-        String fileName = String.valueOf(sid);
-        String s1 = fileName.replaceAll("\\s+", "");
-        String filePath = name + "-" + sid + ".json";
-
-        ObjectMapper mapper = new ObjectMapper();
-        //Converting the Object to JSONString
-        String jsonString = mapper.writeValueAsString(service);
-
-        try {
-            FileWriter file = new FileWriter(new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue().toString() + filePath, false);
-            file.write(jsonString);
-            file.close();
-            uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, service, ""));
-        } catch (Exception e) {
-            e.printStackTrace();
-            uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_SERVICE, sid, "", Variables.ACTION_UPDATE, Variables.RESULT_FAILED, service, ""));
-
-        }
-
-    }
 
   public HttpStatus update(String doerID, String usid, User p) {
 
     p.setUserId(usid.trim());
     Name dn = new BuildDnUser(BASE_DN).buildDn(p.get_id().toString());
 
-    User user = new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(p.get_id().toString());
+    User user = userOpRetrieve.retrieveUsers(p.get_id().toString());
 
     try {
-      if (!new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(doerID).getRole().equals(Variables.ROLE_USER)
-          && !new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(doerID).getRole().equals("PRESENTER")
-          && !new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(usid).getRole().equals("USER") &&
+      if (!userOpRetrieve.retrieveUsers(doerID).getRole().equals(Variables.ROLE_USER)
+          && !userOpRetrieve.retrieveUsers(doerID).getRole().equals("PRESENTER")
+          && !userOpRetrieve.retrieveUsers(usid).getRole().equals("USER") &&
           user.getRole().equals("USER") && new Settings(mongoTemplate).retrieve(Variables.USER_PROFILE_ACCESS)
               .getValue().equalsIgnoreCase("false")) {
         return HttpStatus.FORBIDDEN;
@@ -206,7 +171,7 @@ public class UpdateUser {
     remove = (List<String>) gu.get("remove");
     List<String> groups = new LinkedList<>();
     for (String uid : add) {
-      User user = new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(uid);
+      User user = userOpRetrieve.retrieveUsers(uid);
       if (user.getMemberOf() != null) {
         if (!user.getMemberOf().contains(groupId)) {
           user.getMemberOf().add(groupId);
@@ -219,7 +184,7 @@ public class UpdateUser {
       update(doerID, uid, user);
     }
     for (String uid : remove) {
-      User user = new RetrieveUser(ldapTemplate,mongoTemplate,serviceRepo).retrieveUsers(uid);
+      User user = userOpRetrieve.retrieveUsers(uid);
       if (user.getMemberOf().contains(groupId)) {
         user.getMemberOf().remove(groupId);
         update(doerID, uid, user);

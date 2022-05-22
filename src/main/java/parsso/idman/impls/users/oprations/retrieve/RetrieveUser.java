@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.users.oprations.retrieve.helper.Parameters;
 import parsso.idman.impls.users.oprations.retrieve.sub.Conditional;
 import parsso.idman.impls.users.oprations.retrieve.sub.FullAttributes;
@@ -12,7 +13,6 @@ import parsso.idman.impls.users.oprations.retrieve.sub.MainAttributes;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.models.users.User.ListUsers;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 import java.util.List;
 
@@ -20,8 +20,8 @@ import java.util.List;
 public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retrieve {
 
   @Autowired
-  public RetrieveUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,ServiceRepo ServiceRepo) {
-    super(ldapTemplate, mongoTemplate,ServiceRepo);
+  public RetrieveUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
+    super(ldapTemplate, mongoTemplate);
   }
 
   @Override
@@ -41,7 +41,7 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
 
   @Override
   public User retrieveUsersWithLicensed(String userId) {
-    return new Conditional(this, mongoTemplate, ServiceRepo).licensed(userId);
+    return new Conditional(this, mongoTemplate, new RetrieveService(mongoTemplate)).licensed(userId);
   }
 
   @Override

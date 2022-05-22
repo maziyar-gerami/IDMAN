@@ -15,12 +15,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.users.oprations.retrieve.helper.UsersCount;
 import parsso.idman.models.dashboarddata.Dashboard;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 import parsso.idman.utils.convertor.DateUtils;
 
@@ -32,7 +32,6 @@ public class DashboardData {
   final MongoTemplate mongoTemplate;
   final SimpleUserAttributeMapper simpleUserAttributeMapper;
   final LdapTemplate ldapTemplate;
-  final ServiceRepo serviceRepo;
 
   @Value("${spring.ldap.base.dn}")
   protected String baseDn;
@@ -40,13 +39,12 @@ public class DashboardData {
   @Autowired
   public DashboardData(UserRepo.UsersOp.Retrieve usersOp,
       LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate,
-      SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate, ServiceRepo serviceRepo) {
+      SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
     this.usersOp = usersOp;
     this.eventRepo = eventRepo;
     this.mongoTemplate = mongoTemplate;
     this.simpleUserAttributeMapper = simpleUserAttributeMapper;
     this.ldapTemplate = ldapTemplate;
-    this.serviceRepo = serviceRepo;
   }
 
   Dashboard.Users fUsers;
@@ -94,7 +92,7 @@ public class DashboardData {
 
       // ________services data____________
       List<parsso.idman.models.services.Service> services;
-      services = serviceRepo.listServicesFull();
+      services = new RetrieveService(mongoTemplate).listServicesFull();
       int nServices = 0;
       if (services != null) {
         nServices = services.size();

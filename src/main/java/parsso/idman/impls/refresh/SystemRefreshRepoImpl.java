@@ -12,7 +12,6 @@ import parsso.idman.impls.refresh.subclass.LockedUsers;
 import parsso.idman.impls.refresh.subclass.ServiceRefresh;
 import parsso.idman.impls.refresh.subclass.UserRefresh;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.SystemRefresh;
 
 @Service
@@ -22,7 +21,6 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
   UniformLogger uniformLogger;
   UserRefresh userRefresh;
   LockedUsers lockedUsers;
-  ServiceRepo serviceRepo;
 
   public SystemRefreshRepoImpl(LockedUsers lockedUsers) {
     this.lockedUsers = lockedUsers;
@@ -48,7 +46,7 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
   @Override
   public HttpStatus serviceRefresh(String doer) {
 
-    return new ServiceRefresh(mongoTemplate, uniformLogger,serviceRepo).refresh(doer);
+    return new ServiceRefresh(mongoTemplate, uniformLogger).refresh(doer);
   }
 
   @Override

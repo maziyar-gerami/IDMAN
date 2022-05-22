@@ -6,17 +6,14 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.json.simple.JSONArray;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import parsso.idman.impls.groups.RetrieveGroup;
+import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
-import parsso.idman.models.license.License;
-import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.ServiceRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,30 +26,11 @@ import java.util.Map;
 public class GroupsExcelView extends AbstractXlsView {
   final GroupRepo.Retrieve retrieveGroup;
   final MongoTemplate mongoTemplate;
-  final ServiceRepo serviceRepo;
 
-  public GroupsExcelView(RetrieveGroup retrieveGroup, MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
+  public GroupsExcelView(RetrieveGroup retrieveGroup, MongoTemplate mongoTemplate) {
     this.retrieveGroup = retrieveGroup;
     this.mongoTemplate = mongoTemplate;
-    this.serviceRepo = serviceRepo;
   }
-
-  public License servicesOfGroup(String ouID) {
-    List<MicroService> licensed = new LinkedList<>();
-
-    List<Service> allServices = serviceRepo.listServicesFull();
-
-    for (Service service : allServices)
-      if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null)
-        for (Object name : (JSONArray) ((JSONArray) (service.getAccessStrategy().getRequiredAttributes()
-            .get("ou"))).get(1))
-          if (ouID.equalsIgnoreCase(name.toString()))
-            licensed.add(new MicroService(service));
-
-    return new License(licensed, null);
-
-  }
-
 
   @Override
   protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
@@ -62,7 +40,7 @@ public class GroupsExcelView extends AbstractXlsView {
     List<Group> groups = retrieveGroup.retrieve();
 
     for (Group group : groups)
-      group.setService(servicesOfGroup(group.getId()));
+      group.setService(new ServicesGroup(mongoTemplate).servicesOfGroup(group.getId()));
 
     // create a new Excel sheet
     HSSFSheet sheet = (HSSFSheet) workbook.createSheet("grpups");

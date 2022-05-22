@@ -7,7 +7,6 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 
 import parsso.idman.helpers.UniformLogger;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 @Service
@@ -16,7 +15,6 @@ public class Parameters {
   protected MongoTemplate mongoTemplate;
   protected UniformLogger uniformLogger;
   protected UserRepo.UsersOp.Retrieve userOpRetrieve;
-  protected ServiceRepo serviceRepo;
 
   @Autowired
   public Parameters(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
@@ -25,7 +23,6 @@ public class Parameters {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.userOpRetrieve = userOpRetrieve;
-    this.serviceRepo = serviceRepo;
   }
 
   @Value("${spring.ldap.base.dn}")

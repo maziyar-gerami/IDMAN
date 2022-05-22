@@ -32,7 +32,6 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 
@@ -46,12 +45,11 @@ public class GroupsController {
   private final GroupRepo.Delete deleteGroup;
   private final GroupRepo.Create createGroup;
   private final MongoTemplate mongoTemplate;
-  private final ServiceRepo serviceRepo;
 
   @Autowired
   public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp,
       RetrieveGroup retrieveGroup, UpdateGroup updateGroup, DeleteGroup deleteGroup,
-      CreateGroup createGroup, MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
+      CreateGroup createGroup, MongoTemplate mongoTemplate) {
     this.retrieveUsers = retrieveUsers;
     this.passwordOp = passwordOp;
     this.retrieveGroup = retrieveGroup;
@@ -59,7 +57,6 @@ public class GroupsController {
     this.deleteGroup = deleteGroup;
     this.createGroup = createGroup;
     this.mongoTemplate = mongoTemplate;
-    this.serviceRepo = serviceRepo;
   }
 
   @GetMapping("/user")
@@ -139,7 +136,7 @@ public class GroupsController {
   @GetMapping("/export")
   public ModelAndView downloadExcel() {
     return new ModelAndView(new GroupsExcelView(
-          retrieveGroup, mongoTemplate, serviceRepo), "listGroups", Object.class);
+          retrieveGroup, mongoTemplate), "listGroups", Object.class);
   }
 
   @PostMapping("/import")

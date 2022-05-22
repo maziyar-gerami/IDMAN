@@ -10,21 +10,21 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.LogTime;
 import parsso.idman.helpers.Variables;
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.other.Time;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 
 @Service
 public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   final MongoTemplate mongoTemplate;
-  final ServiceRepo serviceRepo;
+  final RetrieveService retrieveService;
 
   @Autowired
-  public AuditsRepoImpl(MongoTemplate mongoTemplate, ServiceRepo serviceRepo) {
+  public AuditsRepoImpl(MongoTemplate mongoTemplate, RetrieveService retrieveService) {
     this.mongoTemplate = mongoTemplate;
-    this.serviceRepo = serviceRepo;
+    this.retrieveService = retrieveService;
   }
 
   @Override
@@ -39,7 +39,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     }
 
     if(sid!=(0)){
-      parsso.idman.models.services.Service ms = serviceRepo.retrieveService(sid);
+      parsso.idman.models.services.Service ms = retrieveService.retrieveService(sid);
       query.addCriteria(Criteria.where(
             "resourceOperatedUpon").regex(ms.getServiceId()));
     }
@@ -58,7 +58,7 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
     List<Audit> audits = mongoTemplate.find(query, Audit.class, Variables.col_audit);
 
     for (Audit audit : audits) {
-      for (parsso.idman.models.services.Service service : serviceRepo.listServicesFull()) {
+      for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
         if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
           audit.setService(service.getName());
           break;

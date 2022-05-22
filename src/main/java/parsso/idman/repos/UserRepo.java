@@ -4,7 +4,6 @@ import net.minidev.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.models.users.User.ListUsers;
-import parsso.idman.models.services.Service;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 
@@ -54,8 +53,6 @@ public class UserRepo {
       void usersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
       List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException;
-
-      void updateOuIdChange(String doerID, Service service, long id, String name, String id2, String id3);
 
     }
 

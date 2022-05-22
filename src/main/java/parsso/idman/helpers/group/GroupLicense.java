@@ -14,9 +14,9 @@ import java.util.List;
 @SuppressWarnings({ "rawtypes" })
 public class GroupLicense {
   GroupRepo.Retrieve groupRepoRetrieve;
-  ServiceRepo serviceRepo;
+  ServiceRepo.Retrieve serviceRepo;
 
-  public GroupLicense(GroupRepo.Retrieve groupRepoRetrieve, ServiceRepo serviceRepo) {
+  public GroupLicense(GroupRepo.Retrieve groupRepoRetrieve, ServiceRepo.Retrieve serviceRepo) {
     this.groupRepoRetrieve = groupRepoRetrieve;
     this.serviceRepo = serviceRepo;
   }

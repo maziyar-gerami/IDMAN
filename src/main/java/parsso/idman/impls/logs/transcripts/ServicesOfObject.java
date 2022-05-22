@@ -18,10 +18,10 @@ import java.util.Objects;
 
 @SuppressWarnings({ "unchecked" })
 public class ServicesOfObject {
-  private final ServiceRepo serviceRepo;
+  private final ServiceRepo.Retrieve serviceRepo;
   private final MongoTemplate mongoTemplate;
 
-  public ServicesOfObject(ServiceRepo serviceRepo, MongoTemplate mongoTemplate) {
+  public ServicesOfObject(ServiceRepo.Retrieve serviceRepo, MongoTemplate mongoTemplate) {
     this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
   }

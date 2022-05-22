@@ -10,12 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.mobile.impls.ServicesRepoImpl;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.ServiceRepo;
 import parsso.idman.repos.UserRepo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +40,6 @@ public class MobileController {
   UserRepo.ProfilePic profilePic;
   @Autowired
   MongoTemplate mongoTemplate;
-  @Autowired
-  ServiceRepo serviceRepo;
 
   @GetMapping(value = "/api/mobile/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
   public @ResponseBody byte[] GetQr(HttpServletRequest request) throws IOException, WriterException {
@@ -101,7 +99,7 @@ public class MobileController {
       @RequestParam("mobileToken") String MobileToken, @RequestParam("uid") String uid) {
     User user = usersOpRetrieve.retrieveUsers(uid);
     if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
-      return new ResponseEntity<>(serviceRepo.listUserServices(user), HttpStatus.OK);
+      return new ResponseEntity<>(new RetrieveService(mongoTemplate).listUserServices(user), HttpStatus.OK);
     else
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
