@@ -1963,7 +1963,7 @@ export default {
           vm.editServiceLoader = false
         })
       } else if (command === "deleteService") {
-        const selectedServiceList = [this.serviceToolbarBuffer]
+        const selectedServiceList = [parseInt(this.serviceToolbarBuffer)]
         this.loading = true
         this.axios({
           url: "/api/services",
@@ -1990,7 +1990,7 @@ export default {
       } else if (command === "deleteServices") {
         const selectedServicesList = []
         for (const x in this.selectedServices) {
-          selectedServicesList.push(this.selectedServices[x].id)
+          selectedServicesList.push(parseInt(this.selectedServices[x].id))
         }
         this.loading = true
         this.axios({
