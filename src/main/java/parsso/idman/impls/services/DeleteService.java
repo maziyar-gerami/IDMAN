@@ -13,6 +13,7 @@ import parsso.idman.helpers.service.Position;
 import parsso.idman.helpers.service.Trim;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 import parsso.idman.repos.ServiceRepo;
 
 import java.io.File;
@@ -40,10 +41,10 @@ public class DeleteService implements ServiceRepo.Delete {
       selectedFiles = allFiles;
 
     else {
-      ArrayList<String> files = (ArrayList<String>) jsonObject.get("names");
-      for (String file : files)
+      ArrayList<Long> files = (ArrayList<Long>) jsonObject.get("names");
+      for (long file : files)
         for (Object aFile : allFiles)
-          if (aFile.toString().contains(file))
+          if (aFile.toString().contains((String.valueOf(file))))
             selectedFiles.add(aFile);
 
     }
@@ -61,11 +62,11 @@ public class DeleteService implements ServiceRepo.Delete {
     for (Object file : selectedFiles) {
       long id = Trim.extractIdFromFile(file.toString());
       Query query = new Query(Criteria.where("_id").is(id));
-      MicroService microService = mongoTemplate.findOne(query, MicroService.class,
+      SimpleService microService = mongoTemplate.findOne(query, SimpleService.class,
           Variables.col_servicesExtraInfo);
       new Position(mongoTemplate).delete(Objects.requireNonNull(microService).getPosition());
       try {
-        mongoTemplate.remove(query, MicroService.class, Variables.col_servicesExtraInfo);
+        mongoTemplate.remove(query, SimpleService.class, Variables.col_servicesExtraInfo);
         uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_SERVICE, id, "",
             Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));
 

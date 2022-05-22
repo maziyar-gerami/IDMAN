@@ -55,7 +55,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public void saveMetadata(MultipartFile file, String name) {
-    String path = new Settings().retrieve(Variables.METADATA_PATH).getValue();
+    String path = new Settings(mongoTemplate).retrieve(Variables.METADATA_PATH).getValue();
     Path metadataPath = Paths.get(String.valueOf(path));
 
     try {

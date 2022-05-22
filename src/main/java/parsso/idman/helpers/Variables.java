@@ -90,7 +90,7 @@ public class Variables {
   public static final String ACTION_BACKUP = "Backup";
   public static final String ACTION_RESET_FACTORY = "Reset Factory";
   public static final String SMS_VALIDATION_DIGITS = "sms.validation.digits";
-  public static final String SERVICES_ICON_PATH = "services.icon.path";
+  public static final String SERVICES_ICON_PATH = "service.icon.path";
   public static final String PASSWORD_CHANGE_LIMIT = "password.change.limit";
   public static final String PASSWORD_CHANGE_LIMIT_NUMBER = "password.change.limit.number";
   public static final String PASSWORD_LENGTH = "password.quality.length";

@@ -35,8 +35,12 @@ public class Update {
     this.serviceRetrieve = serviceRetrieve;
   }
 
-  public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) {
 
+    
+
+
+
+  public HttpStatus update(String doerID, long id, JSONObject jsonObject, String system) {
     JSONObject JsonExtraInfo = null;
 
     ExtraInfo extraInfo = new ExtraInfo();
@@ -123,6 +127,5 @@ public class Update {
       }
 
     return new OAuth(mongoTemplate, uniformLogger).update(doerID, id, jsonObject);
-
   }
 }

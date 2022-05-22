@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,16 +25,16 @@ public class Position {
 
   public int lastPosition() {
     Query query = new Query().with(Sort.by(Sort.Direction.DESC, "position")).limit(1);
-    return mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo).getPosition();
+    return mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo).getPosition();
   }
 
   public HttpStatus increase(String id) {
     Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
-    MicroService ms = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
+    SimpleService ms = mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo);
     int position = Objects.requireNonNull(ms).getPosition();
-    List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
+    List<SimpleService> microservices = mongoTemplate.findAll(SimpleService.class, Variables.col_servicesExtraInfo);
     if (position != microservices.size()) {
-      MicroService ms1 = searchByPosition(microservices, position + 1);
+      SimpleService ms1 = searchByPosition(microservices, position + 1);
       ms1.setPosition(position);
       mongoTemplate.save(ms1, Variables.col_servicesExtraInfo);
       ms.setPosition(position + 1);
@@ -46,12 +47,17 @@ public class Position {
 
   public HttpStatus decrease(String id) {
     Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
-    MicroService ms = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
+    SimpleService ms=new SimpleService();
+    try{
+     ms = mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo);
+    }catch(Exception e){
+      e.printStackTrace();
+    }
     int position = Objects.requireNonNull(ms).getPosition();
-    List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
+    List<SimpleService> microservices = mongoTemplate.findAll(SimpleService.class, Variables.col_servicesExtraInfo);
     if (position != 1) {
-      MicroService ms1 = searchByPosition(microservices, position);
-      MicroService ms2 = searchByPosition(microservices, position - 1);
+      SimpleService ms1 = searchByPosition(microservices, position);
+      SimpleService ms2 = searchByPosition(microservices, position - 1);
       ms1.setPosition(position - 1);
       ms2.setPosition(position);
       mongoTemplate.save(ms1, Variables.col_servicesExtraInfo);
@@ -61,8 +67,8 @@ public class Position {
     return HttpStatus.OK;
   }
 
-  public MicroService searchByPosition(List<MicroService> microServices, int position) {
-    for (MicroService microService : microServices) {
+  public SimpleService searchByPosition(List<SimpleService> microServices, int position) {
+    for (SimpleService microService : microServices) {
       if (microService.getPosition() == position)
         return microService;
     }

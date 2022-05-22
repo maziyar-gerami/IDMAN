@@ -38,13 +38,19 @@ public class ServiceAccess {
     } catch (NullPointerException e) {
       return false;
     }
-    for (Schedule schedule : dailyAccess)
-      if (schedule.getWeekDay() == currentDay) {
-        Period period = schedule.getPeriod();
-        if (simpleTime.compareTo(period.getFrom()) == 1 && simpleTime.compareTo(period.getTo()) == -1)
-          return true;
-      }
-    return false;
+
+    if (dailyAccess != null) {
+
+      for (Schedule schedule : dailyAccess)
+        if (schedule.getWeekDay() == currentDay) {
+          Period period = schedule.getPeriod();
+          if (simpleTime.compareTo(period.getFrom()) == 1 && simpleTime.compareTo(period.getTo()) == -1)
+            return true;
+        }
+      return false;
+    } else {
+      return true;
+    }
   }
 
 }
