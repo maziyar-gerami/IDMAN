@@ -15,6 +15,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 
 public class ServiceRefresh {
   final MongoTemplate mongoTemplate;
@@ -32,9 +33,9 @@ public class ServiceRefresh {
 
     for (parsso.idman.models.services.Service service : new RetrieveService(mongoTemplate).listServicesFull()) {
       Query query = new Query(Criteria.where("_id").is(service.getId()));
-      MicroService serviceExtraInfo = mongoTemplate.findOne(query, MicroService.class,
+      SimpleService serviceExtraInfo = mongoTemplate.findOne(query, SimpleService.class,
           Variables.col_servicesExtraInfo);
-      MicroService newServiceExtraInfo = new MicroService();
+          SimpleService newServiceExtraInfo = new SimpleService();
 
       String tempUrl;
 
@@ -65,9 +66,9 @@ public class ServiceRefresh {
     List<parsso.idman.models.services.Service> serviceList = new RetrieveService(mongoTemplate).listServicesFull();
     List<Long> ids = new LinkedList<>();
 
-    List<MicroService> microServices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
+    List<SimpleService> microServices = mongoTemplate.findAll(SimpleService.class, Variables.col_servicesExtraInfo);
 
-    for (MicroService microService : microServices)
+    for (SimpleService microService : microServices)
       ids.add(microService.get_id());
 
     for (parsso.idman.models.services.Service service : serviceList)
@@ -76,7 +77,7 @@ public class ServiceRefresh {
     Query query;
     for (Long id : ids) {
       query = new Query(Criteria.where("_id").is(id));
-      mongoTemplate.findAndRemove(query, MicroService.class, Variables.col_servicesExtraInfo);
+      mongoTemplate.findAndRemove(query, SimpleService.class, Variables.col_servicesExtraInfo);
 
     }
 
