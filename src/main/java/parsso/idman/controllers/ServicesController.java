@@ -78,7 +78,7 @@ public class ServicesController {
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         retrieveService.listUserServices(
-          userOpRetrieve.retrieveUsers("maziyar")),
+          userOpRetrieve.retrieveUsers(request.getUserPrincipal().getName())),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -106,7 +106,7 @@ public class ServicesController {
         HttpServletRequest request, @RequestBody JSONObject jsonObject,
             @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
                 throws NoSuchFieldException, IllegalAccessException {
-    LinkedList<String> ls = deleteService.delete("request.getUserPrincipal().getName()", jsonObject);
+    LinkedList<String> ls = deleteService.delete(request.getUserPrincipal().getName(), jsonObject);
     HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
 
     return new ResponseEntity<>(new Response(
@@ -119,7 +119,7 @@ public class ServicesController {
       @PathVariable("system") String system, @RequestParam(
         value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, ParseException, NoSuchFieldException, IllegalAccessException {
-    long id = createService.createService("request.getUserPrincipal().getName()", jsonObject, system);
+    long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
     HttpStatus httpStatus = (id == 0 ? HttpStatus.FORBIDDEN : HttpStatus.CREATED);
     return new ResponseEntity<>(new Response(
           id, Variables.MODEL_SERVICE, httpStatus.value(), lang),
@@ -134,7 +134,7 @@ public class ServicesController {
           Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_SERVICE,
         updateService.updateService(
-            "request.getUserPrincipal().getName()", id, jsonObject, system).value(),
+            request.getUserPrincipal().getName(), id, jsonObject, system).value(),
         lang), HttpStatus.OK);
   }
 
@@ -144,7 +144,7 @@ public class ServicesController {
             defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException{
       return new ResponseEntity(new Response(
         new ServiceAudit(retrieveService, mongoTemplate).usedService(
-            "maziyar"),
+            request.getUserPrincipal().getName()),
                 Variables.MODEL_SERVICE,HttpStatus.OK.value(),lang), HttpStatus.OK);
     }
 

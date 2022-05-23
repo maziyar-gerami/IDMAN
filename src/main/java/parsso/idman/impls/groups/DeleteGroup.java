@@ -12,6 +12,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.impls.groups.helper.BuildDnGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
@@ -76,7 +77,7 @@ public class DeleteGroup implements GroupRepo.Delete {
           for (String groupN : user.getMemberOf()) {
             if (groupN.equalsIgnoreCase(group.getId())) {
               context = ldapTemplate
-                  .lookupContext(new BuildDnGroup(BASE_DN).buildDn(user.get_id().toString()));
+                  .lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
               context.removeAttributeValue("ou", group.getId());
               try {
                 ldapTemplate.modifyAttributes(context);
