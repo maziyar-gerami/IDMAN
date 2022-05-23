@@ -84,10 +84,13 @@ public class ServicesController {
 
   @GetMapping("/api/services/main")
   public ResponseEntity<Response> listServicesMain(
-      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
+      @RequestParam(value = "lang",
+       defaultValue = Variables.DEFAULT_LANG) String lang,
+       @RequestParam(name = "page", defaultValue = "") String page,
+      @RequestParam(name = "count", defaultValue = "") String count)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(retrieveService.listServicesMain(),
+        new Response(retrieveService.listServicesMain(page, count),
           Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
@@ -107,7 +110,7 @@ public class ServicesController {
             @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
                 throws NoSuchFieldException, IllegalAccessException {
     LinkedList<String> ls = deleteService.delete(request.getUserPrincipal().getName(), jsonObject);
-    HttpStatus httpStatus = (ls == null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
+    HttpStatus httpStatus = (ls == null) ? HttpStatus.NO_CONTENT : HttpStatus.BAD_REQUEST;
 
     return new ResponseEntity<>(new Response(
         ls, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);

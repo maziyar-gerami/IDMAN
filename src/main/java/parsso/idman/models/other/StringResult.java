@@ -33,6 +33,13 @@ public class StringResult {
   public static String PASSWORD_404_FA = "کاربر مورد نظر یافت نشد";
   public static String PASSWORD_404_EN = "User not found";
 
+  
+  public static String SERVICE_204_FA = "سرویس حذف شد";
+  public static String SERVICE_204_EN = "The service delete was successful";
+  
+  public static String COMMON_204_FA = "حذف شد";
+  public static String COMMON_204_EN = "Delete successful";
+
   public static String USER_300_FA = "چندین کاربر با خصوصیت وارد شده وجود دارد.";
   public static String USER_300_EN = "There are multiple users with this specified case address";
 

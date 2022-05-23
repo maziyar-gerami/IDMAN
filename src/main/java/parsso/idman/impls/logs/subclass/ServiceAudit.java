@@ -25,7 +25,7 @@ public class ServiceAudit {
   }
 
   public List<JSONObject> usedService(String userId){
-    List<MicroService> microServices = retrieveService.listServicesMain();
+    List<MicroService> microServices = retrieveService.listServicesMain("","");
     Query query;
     List<JSONObject> result = new LinkedList<>();
     for (MicroService microService : microServices) {

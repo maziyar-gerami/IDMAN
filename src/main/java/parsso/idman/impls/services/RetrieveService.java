@@ -223,7 +223,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
   }
 
   @Override
-  public List<MicroService> listServicesMain() {
+  public List<MicroService> listServicesMain(String page , String count) {
 
     File folder = new File(new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue()); // ./services/
     String[] files = folder.list();

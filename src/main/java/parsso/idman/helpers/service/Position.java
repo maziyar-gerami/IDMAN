@@ -75,7 +75,7 @@ public class Position {
   }
 
   public void delete(int position) {
-    List<MicroService> microservices = mongoTemplate.findAll(MicroService.class, Variables.col_servicesExtraInfo);
+    List<SimpleService> microservices = mongoTemplate.findAll(SimpleService.class, Variables.col_servicesExtraInfo);
     Collections.sort(microservices);
     Collections.reverse(microservices);
 

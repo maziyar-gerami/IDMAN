@@ -24,7 +24,7 @@ public class ServiceRepo {
 
     List<Service> listServicesWithGroups(String ou);
 
-    List<MicroService> listServicesMain();
+    List<MicroService> listServicesMain(String page, String count);
 
     Service retrieveService(long id);
 
