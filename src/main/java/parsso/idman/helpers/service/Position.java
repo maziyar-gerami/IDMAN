@@ -3,7 +3,6 @@ package parsso.idman.helpers.service;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Field;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import parsso.idman.helpers.Variables;
@@ -28,7 +27,7 @@ public class Position {
     return mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo).getPosition();
   }
 
-  public HttpStatus increase(String id) {
+  public HttpStatus increase(long id) {
     Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
     SimpleService ms = mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo);
     int position = Objects.requireNonNull(ms).getPosition();
@@ -45,7 +44,7 @@ public class Position {
     return HttpStatus.OK;
   }
 
-  public HttpStatus decrease(String id) {
+  public HttpStatus decrease(long id) {
     Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
     SimpleService ms=new SimpleService();
     try{

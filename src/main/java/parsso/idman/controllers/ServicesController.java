@@ -178,7 +178,7 @@ public class ServicesController {
   }
 
   @GetMapping("/api/services/position/{serviceId}")
-  public ResponseEntity<Response> increasePosition(@PathVariable("serviceId") String id,
+  public ResponseEntity<Response> increasePosition(@PathVariable("serviceId") long id,
       @RequestParam("value") int value, @RequestParam(value = "lang",
           defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
     if (value == 1) {
