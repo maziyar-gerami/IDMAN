@@ -53,26 +53,26 @@ public class PasswordSettings {
 
         case "pwdInHistory":
           attrs[1] = new BasicAttribute("pwdInHistory", setting.getValue());
-          items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
+          items[1] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[1]);
           continue;
 
         case "pwdLockout":
           attrs[2] = new BasicAttribute("pwdLockout",  setting.getValue().toString().toUpperCase());
-          items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
+          items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
           continue;
 
         case "pwdLockoutDuration":
           attrs[3] = new BasicAttribute("pwdLockoutDuration", setting.getValue());
-          items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
+          items[3] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[3]);
           continue;
         case "pwdMaxFailure":
           attrs[4] = new BasicAttribute("pwdMaxFailure", setting.getValue());
-          items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
+          items[4] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[4]);
           continue;
 
         case "pwdMaxAge":
           attrs[5] = new BasicAttribute("pwdMaxAge", setting.getValue());
-          items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[6]);
+          items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
       }
 
     }
