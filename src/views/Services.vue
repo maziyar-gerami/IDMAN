@@ -1654,6 +1654,7 @@ export default {
           if (res.data.status.code === 201) {
             vm.createServiceLoader = false
             vm.resetState("createService")
+            vm.servicesRequestMaster("getServices")
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.createServiceLoader = false
@@ -1954,6 +1955,7 @@ export default {
           if (res.data.status.code === 200) {
             vm.editServiceLoader = false
             vm.resetState("editService")
+            vm.servicesRequestMaster("getServices")
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
@@ -1976,7 +1978,7 @@ export default {
             names: selectedServiceList
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
-          if (res.data.status.code === 204) {
+          if (res.data.status.code === 200) {
             vm.loading = false
             vm.servicesRequestMaster("getServices")
           } else {
@@ -2004,7 +2006,7 @@ export default {
             names: selectedServicesList
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
-          if (res.data.status.code === 204) {
+          if (res.data.status.code === 200) {
             vm.loading = false
             vm.servicesRequestMaster("getServices")
           } else {
