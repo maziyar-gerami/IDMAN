@@ -104,10 +104,10 @@ export default {
           id: "ADMIN",
           name: this.$t("admin")
         },
-        {
+        /* {
           id: "PRESENTER",
           name: this.$t("presenter")
-        },
+        }, */
         {
           id: "USER",
           name: this.$t("user")

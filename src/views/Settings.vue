@@ -38,6 +38,7 @@
                     <InputText v-if="setting.type.class === 'string' || setting.type.class === 'path' || setting.type.class === 'url'" :id="setting._id" type="text" v-model="setting.value" />
                     <div v-else-if="setting.type.class === 'integer'" :dir="$store.state.reverseDirection"><InputNumber :id="setting._id" v-model="setting.value" showButtons mode="decimal" /></div>
                     <InputSwitch v-else-if="setting.type.class === 'switch'" v-model="setting.value" :id="setting._id" />
+                    <Dropdown v-else-if="setting._id === 'SMS.SDK'" v-model="setting.value" :id="setting._id" :options="setting.type.values" :placeholder="setting.value" @change="settingsRequestMaster('editSMSSetting')" />
                     <Dropdown v-else-if="setting.type.class === 'list'" v-model="setting.value" :id="setting._id" :options="setting.type.values" :placeholder="setting.value" />
                   </div>
                 </div>
@@ -158,6 +159,40 @@ export default {
               this.settings[i][j].value = this.settings[i][j].value.toString()
             }
             editList.push({ _id: this.settings[i][j]._id, value: this.settings[i][j].value })
+          }
+        }
+        this.loading = true
+        this.axios({
+          url: "/api/properties/settings",
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            lang: langCode
+          },
+          data: JSON.stringify(
+            editList
+          ).replace(/\\\\/g, "\\")
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.loading = false
+            vm.settingsRequestMaster("getSettings")
+          } else {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.loading = false
+            vm.settingsRequestMaster("getSettings")
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.loading = false
+          vm.settingsRequestMaster("getSettings")
+        })
+      } else if (command === "editSMSSetting") {
+        const editList = []
+        for (const i in this.settings) {
+          for (const j in this.settings[i]) {
+            if (this.settings[i][j]._id === "SMS.SDK") {
+              editList.push({ _id: this.settings[i][j]._id, value: this.settings[i][j].value })
+            }
           }
         }
         this.loading = true

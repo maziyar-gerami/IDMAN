@@ -55,7 +55,7 @@
                     <Button icon="bx bxs-edit bx-sm" class="p-button-rounded p-button-warning p-button-outlined mx-1" @click="editService(data._id)" v-tooltip.top="$t('edit')" />
                   </div>
                   <div class="flex align-items-center justify-content-center">
-                    <Button icon="bx bxs-trash bx-sm" class="p-button-rounded p-button-danger p-button-outlined mx-1" @click="deleteService(data._id)" v-tooltip.top="$t('delete')" />
+                    <Button icon="bx bxs-trash bx-sm" class="p-button-rounded p-button-danger p-button-outlined mx-1" @click="deleteService(data._id, data.name)" v-tooltip.top="$t('delete')" />
                   </div>
                 </template>
               </Column>
@@ -109,14 +109,14 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.serviceId">{{ $t("serviceID") }}<span style="color: red;"> * </span></label>
-                        <InputText id="createServiceBuffer.serviceId" type="text" :class="createServiceErrors.serviceId" v-model="createServiceBuffer.serviceId" />
+                        <InputText id="createServiceBuffer.serviceId" type="text" :class="createServiceErrors.serviceId" v-model="createServiceBuffer.serviceId" dir="ltr" />
                         <small>{{ $t("serviceURLText1") }}</small>
                       </div>
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.extraInfo.url">{{ $t("serviceURL") }}<span style="color: red;"> * </span></label>
-                        <InputText id="createServiceBuffer.extraInfo.url" type="text" :class="createServiceErrors.extraInfo.url" v-model="createServiceBuffer.extraInfo.url" />
+                        <InputText id="createServiceBuffer.extraInfo.url" type="text" :class="createServiceErrors.extraInfo.url" v-model="createServiceBuffer.extraInfo.url" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -137,7 +137,7 @@
                     </div>
                     <div class="field col-6">
                       <div v-if="createServiceBuffer.metadataLocationOption === 'address'" class="field p-fluid">
-                        <InputText id="createServiceBuffer.metadataLocation" type="text" :class="createServiceErrors.metadataLocation" v-model="createServiceBuffer.metadataLocation" />
+                        <InputText id="createServiceBuffer.metadataLocation" type="text" :class="createServiceErrors.metadataLocation" v-model="createServiceBuffer.metadataLocation" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                       <div v-else-if="createServiceBuffer.metadataLocationOption === 'file'" class="field p-fluid">
@@ -222,14 +222,14 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.informationUrl">{{ $t("informationURL") }}</label>
-                        <InputText id="createServiceBuffer.informationUrl" type="text" v-model="createServiceBuffer.informationUrl" />
+                        <InputText id="createServiceBuffer.informationUrl" type="text" v-model="createServiceBuffer.informationUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.privacyUrl">{{ $t("privacyURL") }}</label>
-                        <InputText id="createServiceBuffer.privacyUrl" type="text" v-model="createServiceBuffer.privacyUrl" />
+                        <InputText id="createServiceBuffer.privacyUrl" type="text" v-model="createServiceBuffer.privacyUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -274,7 +274,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.logoutUrl">{{ $t("logoutURL") }}</label>
-                        <InputText id="createServiceBuffer.logoutUrl" type="text" v-model="createServiceBuffer.logoutUrl" />
+                        <InputText id="createServiceBuffer.logoutUrl" type="text" v-model="createServiceBuffer.logoutUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -351,7 +351,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.endpointUrl">{{ $t("url") }}</label>
-                        <InputText id="createServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="createServiceBuffer.accessStrategy.endpointUrl" />
+                        <InputText id="createServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="createServiceBuffer.accessStrategy.endpointUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -408,7 +408,7 @@
                     <div class="field col-6">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl">{{ $t("unauthorizedRedirectUrl") }}</label>
-                        <InputText id="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" />
+                        <InputText id="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="createServiceBuffer.accessStrategy.unauthorizedRedirectUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -451,7 +451,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.extraInfo.notificationApiURL">{{ $t("apiAddress") }}</label>
-                        <InputText id="createServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="createServiceBuffer.extraInfo.notificationApiURL" />
+                        <InputText id="createServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="createServiceBuffer.extraInfo.notificationApiURL" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -516,14 +516,14 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.serviceId">{{ $t("serviceID") }}<span style="color: red;"> * </span></label>
-                        <InputText id="editServiceBuffer.serviceId" type="text" :class="editServiceErrors.serviceId" v-model="editServiceBuffer.serviceId" />
+                        <InputText id="editServiceBuffer.serviceId" type="text" :class="editServiceErrors.serviceId" v-model="editServiceBuffer.serviceId" dir="ltr" />
                         <small>{{ $t("serviceURLText1") }}</small>
                       </div>
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.extraInfo.url">{{ $t("serviceURL") }}<span style="color: red;"> * </span></label>
-                        <InputText id="editServiceBuffer.extraInfo.url" type="text" :class="editServiceErrors.extraInfo.url" v-model="editServiceBuffer.extraInfo.url" />
+                        <InputText id="editServiceBuffer.extraInfo.url" type="text" :class="editServiceErrors.extraInfo.url" v-model="editServiceBuffer.extraInfo.url" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -544,7 +544,7 @@
                     </div>
                     <div class="field col-6">
                       <div v-if="editServiceBuffer.metadataLocationOption === 'address'" class="field p-fluid">
-                        <InputText id="editServiceBuffer.metadataLocation" type="text" :class="editServiceErrors.metadataLocation" v-model="editServiceBuffer.metadataLocation" />
+                        <InputText id="editServiceBuffer.metadataLocation" type="text" :class="editServiceErrors.metadataLocation" v-model="editServiceBuffer.metadataLocation" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                       <div v-else-if="editServiceBuffer.metadataLocationOption === 'file'" class="field p-fluid">
@@ -620,7 +620,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.logoAddress">{{ $t("logo") }}</label>
-                        <InputText id="editServiceBuffer.logoAddress" type="text" v-model="editServiceBuffer.logo" />
+                        <InputText id="editServiceBuffer.logoAddress" type="text" v-model="editServiceBuffer.logo" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -636,14 +636,14 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.informationUrl">{{ $t("informationURL") }}</label>
-                        <InputText id="editServiceBuffer.informationUrl" type="text" v-model="editServiceBuffer.informationUrl" />
+                        <InputText id="editServiceBuffer.informationUrl" type="text" v-model="editServiceBuffer.informationUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.privacyUrl">{{ $t("privacyURL") }}</label>
-                        <InputText id="editServiceBuffer.privacyUrl" type="text" v-model="editServiceBuffer.privacyUrl" />
+                        <InputText id="editServiceBuffer.privacyUrl" type="text" v-model="editServiceBuffer.privacyUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -688,7 +688,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.logoutUrl">{{ $t("logoutURL") }}</label>
-                        <InputText id="editServiceBuffer.logoutUrl" type="text" v-model="editServiceBuffer.logoutUrl" />
+                        <InputText id="editServiceBuffer.logoutUrl" type="text" v-model="editServiceBuffer.logoutUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -765,7 +765,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.endpointUrl">{{ $t("url") }}</label>
-                        <InputText id="editServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="editServiceBuffer.accessStrategy.endpointUrl" />
+                        <InputText id="editServiceBuffer.accessStrategy.endpointUrl" type="text" v-model="editServiceBuffer.accessStrategy.endpointUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -822,7 +822,7 @@
                     <div class="field col-6">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl">{{ $t("unauthorizedRedirectUrl") }}</label>
-                        <InputText id="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" />
+                        <InputText id="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" type="text" v-model="editServiceBuffer.accessStrategy.unauthorizedRedirectUrl" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -865,7 +865,7 @@
                     <div class="field col">
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.extraInfo.notificationApiURL">{{ $t("apiAddress") }}</label>
-                        <InputText id="editServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="editServiceBuffer.extraInfo.notificationApiURL" />
+                        <InputText id="editServiceBuffer.extraInfo.notificationApiURL" type="text" v-model="editServiceBuffer.extraInfo.notificationApiURL" dir="ltr" />
                         <small>{{ $t("serviceURLText2") }}</small>
                       </div>
                     </div>
@@ -1651,7 +1651,7 @@ export default {
           },
           data: serviceData
         }).then((res) => {
-          if (res.data.status.code === 200) {
+          if (res.data.status.code === 201) {
             vm.createServiceLoader = false
             vm.resetState("createService")
           } else {
@@ -1990,7 +1990,7 @@ export default {
       } else if (command === "deleteServices") {
         const selectedServicesList = []
         for (const x in this.selectedServices) {
-          selectedServicesList.push(parseInt(this.selectedServices[x].id))
+          selectedServicesList.push(parseInt(this.selectedServices[x]._id))
         }
         this.loading = true
         this.axios({
@@ -2532,9 +2532,9 @@ export default {
         this.servicesRequestMaster("editService")
       }
     },
-    deleteService (id) {
+    deleteService (id, name) {
       this.serviceToolbarBuffer = id
-      this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + String(id), "pi-question-circle", "#F0EAAA", this.servicesRequestMaster, "deleteService")
+      this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + String(name), "pi-question-circle", "#F0EAAA", this.servicesRequestMaster, "deleteService")
     },
     positionService (change, id) {
       this.serviceToolbarBuffer = {

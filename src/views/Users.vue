@@ -10,7 +10,6 @@
                 <Button :label="$t('new')" icon="pi pi-plus" class="p-button-success mx-1" @click="createUser()" />
                 <Button :label="$t('delete')" icon="pi pi-trash" class="p-button-danger mx-1" @click="usersToolbar('delete')" />
                 <i class="pi pi-bars p-toolbar-separator mx-1" ></i>
-                <Button icon="pi pi-undo" class="mx-1" v-tooltip.top="$t('resetPassword')" @click="usersToolbar('resetPassword')" />
                 <Button icon="pi pi-calendar-times" class="p-button-warning mx-1" v-tooltip.top="$t('expirePassword')" @click="usersToolbar('expirePassword')" />
               </template>
               <template #end>
@@ -134,9 +133,6 @@
                 <template #body="{data}">
                   <div class="flex align-items-center justify-content-center">
                     <Button icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-outlined mx-1" @click="editUser(data._id)" v-tooltip.top="$t('edit')" />
-                  </div>
-                  <div class="flex align-items-center justify-content-center">
-                    <Button icon="pi pi-refresh" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="resetUserPassword(data._id)" v-tooltip.top="$t('resetPassword')" />
                   </div>
                   <div class="flex align-items-center justify-content-center">
                     <Button icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-outlined mx-1" @click="deleteUser(data._id)" v-tooltip.top="$t('delete')" />
@@ -849,47 +845,6 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
         })
-      } else if (command === "resetUserPassword") {
-        const selectedUserList = [this.userToolbarBuffer]
-        this.loading = true
-        this.axios({
-          url: "/api/users/sendMail",
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          params: {
-            lang: langCode
-          },
-          data: JSON.stringify({
-            names: selectedUserList
-          }).replace(/\\\\/g, "\\")
-        }).then(() => {
-          vm.loading = false
-        }).catch(() => {
-          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          vm.loading = false
-        })
-      } else if (command === "resetUsersPasswords") {
-        const selectedUsersList = []
-        for (const x in this.selectedUsers) {
-          selectedUsersList.push(this.selectedUsers[x]._id)
-        }
-        this.loading = true
-        this.axios({
-          url: "/api/users/sendMail",
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          params: {
-            lang: langCode
-          },
-          data: JSON.stringify({
-            names: selectedUsersList
-          }).replace(/\\\\/g, "\\")
-        }).then(() => {
-          vm.loading = false
-        }).catch(() => {
-          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          vm.loading = false
-        })
       } else if (command === "expireUsersPasswords") {
         const selectedUsersList = []
         for (const x in this.selectedUsers) {
@@ -1282,16 +1237,10 @@ export default {
       this.userToolbarBuffer = id
       this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + String(id), "pi-question-circle", "#F0EAAA", this.usersRequestMaster, "deleteUser")
     },
-    resetUserPassword (id) {
-      this.userToolbarBuffer = id
-      this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("resetPassword") + " " + String(id), "pi-question-circle", "#F0EAAA", this.usersRequestMaster, "resetUserPassword")
-    },
     usersToolbar (action) {
       if (this.selectedUsers.length > 0) {
         if (action === "delete") {
           this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("delete") + " " + this.$t("users"), "pi-question-circle", "#F0EAAA", this.usersRequestMaster, "deleteUsers")
-        } else if (action === "resetPassword") {
-          this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("resetPassword") + " " + this.$t("users"), "pi-question-circle", "#F0EAAA", this.usersRequestMaster, "resetUsersPasswords")
         } else if (action === "expirePassword") {
           this.confirmPromptMaster(this.$t("confirmPromptText"), this.$t("expirePassword") + " " + this.$t("users"), "pi-question-circle", "#F0EAAA", this.usersRequestMaster, "expireUsersPasswords")
         }
