@@ -57,6 +57,12 @@ public class CreateService implements ServiceRepo.Create {
     }
     long id = 0;
     JSONObject jsonExtraInfo = new JSONObject();
+    
+    String name= jsonObject.get("name").toString();
+
+    String serviceId= jsonObject.get("serviceId").toString();
+
+    String description = jsonObject.get("description").toString();
 
     extraInfo.setUrl(jsonExtraInfo.get("url") != null ? jsonExtraInfo.get("url").toString()
         : jsonObject.get("serviceId").toString());
@@ -94,9 +100,10 @@ public class CreateService implements ServiceRepo.Create {
     JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonString);
 
     extraInfo = new ExtraInfo().setExtraInfo(id, extraInfo, jsonObjectExtraInfo,
-        new Position(mongoTemplate).lastPosition() + 1);
+        new Position(mongoTemplate).lastPosition() + 1, name, serviceId,description);
 
     try {
+      
       mongoTemplate.save(extraInfo, Variables.col_servicesExtraInfo);
 
       return id;

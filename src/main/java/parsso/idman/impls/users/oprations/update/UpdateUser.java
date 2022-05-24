@@ -15,6 +15,7 @@ import parsso.idman.helpers.onetime.RunOneTime;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.ExcelAnalyzer;
 import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.UserRepo;
@@ -23,12 +24,14 @@ import parsso.idman.repos.UserRepo;
 public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
   protected final BuildAttributes buildAttributes;
+  private final RetrieveService retrieveService;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes) {
+      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
+    this.retrieveService = retrieveService;
   }
 
   public HttpStatus update(String doerID, String usid, User p) {
@@ -70,7 +73,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
   @PostConstruct
   public void postConstruct() throws InterruptedException{
-    new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate)).postConstruct();
+    new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate),retrieveService).postConstruct();
     //new PreferenceSettings(mongoTemplate).run();
   }
 }

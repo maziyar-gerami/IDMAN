@@ -18,6 +18,9 @@ public class ExtraInfo {
   String url;
   int position;
   String UUID;
+  String name;
+  String description;
+  String serviceId;
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String notificationApiURL;
   @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -30,23 +33,30 @@ public class ExtraInfo {
   }
 
   public parsso.idman.models.services.servicesSubModel.ExtraInfo setExtraInfo(long id, ExtraInfo extraInfo,
-      JSONObject jsonObject, int i) {
+      JSONObject jsonObjectExraInfo, int i, String name, String serviceId, String description) {
     extraInfo.setId(id);
     extraInfo.setPosition(i);
     try {
-      extraInfo.setNotificationApiURL(jsonObject.get("notificationApiURL").toString());
+      extraInfo.setNotificationApiURL(jsonObjectExraInfo.get("notificationApiURL").toString());
     } catch (Exception ignored) {
     }
 
     try {
-      extraInfo.setNotificationApiKey(jsonObject.get("notificationApiKey").toString());
+      extraInfo.setNotificationApiKey(jsonObjectExraInfo.get("notificationApiKey").toString());
     } catch (Exception ignored) {
     }
 
     try {
-      extraInfo.setDailyAccess((List<Schedule>) jsonObject.get("dailyAccess"));
+      extraInfo.setDailyAccess((List<Schedule>) jsonObjectExraInfo.get("dailyAccess"));
     } catch (Exception ignored) {
     }
+
+    extraInfo.setDescription(description);
+
+    extraInfo.setName(name);
+
+    extraInfo.setServiceId(serviceId);
+
     return extraInfo;
   }
 }

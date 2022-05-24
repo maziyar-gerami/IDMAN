@@ -14,7 +14,6 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.ReportMessage;
-import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.services.serviceType.SimpleService;
 
 public class ServiceRefresh {
@@ -56,6 +55,12 @@ public class ServiceRefresh {
       serviceExtraInfo.set_id(service.getId());
 
       serviceExtraInfo.setPosition(i++);
+
+      serviceExtraInfo.setDescription(service.getDescription());
+
+      serviceExtraInfo.setName(service.getName());
+
+      serviceExtraInfo.setServiceId(service.getServiceId());
 
       mongoTemplate.save(serviceExtraInfo, Variables.col_servicesExtraInfo);
 

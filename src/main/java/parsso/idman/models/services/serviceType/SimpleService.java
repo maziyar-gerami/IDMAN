@@ -9,6 +9,9 @@ public class SimpleService implements Comparable  {
   long _id;
   String url;
   int position;
+  String serviceId;
+  String name;
+  String description;
 
   @Override
   public int compareTo(Object o) {

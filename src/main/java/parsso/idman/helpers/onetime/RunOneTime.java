@@ -8,6 +8,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.repos.UserRepo;
 
@@ -18,16 +19,18 @@ public class RunOneTime {
   final UserRepo.UsersOp.Retrieve usersOpRetrieve;
   final UserRepo.UsersOp.Update usersOpUpdate;
   final String basedn;
+  final RetrieveService retrieveService;
 
   public RunOneTime(LdapTemplate ldapTemplate, 
       MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve,
       UniformLogger uniformLogger, UserRepo.UsersOp.Update usersOpUpdate, String basedn,
-      UserAttributeMapper userAttributeMapper) {
+      UserAttributeMapper userAttributeMapper, RetrieveService retrieveService) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;
+    this.retrieveService =retrieveService;
     this.basedn = basedn;
   }
 
@@ -91,6 +94,14 @@ public class RunOneTime {
       }
     };
 
+    val addNameService = new Runnable() {
+
+      @Override
+      public void run() {
+        new SimpleServiceFix(mongoTemplate,retrieveService).run();
+      }
+    };
+
     Thread sathread = new Thread(surun);
     Thread logeInUsers = new Thread(loggeInUses);
     Thread duplicated = new Thread(duplicatedUsers);
@@ -98,6 +109,7 @@ public class RunOneTime {
     Thread addLockou = new Thread(addLockout);
     Thread displayName = new Thread(displayNameFix);
     Thread roleFixt = new Thread(reoleFix);
+    Thread nameService = new Thread(addNameService);
     logeInUsers.start();
 
     OneTime b1 = mongoTemplate.findOne(
@@ -140,6 +152,13 @@ public class RunOneTime {
         OneTime.class, Variables.col_OneTime);
     if (b7 == null || !b7.isRun()) {
       roleFixt.start();
+    }
+
+    OneTime b8 = mongoTemplate.findOne(
+        new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)),
+        OneTime.class, Variables.col_OneTime);
+    if (b8 == null || !b8.isRun()) {
+      nameService.start();
     }
 
     System.out.println(Variables.PARSSO_IDMAN);

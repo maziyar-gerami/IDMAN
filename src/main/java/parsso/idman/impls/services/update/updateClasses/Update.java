@@ -69,6 +69,12 @@ public class Update {
 
       extraInfo.setNotificationApiKey((String) JsonExtraInfo.get("notificationApiKey"));
 
+      extraInfo.setName((String) JsonExtraInfo.get("name"));
+
+      extraInfo.setDescription((String) JsonExtraInfo.get("description"));
+
+      extraInfo.setServiceId((String) JsonExtraInfo.get("serviceId"));
+
       if (JsonExtraInfo.get("dailyAccess") != null) {
 
         extraInfo.setDailyAccess((List<Schedule>) JsonExtraInfo.get("dailyAccess"));

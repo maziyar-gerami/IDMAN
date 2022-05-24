@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 import parsso.idman.models.users.User;
 
 import javax.servlet.http.HttpServletResponse;
@@ -24,7 +25,7 @@ public class ServiceRepo {
 
     List<Service> listServicesWithGroups(String ou);
 
-    List<MicroService> listServicesMain(String page, String count);
+    List<SimpleService> listServicesMain(String page, String count);
 
     Service retrieveService(long id);
 

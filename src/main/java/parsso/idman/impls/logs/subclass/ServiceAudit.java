@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import parsso.idman.helpers.Variables;
 import parsso.idman.impls.services.RetrieveService;
-import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 
 public class ServiceAudit {
   final RetrieveService retrieveService;
@@ -25,10 +25,10 @@ public class ServiceAudit {
   }
 
   public List<JSONObject> usedService(String userId){
-    List<MicroService> microServices = retrieveService.listServicesMain("","");
+    List<SimpleService> microServices = retrieveService.listServicesMain("","");
     Query query;
     List<JSONObject> result = new LinkedList<>();
-    for (MicroService microService : microServices) {
+    for (SimpleService microService : microServices) {
       query = new Query(Criteria.where("principal").is(userId));
       query.addCriteria(Criteria.where("resourceOperatedUpon").regex(microService.getServiceId()));
       if (mongoTemplate.exists(query, Variables.col_audit)) {

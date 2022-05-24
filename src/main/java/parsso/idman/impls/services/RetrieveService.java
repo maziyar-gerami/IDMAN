@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -19,11 +20,11 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.Notifs;
-import parsso.idman.helpers.service.Trim;
 import parsso.idman.impls.services.create.sublcasses.Analyze;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
+import parsso.idman.models.services.serviceType.SimpleService;
 import parsso.idman.models.services.servicesSubModel.ExtraInfo;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.ServiceRepo;
@@ -223,38 +224,14 @@ public class RetrieveService implements ServiceRepo.Retrieve {
   }
 
   @Override
-  public List<MicroService> listServicesMain(String page , String count) {
-
-    File folder = new File(new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue()); // ./services/
-    String[] files = folder.list();
-    List<MicroService> services = new LinkedList<>();
-    Service service = null;
-    MicroService microService = null;
-    if(files!=null)
-    for (String file : Objects.requireNonNull(files)) {
-      if (file.endsWith(".json"))
-        try {
-          service = new Analyze(mongoTemplate, new RetrieveService(mongoTemplate), uniformLogger)
-              .analyze(file);
-        } catch (Exception e) {
-          e.printStackTrace();
-          uniformLogger.warn(Variables.DOER_SYSTEM,
-              new ReportMessage(Variables.MODEL_SERVICE, Objects.requireNonNull(service).getId(), "",
-                  Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to parse service"));
-
-          continue;
-        }
-      Query query = new Query(Criteria.where("_id").is(Trim.extractIdFromFile(file)));
-      try {
-        microService = mongoTemplate.findOne(query, MicroService.class, Variables.col_servicesExtraInfo);
-      } catch (Exception e) {
-        microService = new MicroService(Objects.requireNonNull(service).getId(), service.getServiceId());
-      } finally {
-        services.add(new MicroService(Objects.requireNonNull(service), microService));
-      }
-    }
-    Collections.sort(services);
-    return services;
+  public List<SimpleService> listServicesMain(String page , String count) {
+    Query query = new Query();
+    
+    if (!page.equals("") && !page.equals(""))
+      query.skip(Integer.parseInt(page)).limit(Integer.parseInt(count));
+      
+    return mongoTemplate.find(query.with(Sort.by(Sort.Direction.DESC, "position"))
+    , SimpleService.class, Variables.col_servicesExtraInfo);
   }
 
   @Override
