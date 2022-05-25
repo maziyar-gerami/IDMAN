@@ -139,7 +139,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
     for (Service service : services) {
 
         if (service.getAccessStrategy() != null)
-            if (service.getAccessStrategy().getRequiredAttributes() != null)
+            if (service.getAccessStrategy().getRequiredAttributes() != null){
                 if (service.getAccessStrategy().getRequiredAttributes().get("ou") != null) {
 
                     Object member = service.getAccessStrategy().getRequiredAttributes().get("ou");
@@ -158,7 +158,19 @@ public class RetrieveService implements ServiceRepo.Retrieve {
                     }
 
 
+                }if (service.getAccessStrategy().getRequiredAttributes().get("uid") != null) {
+                  Object memberUid = service.getAccessStrategy().getRequiredAttributes().get("uid");
+                  if (memberUid != null) {
+                    JSONArray s = (JSONArray) memberUid;
+      
+                    if (((List) s.get(1)).contains(user.get_id()) && !relatedList.contains(service)) {
+                      relatedList.add(service);
+                      break;
+      
+                    }
+                  }
                 }
+              }
 
 
     }
