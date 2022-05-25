@@ -1978,7 +1978,7 @@ export default {
             names: selectedServiceList
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
-          if (res.data.status.code === 200) {
+          if (res.data.status.code === 204) {
             vm.loading = false
             vm.servicesRequestMaster("getServices")
           } else {
@@ -2006,7 +2006,7 @@ export default {
             names: selectedServicesList
           }).replace(/\\\\/g, "\\")
         }).then((res) => {
-          if (res.data.status.code === 200) {
+          if (res.data.status.code === 204) {
             vm.loading = false
             vm.servicesRequestMaster("getServices")
           } else {
