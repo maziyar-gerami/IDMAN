@@ -2280,15 +2280,18 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
-            if (res.data === "") {
+            if (res.data.status.code === 200) {
+              vm.createServiceErrors.metadataLocation = ""
+              vm.createServiceBuffer.metadataLocation = res.data.data
+            } else {
               vm.createServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
-            } else {
-              vm.createServiceErrors.metadataLocation = ""
             }
             vm.createServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.createServiceErrors.metadataLocation = "p-invalid"
+            errorCount += 1
             vm.createServiceLoader = false
           })
         }
@@ -2336,7 +2339,7 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          if (res.data.data !== "") {
+          if (res.data.status.code === 200) {
             vm.createServiceBuffer.logo = res.data.data
           }
           vm.createServiceLoader = false
@@ -2462,15 +2465,18 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
-            if (res.data === "") {
+            if (res.data.status.code === 200) {
+              vm.editServiceErrors.metadataLocation = ""
+              vm.editServiceBuffer.metadataLocation = res.data.data
+            } else {
               vm.editServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
-            } else {
-              vm.editServiceErrors.metadataLocation = ""
             }
             vm.editServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.editServiceErrors.metadataLocation = "p-invalid"
+            errorCount += 1
             vm.editServiceLoader = false
           })
         }
@@ -2518,7 +2524,7 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          if (res.data.data !== "") {
+          if (res.data.status.code === 200) {
             vm.editServiceBuffer.logo = res.data.data
           }
           vm.editServiceLoader = false
