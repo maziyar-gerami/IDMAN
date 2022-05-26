@@ -2336,8 +2336,8 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          if (res.data !== "") {
-            vm.createServiceBuffer.logo = res.data
+          if (res.data.data !== "") {
+            vm.createServiceBuffer.logo = res.data.data
           }
           vm.createServiceLoader = false
         }).catch(() => {
@@ -2518,8 +2518,8 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          if (res.data !== "") {
-            vm.editServiceBuffer.logo = res.data
+          if (res.data.data !== "") {
+            vm.editServiceBuffer.logo = res.data.data
           }
           vm.editServiceLoader = false
         }).catch(() => {
