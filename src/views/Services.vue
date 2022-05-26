@@ -142,8 +142,7 @@
                       </div>
                       <div v-else-if="createServiceBuffer.metadataLocationOption === 'file'" class="field p-fluid">
                         <FileUpload id="createServiceBuffer.metadataLocation" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'create', 'metadata')" :class="createServiceErrors.metadataLocation" />
-                        <input id="createMetadataFile" type="file" class="hidden" name="file">
+                        @select="fileUploadHelper($event, 'create', 'metadata')" :class="createServiceErrors.metadataLocation" accept=".xml" />
                       </div>
                     </div>
                   </div>
@@ -214,7 +213,7 @@
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.logo">{{ $t("logo") }}</label>
                         <FileUpload id="createServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'create', 'logo')" />
+                        @select="fileUploadHelper($event, 'create', 'logo')" accept="image/*" />
                       </div>
                     </div>
                   </div>
@@ -549,8 +548,7 @@
                       </div>
                       <div v-else-if="editServiceBuffer.metadataLocationOption === 'file'" class="field p-fluid">
                         <FileUpload id="editServiceBuffer.metadataLocation" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'edit', 'metadata')" :class="editServiceErrors.metadataLocation" />
-                        <input id="editMetadataFile" type="file" class="hidden" name="file">
+                        @select="fileUploadHelper($event, 'edit', 'metadata')" :class="editServiceErrors.metadataLocation" accept=".xml" />
                       </div>
                     </div>
                   </div>
@@ -628,7 +626,7 @@
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.logo">&nbsp;</label>
                         <FileUpload id="editServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'edit', 'logo')" />
+                        @select="fileUploadHelper($event, 'edit', 'logo')" accept="image/*" />
                       </div>
                     </div>
                   </div>
