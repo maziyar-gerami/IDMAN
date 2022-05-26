@@ -2333,14 +2333,17 @@ export default {
         logoFileBodyFormData.append("file", this.createServiceBuffer.logoFile)
         const vm = this
         this.createServiceLoader = true
+        console.log(11111111111)
         this.axios({
           url: "/api/services/icon",
           method: "POST",
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
+          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             vm.createServiceBuffer.logo = res.data.data
+            console.log(vm.createServiceBuffer.logo)
           }
           vm.createServiceLoader = false
         }).catch(() => {
@@ -2518,14 +2521,17 @@ export default {
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
         const vm = this
         this.editServiceLoader = true
+        console.log(11111111111)
         this.axios({
           url: "/api/services/icon",
           method: "POST",
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
+          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             vm.editServiceBuffer.logo = res.data.data
+            console.log(vm.editServiceBuffer.logo)
           }
           vm.editServiceLoader = false
         }).catch(() => {
