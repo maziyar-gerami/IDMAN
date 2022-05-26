@@ -1175,7 +1175,7 @@ export default {
           vm.loading = false
         })
       } else if (command === "getService") {
-        this.editServiceLoader = true
+        // this.editServiceLoader = true
         this.axios({
           url: "/api/services/" + vm.editServiceBuffer.id,
           method: "GET",
@@ -1668,7 +1668,7 @@ export default {
         })
       } else if (command === "editService") {
         let serviceData = {}
-        // this.editServiceLoader = true
+        this.editServiceLoader = true
         const ouTemp = []
         if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
           for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
@@ -2281,6 +2281,7 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
+            console.log(res.data.status.code)
             if (res.data.status.code === 200) {
               vm.createServiceErrors.metadataLocation = ""
               vm.createServiceBuffer.metadataLocation = res.data.data
@@ -2460,13 +2461,14 @@ export default {
           const metadataFileBodyFormData = new FormData()
           metadataFileBodyFormData.append("file", this.editServiceBuffer.metadataFile)
           const vm = this
-          // this.editServiceLoader = true
+          this.editServiceLoader = true
           this.axios({
             url: "/api/services/metadata",
             method: "POST",
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
+            console.log(res.data.status.code)
             if (res.data.status.code === 200) {
               vm.editServiceErrors.metadataLocation = ""
               vm.editServiceBuffer.metadataLocation = res.data.data
@@ -2474,7 +2476,7 @@ export default {
               vm.editServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
             }
-            // vm.editServiceLoader = false
+            vm.editServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceErrors.metadataLocation = "p-invalid"
@@ -2519,17 +2521,18 @@ export default {
         const logoFileBodyFormData = new FormData()
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
         const vm = this
-        // this.editServiceLoader = true
+        this.editServiceLoader = true
         this.axios({
           url: "/api/services/icon",
           method: "POST",
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
+          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             this.editServiceBuffer.logo = res.data.data
           }
-          // vm.editServiceLoader = false
+          vm.editServiceLoader = false
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
