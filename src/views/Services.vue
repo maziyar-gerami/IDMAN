@@ -1279,26 +1279,14 @@ export default {
               }
             }
 
-            vm.editServiceLoader = false
-            let timer = 1
-            const i = setInterval(function () {
-              if (timer === 0) {
-                clearInterval(i)
-              }
-              --timer
-            }, 1000)
-
             if (typeof res.data.data.extraInfo !== "undefined") {
               if (typeof res.data.data.extraInfo.dailyAccess !== "undefined") {
                 vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
                 if (res.data.data.extraInfo.dailyAccess.length > 0) {
                   for (const i in res.data.data.extraInfo.dailyAccess) {
-                    console.log(1111111)
                     document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
-                    console.log(2222222)
                     document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
-                    console.log(3333333)
                     document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
                   }
@@ -1361,6 +1349,7 @@ export default {
                 vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.data.extraInfo.notificationApiKey
               }
             }
+            vm.editServiceLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
@@ -1679,7 +1668,7 @@ export default {
         })
       } else if (command === "editService") {
         let serviceData = {}
-        this.editServiceLoader = true
+        // this.editServiceLoader = true
         const ouTemp = []
         if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
           for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
@@ -2471,7 +2460,7 @@ export default {
           const metadataFileBodyFormData = new FormData()
           metadataFileBodyFormData.append("file", this.editServiceBuffer.metadataFile)
           const vm = this
-          this.editServiceLoader = true
+          // this.editServiceLoader = true
           this.axios({
             url: "/api/services/metadata",
             method: "POST",
@@ -2485,7 +2474,7 @@ export default {
               vm.editServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
             }
-            vm.editServiceLoader = false
+            // vm.editServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceErrors.metadataLocation = "p-invalid"
@@ -2530,18 +2519,17 @@ export default {
         const logoFileBodyFormData = new FormData()
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
         const vm = this
-        this.editServiceLoader = true
+        // this.editServiceLoader = true
         this.axios({
           url: "/api/services/icon",
           method: "POST",
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             this.editServiceBuffer.logo = res.data.data
           }
-          vm.editServiceLoader = false
+          // vm.editServiceLoader = false
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
