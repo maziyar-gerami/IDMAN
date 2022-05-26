@@ -1386,6 +1386,7 @@ export default {
           }
           this.createServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
         }
+        const dailyAccessTemp = []
         for (let i = 0; i < 7; ++i) {
           if (document.getElementById("createSelect" + i).checked) {
             const tempDailyAccessStart = document.getElementById("createServiceBuffer.dailyAccess.start" + i).value.split(":")
@@ -1419,8 +1420,11 @@ export default {
                 }
               }
             }
-            this.createServiceBuffer.extraInfo.dailyAccess.push(tempDailyAccessDay)
+            dailyAccessTemp.push(tempDailyAccessDay)
           }
+        }
+        if (dailyAccessTemp.length > 0) {
+          this.createServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
         }
         if (document.getElementById("createServiceBuffer.startDate").value !== "" && document.getElementById("createServiceBuffer.endDate").value !== "") {
           const dateStartTemp = document.getElementById("createServiceBuffer.startDate").value.split("  ")
@@ -1687,6 +1691,7 @@ export default {
           }
           this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
         }
+        const dailyAccessTemp = []
         for (let i = 0; i < 7; ++i) {
           if (document.getElementById("editSelect" + i).checked) {
             const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
@@ -1720,8 +1725,11 @@ export default {
                 }
               }
             }
-            this.editServiceBuffer.extraInfo.dailyAccess.push(tempDailyAccessDay)
+            dailyAccessTemp.push(tempDailyAccessDay)
           }
+        }
+        if (dailyAccessTemp.length > 0) {
+          this.editServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
         }
         if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
           const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
