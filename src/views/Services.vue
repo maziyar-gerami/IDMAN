@@ -1183,6 +1183,7 @@ export default {
             lang: langCode
           }
         }).then((res) => {
+          vm.editServiceLoader = false
           if (res.data.status.code === 200) {
             vm.editServiceBuffer.accessStrategy.enabled = res.data.data.accessStrategy.enabled
             vm.editServiceBuffer.accessStrategy.ssoEnabled = res.data.data.accessStrategy.ssoEnabled
@@ -1349,7 +1350,6 @@ export default {
                 vm.editServiceBuffer.extraInfo.notificationApiKey = res.data.data.extraInfo.notificationApiKey
               }
             }
-            vm.editServiceLoader = false
           } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
@@ -2508,13 +2508,6 @@ export default {
         }
       }
 
-      const i = setInterval(function () {
-        if (this.editServiceLoader === false) {
-          clearInterval(i)
-        }
-      }, 500)
-
-      let logoTemp = ""
       if (this.editServiceBuffer.logoFile !== null) {
         const logoFileBodyFormData = new FormData()
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
@@ -2527,7 +2520,7 @@ export default {
           data: logoFileBodyFormData
         }).then((res) => {
           if (res.data.status.code === 200) {
-            logoTemp = res.data.data
+            vm.editServiceBuffer.logo = res.data.data
           }
           vm.editServiceLoader = false
         }).catch(() => {
@@ -2535,13 +2528,6 @@ export default {
           vm.editServiceLoader = false
         })
       }
-      this.editServiceBuffer.logo = logoTemp
-
-      const j = setInterval(function () {
-        if (this.editServiceLoader === false) {
-          clearInterval(j)
-        }
-      }, 500)
 
       if (errorCount > 0) {
         this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
