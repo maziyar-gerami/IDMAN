@@ -1183,7 +1183,6 @@ export default {
             lang: langCode
           }
         }).then((res) => {
-          vm.editServiceLoader = false
           if (res.data.status.code === 200) {
             vm.editServiceBuffer.accessStrategy.enabled = res.data.data.accessStrategy.enabled
             vm.editServiceBuffer.accessStrategy.ssoEnabled = res.data.data.accessStrategy.ssoEnabled
@@ -1280,14 +1279,26 @@ export default {
               }
             }
 
+            vm.editServiceLoader = false
+            let timer = 1
+            const i = setInterval(function () {
+              if (timer === 0) {
+                clearInterval(i)
+              }
+              --timer
+            }, 1000)
+
             if (typeof res.data.data.extraInfo !== "undefined") {
               if (typeof res.data.data.extraInfo.dailyAccess !== "undefined") {
                 vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
                 if (res.data.data.extraInfo.dailyAccess.length > 0) {
                   for (const i in res.data.data.extraInfo.dailyAccess) {
+                    console.log(1111111)
                     document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
+                    console.log(2222222)
                     document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
+                    console.log(3333333)
                     document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
                   }
@@ -2340,6 +2351,7 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
+          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             vm.createServiceBuffer.logo = res.data.data
           }
@@ -2508,6 +2520,12 @@ export default {
         }
       }
 
+      const i = setInterval(function () {
+        if (this.editServiceLoader === false) {
+          clearInterval(i)
+        }
+      }, 500)
+
       if (this.editServiceBuffer.logoFile !== null) {
         const logoFileBodyFormData = new FormData()
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
@@ -2519,8 +2537,9 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
+          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
-            vm.editServiceBuffer.logo = res.data.data
+            this.editServiceBuffer.logo = res.data.data
           }
           vm.editServiceLoader = false
         }).catch(() => {
@@ -2528,6 +2547,12 @@ export default {
           vm.editServiceLoader = false
         })
       }
+
+      const j = setInterval(function () {
+        if (this.editServiceLoader === false) {
+          clearInterval(j)
+        }
+      }, 500)
 
       if (errorCount > 0) {
         this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
