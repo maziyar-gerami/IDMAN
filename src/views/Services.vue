@@ -1355,7 +1355,8 @@ export default {
             vm.editServiceLoader = false
             vm.resetState("editService")
           }
-        }).catch(() => {
+        }).catch((e) => {
+          console.log(e)
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
           vm.resetState("editService")
@@ -2339,7 +2340,9 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          vm.createServiceBuffer.logo = res.data.data
+          if (res.data.status.code === 200) {
+            vm.createServiceBuffer.logo = res.data.data
+          }
           vm.createServiceLoader = false
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -2511,6 +2514,7 @@ export default {
         }
       }, 500)
 
+      let logoTemp = ""
       if (this.editServiceBuffer.logoFile !== null) {
         const logoFileBodyFormData = new FormData()
         logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
@@ -2523,7 +2527,7 @@ export default {
           data: logoFileBodyFormData
         }).then((res) => {
           if (res.data.status.code === 200) {
-            vm.editServiceBuffer.logo = res.data.data
+            logoTemp = res.data.data
           }
           vm.editServiceLoader = false
         }).catch(() => {
@@ -2531,6 +2535,7 @@ export default {
           vm.editServiceLoader = false
         })
       }
+      this.editServiceBuffer.logo = logoTemp
 
       const j = setInterval(function () {
         if (this.editServiceLoader === false) {
