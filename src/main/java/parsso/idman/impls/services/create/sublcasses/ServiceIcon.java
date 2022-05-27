@@ -18,14 +18,12 @@ public class ServiceIcon {
   FilesStorageService storageService;
   String BASE_URL;
 
-  public ServiceIcon(FilesStorageService storageService, String BASE_URL) {
+  public ServiceIcon(FilesStorageService storageService, String BASE_URL,MongoTemplate mongoTemplate) {
     this.storageService = storageService;
+    this.mongoTemplate =mongoTemplate;
     this.BASE_URL = BASE_URL;
   }
 
-  public ServiceIcon(MongoTemplate mongoTemplate) {
-    this.mongoTemplate = mongoTemplate;
-  }
 
   public String show(HttpServletResponse response, String fileName) {
 

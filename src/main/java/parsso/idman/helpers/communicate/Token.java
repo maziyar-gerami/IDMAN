@@ -55,7 +55,7 @@ public class Token {
             .substring(mainDbToken.indexOf(user.get_id().toString()) + user.get_id().toString().length());
 
         if ((cTimeStamp - Long.parseLong(timeStamp)) < (60000L
-            * Long.parseLong(new Settings().retrieve("token.valid.email").getValue().toString())))
+            * Long.parseLong(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_EMAIL).getValue().toString())))
           return HttpStatus.OK;
 
         else

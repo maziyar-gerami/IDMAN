@@ -192,7 +192,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
           if (bucket.tryConsume(1)) {
-    String result = new ServiceIcon(storageService, baseurl).upload(file);
+    String result = new ServiceIcon(storageService, baseurl,mongoTemplate).upload(file);
     HttpStatus httpStatus = (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(
         result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
@@ -222,7 +222,7 @@ public class ServicesController {
   public @ResponseBody Object getMetaDataFile(@PathVariable("file") String file,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws IOException {
 
-    String metadataPath = new Settings().retrieve("metadata.file.path").getValue();
+    String metadataPath = new Settings(mongoTemplate).retrieve(Variables.METADATA_PATH).getValue();
 
     FileInputStream in = new FileInputStream(metadataPath + file);
 
@@ -239,7 +239,7 @@ public class ServicesController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
           throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(new ServiceIcon(storageService, baseurl).show(response, file),
+        new Response(new ServiceIcon(storageService, baseurl,mongoTemplate).show(response, file),
         Variables.MODEL_SERVICE, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }

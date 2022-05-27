@@ -53,6 +53,6 @@ public class UpdateService implements ServiceRepo.Update {
 
   @Override
   public String uploadIcon(MultipartFile file) {
-    return new ServiceIcon(filesStorageService, BASE_URL).upload(file);
+    return new ServiceIcon(filesStorageService, BASE_URL,mongoTemplate).upload(file);
   }
 }
