@@ -90,12 +90,12 @@ public class GroupsController {
   public ResponseEntity<Response> bindLdapGroup(HttpServletRequest request,
       @RequestParam(value = "lang", defaultValue = "fa") String lang, @RequestBody Group group)
       throws NoSuchFieldException, IllegalAccessException {
-        if (bucket.tryConsume(1)){
+        if (bucket.tryConsume(1))
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
         createGroup.create(request.getUserPrincipal().getName(), group).value(), lang),
         HttpStatus.OK);
-      }
-      return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.o)
+        return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.OK);
+        
   }
 
   @GetMapping
@@ -149,8 +149,10 @@ public class GroupsController {
 
   @GetMapping("/export")
   public ModelAndView downloadExcel() {
+    if (bucket.tryConsume(1))
     return new ModelAndView(new GroupsExcelView(
           retrieveGroup, mongoTemplate), "listGroups", Object.class);
+          return null;
   }
 
   @PostMapping("/import")
@@ -159,6 +161,7 @@ public class GroupsController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException, java.io.IOException,
       ParseException {
+       if( bucket.tryConsume(1)){
 
     org.json.simple.JSONObject jsonObject = new ImportGroups(createGroup)
         .importFileGroups(request.getUserPrincipal().getName(), file, true);
@@ -180,4 +183,6 @@ public class GroupsController {
           HttpStatus.OK);
     }
   }
+  return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.OK);
+}
 }

@@ -1,5 +1,7 @@
 package parsso.idman.controllers.users.oprations;
 
+import java.time.Duration;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.excelView.UsersExcelView;
@@ -24,6 +30,7 @@ import parsso.idman.repos.UserRepo;
 @RestController
 public class RetrieveController extends UsersOps {
   SystemRefresh systemRefresh;
+  private Bucket bucket;
 
   @Autowired
   public RetrieveController(
@@ -31,6 +38,10 @@ public class RetrieveController extends UsersOps {
       UserRepo.UsersOp.Retrieve usersOpRetrieve, SystemRefresh systemRefresh) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.systemRefresh = systemRefresh;
+    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    this.bucket = Bucket4j.builder()
+            .addLimit(limit)
+            .build();
   }
 
   @GetMapping("/api/user")
@@ -130,6 +141,9 @@ public class RetrieveController extends UsersOps {
 
   @GetMapping("/api/users/export")
   public ModelAndView downloadExcel() {
+    if(bucket.tryConsume(1))
     return new ModelAndView(new UsersExcelView(usersOpRetrieve), "listUsers", Object.class);
+    return null;
+    
   }
 }

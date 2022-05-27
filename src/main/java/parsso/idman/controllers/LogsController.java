@@ -1,5 +1,6 @@
 package parsso.idman.controllers;
 
+import java.time.Duration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.excelView.AuditsExcelView;
 import parsso.idman.helpers.excelView.EventsExcelView;
@@ -32,6 +38,7 @@ public class LogsController {
   final AuditsExcelView auditsExcelView;
   final LogsExcelView logsExcelView;
   final MongoTemplate mongoTemplate;
+  final Bucket bucket;
 
   @Autowired
   public LogsController(
@@ -46,6 +53,10 @@ public class LogsController {
     this.auditsExcelView = auditsExcelView;
     this.logsExcelView = logsExcelView;
     this.mongoTemplate = mongoTemplate;
+    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    this.bucket = Bucket4j.builder()
+            .addLimit(limit)
+            .build();
   }
 
   @GetMapping("/audits/users")
@@ -187,6 +198,7 @@ public class LogsController {
   @GetMapping("/export")
   public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
     // return a view which will be resolved by an excel view resolver
+    if (bucket.tryConsume(1)){
     Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
     lt.start();
 
@@ -201,4 +213,6 @@ public class LogsController {
         return null;
     }
   }
+  return null;
+}
 }
