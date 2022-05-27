@@ -33,6 +33,9 @@ public class StringResult {
   public static String PASSWORD_404_FA = "کاربر مورد نظر یافت نشد";
   public static String PASSWORD_404_EN = "User not found";
 
+  public static String COMMON_429_FA = "تعداد درخواست ها بیش از حد مجاز است.";
+  public static String COMMON_429_EN = "Too many requests";
+
   
   public static String SERVICE_204_FA = "سرویس حذف شد";
   public static String SERVICE_204_EN = "The service delete was successful";

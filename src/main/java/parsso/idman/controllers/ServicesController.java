@@ -2,6 +2,7 @@ package parsso.idman.controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +28,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -53,6 +59,7 @@ public class ServicesController {
   final DeleteService deleteService;
   final UpdateService updateService;
   final RetrieveService retrieveService;
+  private final Bucket bucket;
 
   @Autowired
   public ServicesController(UserRepo.UsersOp.Retrieve userOpRetrieve,
@@ -67,6 +74,10 @@ public class ServicesController {
     this.deleteService = deleteService;
     this.updateService = updateService;
     this.retrieveService = retrieveService;
+    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    this.bucket = Bucket4j.builder()
+            .addLimit(limit)
+            .build();
   }
 
   @Value("${base.url}")
@@ -122,11 +133,15 @@ public class ServicesController {
       @PathVariable("system") String system, @RequestParam(
         value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, ParseException, NoSuchFieldException, IllegalAccessException {
-    long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
+    
+    if (bucket.tryConsume(1)) {
+      long id = createService.createService(request.getUserPrincipal().getName(), jsonObject, system);
     HttpStatus httpStatus = (id == 0 ? HttpStatus.FORBIDDEN : HttpStatus.CREATED);
     return new ResponseEntity<>(new Response(
           id, Variables.MODEL_SERVICE, httpStatus.value(), lang),
         HttpStatus.OK);
+    }
+    return new ResponseEntity<>(new Response(null,Variables.MODEL_SERVICE, HttpStatus.TOO_MANY_REQUESTS.value(), lang),HttpStatus.OK);
   }
 
   @PutMapping("/api/service/{id}/{system}")
@@ -163,22 +178,31 @@ public class ServicesController {
   public ResponseEntity<Response> uploadMetadata(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+          if (bucket.tryConsume(1)) {
     String result = new Metadata(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(
       new Response(result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
+          }
+          return new ResponseEntity<>(new Response(null,Variables.MODEL_SERVICE,HttpStatus.TOO_MANY_REQUESTS.value(),lang), HttpStatus.OK);
   }
 
   @PostMapping("/api/services/icon")
   public ResponseEntity<Response> uploadIcon(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+          if (bucket.tryConsume(1)) {
     String result = new ServiceIcon(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
     return new ResponseEntity<>(new Response(
         result, Variables.MODEL_SERVICE, httpStatus.value(), lang), HttpStatus.OK);
+        
 
   }
+  return new ResponseEntity<>(new Response(
+        null, Variables.MODEL_SERVICE, HttpStatus.TOO_MANY_REQUESTS.value(), lang), HttpStatus.OK);
+}
+  
 
   @GetMapping("/api/services/position/{serviceId}")
   public ResponseEntity<Response> increasePosition(@PathVariable("serviceId") long id,

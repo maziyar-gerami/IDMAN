@@ -1,6 +1,12 @@
 package parsso.idman.controllers;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import io.jsonwebtoken.io.IOException;
+
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +51,7 @@ public class GroupsController {
   private final GroupRepo.Delete deleteGroup;
   private final GroupRepo.Create createGroup;
   private final MongoTemplate mongoTemplate;
+  private Bucket bucket;
 
   @Autowired
   public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp,
@@ -57,6 +64,10 @@ public class GroupsController {
     this.deleteGroup = deleteGroup;
     this.createGroup = createGroup;
     this.mongoTemplate = mongoTemplate;
+    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    this.bucket = Bucket4j.builder()
+            .addLimit(limit)
+            .build();
   }
 
   @GetMapping("/user")
@@ -79,9 +90,12 @@ public class GroupsController {
   public ResponseEntity<Response> bindLdapGroup(HttpServletRequest request,
       @RequestParam(value = "lang", defaultValue = "fa") String lang, @RequestBody Group group)
       throws NoSuchFieldException, IllegalAccessException {
+        if (bucket.tryConsume(1)){
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
         createGroup.create(request.getUserPrincipal().getName(), group).value(), lang),
         HttpStatus.OK);
+      }
+      return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.o)
   }
 
   @GetMapping

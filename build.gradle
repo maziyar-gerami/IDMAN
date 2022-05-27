@@ -159,6 +159,10 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.bitbucket.b_c/jose4j
 	implementation group: 'org.bitbucket.b_c', name: 'jose4j', version: '0.7.9'
 
+	// https://mvnrepository.com/artifact/com.github.vladimir-bukhtoyarov/bucket4j-core
+implementation group: 'com.github.vladimir-bukhtoyarov', name: 'bucket4j-core', version: '7.5.0'
+
+
 
 
 	configurations.all {
