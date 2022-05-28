@@ -41,7 +41,7 @@ public class CreateController extends UsersOps {
       UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Create create) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.userOpCreate = create;
-    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
         .addLimit(limit)
         .build();

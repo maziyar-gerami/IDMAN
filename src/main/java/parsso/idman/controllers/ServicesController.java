@@ -75,7 +75,7 @@ public class ServicesController {
     this.deleteService = deleteService;
     this.updateService = updateService;
     this.retrieveService = retrieveService;
-    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
             .addLimit(limit)
             .build();

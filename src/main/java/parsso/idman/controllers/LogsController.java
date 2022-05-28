@@ -53,7 +53,7 @@ public class LogsController {
     this.auditsExcelView = auditsExcelView;
     this.logsExcelView = logsExcelView;
     this.mongoTemplate = mongoTemplate;
-    Bandwidth limit = Bandwidth.classic(60, Refill.greedy(60, Duration.ofMinutes(1)));
+    Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
             .addLimit(limit)
             .build();
