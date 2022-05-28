@@ -33,6 +33,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
+import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -178,6 +179,9 @@ public class ServicesController {
   public ResponseEntity<Response> uploadMetadata(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_METADATA))
+          return new ResponseEntity(new Response(null,Variables.MODEL_SERVICE,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+
           if (bucket.tryConsume(1)) {
     String result = new Metadata(storageService, baseurl).upload(file);
     HttpStatus httpStatus = (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;
@@ -191,6 +195,8 @@ public class ServicesController {
   public ResponseEntity<Response> uploadIcon(@RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue 
         = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException {
+          if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_PHOTO))
+            return new ResponseEntity(new Response(null,Variables.MODEL_SERVICE,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
           if (bucket.tryConsume(1)) {
     String result = new ServiceIcon(storageService, baseurl,mongoTemplate).upload(file);
     HttpStatus httpStatus = (result != null) ? HttpStatus.OK : HttpStatus.BAD_REQUEST;

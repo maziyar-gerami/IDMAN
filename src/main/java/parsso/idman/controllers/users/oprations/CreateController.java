@@ -20,6 +20,7 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
+import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
@@ -73,6 +74,9 @@ public class CreateController extends UsersOps {
       HttpServletRequest request, @RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException {
+
+        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_IMPORT))
+          return new ResponseEntity(new Response(null,Variables.MODEL_USER,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
 
     if (bucket.tryConsume(1)) {
 

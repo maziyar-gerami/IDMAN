@@ -1,5 +1,9 @@
 package parsso.idman.helpers;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import parsso.idman.models.users.User;
 
 public class Variables {
@@ -157,5 +161,9 @@ public class Variables {
   public static final String PWD_LOCKOUT = "PWDLockout";
   public static final String ROLE_CORRECTION = "RoleFix";
   public static final String SIMPLESERVICE_FIX = "SimpleServiceFix";
+  public static final List<String> EXT_METADATA = Arrays.asList("xml");
+  public static final List<String> EXT_PHOTO = Arrays.asList("png","jpg","jprg");
+  public static final List<String> EXT_USER_GROUP_UPDATE = Arrays.asList("xlsx","xls","csv");
+  public static final List<String> EXT_USER_IMPORT =  Arrays.asList("xlsx");
 
 }

@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.excelView.GroupsExcelView;
 import parsso.idman.helpers.group.ImportGroups;
@@ -161,6 +163,9 @@ public class GroupsController {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException, java.io.IOException,
       ParseException {
+        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_IMPORT))
+          return new ResponseEntity(new Response(null,Variables.MODEL_GROUP,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+
        if( bucket.tryConsume(1)){
 
     org.json.simple.JSONObject jsonObject = new ImportGroups(createGroup)

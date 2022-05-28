@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.Operations;
@@ -69,6 +70,8 @@ public class UpdateController extends UsersOps {
       @PathVariable("ou") String ou,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException {
+        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_GROUP_UPDATE))
+          return new ResponseEntity(new Response(null,Variables.MODEL_USER,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
     List<String> notExist = update.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
     if (notExist == null) {
       return new ResponseEntity<>(new Response(

@@ -21,6 +21,9 @@ public class StringResult {
   public static String COMMON_404_EN = "Not found";
   public static String COMMON_404_FA = "یافت نشد";
 
+  public static String COMMON_415_EN = "Media file is not supported.";
+  public static String COMMON_415_FA = "فایل ورودی نامعتبر است";
+
   public static String USER_406_FA = "قابلیت تغییر گذرواژه وجود ندارد.";
   public static String USER_406_EN = "Changing password is not possible";
 
