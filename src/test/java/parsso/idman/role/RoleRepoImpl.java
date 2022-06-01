@@ -61,6 +61,16 @@ public class RoleRepoImpl {
     for (String user : names) {
       assertEquals("SUPERUSER", userRepo.retrieveUserMain(user).getRole(), "Role not changed: Step 2");
     }
+    names.add("jsdvns");
+    jsonObject.put("names", names);
+    assertEquals(HttpStatus.PARTIAL_CONTENT, rolesRepo.updateRole("tester", "SUPERUSER", jsonObject),
+        "User role Update failed for partial content: Step 3");
+names = new ArrayList<>();
+        names.add("jsdvns");
+        names.add("jsd1vns");
+    jsonObject.put("names", names);
+    assertEquals(HttpStatus.BAD_REQUEST, rolesRepo.updateRole("tester", "SUPERUSER", jsonObject),
+        "User role Update failed for bad reques: Step 4");
   }
 
 }

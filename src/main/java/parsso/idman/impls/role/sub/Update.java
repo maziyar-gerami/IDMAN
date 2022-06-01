@@ -2,6 +2,9 @@ package parsso.idman.impls.role.sub;
 
 import java.util.List;
 import java.util.Objects;
+
+import com.google.gson.JsonObject;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -29,6 +32,10 @@ public class Update {
       try {
         UsersExtraInfo usersExtraInfo = mongoTemplate.findOne(new Query(Criteria.where("_id").is(userId)),
             UsersExtraInfo.class, Variables.col_usersExtraInfo);
+        if (usersExtraInfo == null) {
+          i++;
+          continue;
+        }
         String oldRole = Objects.requireNonNull(usersExtraInfo).getRole();
         usersExtraInfo.setRole(role);
         mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
@@ -41,15 +48,24 @@ public class Update {
         e.printStackTrace();
         uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change",
             Variables.RESULT_FAILED, "due to writing to MongoDB"));
+
+        if (i > 0) {
+          uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change",
+              Variables.RESULT_SUCCESS, "partially done"));
+
+        }
+
       }
 
-      if (i > 0) {
-        uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change",
-            Variables.RESULT_SUCCESS, "partially done"));
-        return HttpStatus.PARTIAL_CONTENT;
 
-      }
     }
+    List<String> temp = (List<String>) users.get("names");
+    
+    if (i>0 && i== temp.size())
+      return HttpStatus.BAD_REQUEST;
+    if (i > 0)
+      return HttpStatus.PARTIAL_CONTENT;
+
     return HttpStatus.OK;
 
   }
