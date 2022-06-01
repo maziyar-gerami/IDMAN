@@ -1,4 +1,4 @@
-package parsso.idman.impls.role.subclass;
+package parsso.idman.impls.role.sub;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,8 +40,7 @@ public class Update {
         i++;
         e.printStackTrace();
         uniformLogger.warn(doerID, new ReportMessage(Variables.MODEL_ROLE, userId, "", "change",
-            Variables.RESULT_FAILED, "due to writing to ldap"));
-
+            Variables.RESULT_FAILED, "due to writing to MongoDB"));
       }
 
       if (i > 0) {

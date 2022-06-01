@@ -1,4 +1,4 @@
-package parsso.idman.impls.role.subclass;
+package parsso.idman.impls.role.sub;
 
 import java.util.List;
 
@@ -19,7 +19,6 @@ public class Retrieve {
   public List<User.UserRole> retrieve() {
     try {
       return mongoTemplate.find(new Query(), UserRole.class, Variables.col_usersExtraInfo);
-
     } catch (Exception e) {
       return null;
     }

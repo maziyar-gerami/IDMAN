@@ -20,6 +20,22 @@ import java.util.List;
 @Getter
 @Setter
 public class User implements UserDetails, Comparable<User> {
+  public User(String name, String firstName, String lastName, String displayName, 
+    String mobile, String mail, String userPassword, String role, String status){
+      this._id =name;
+      this.firstName =firstName;
+      this.lastName = lastName;
+      this.displayName = displayName;
+      this.mobile = mobile;
+      this.mail = mail;
+      this.userPassword = userPassword;
+      this.role = role;
+      this.status = status;
+
+  }
+
+  public User(){
+  }
   private static final String PREFIX = "ROLE_";
   @JsonAlias("userId")
   Object _id;

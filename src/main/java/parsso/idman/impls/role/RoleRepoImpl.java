@@ -6,9 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
-import parsso.idman.helpers.Variables;
-import parsso.idman.impls.role.subclass.Retrieve;
-import parsso.idman.impls.role.subclass.Update;
+import parsso.idman.impls.role.sub.Retrieve;
+import parsso.idman.impls.role.sub.Update;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.RolesRepo;
 
@@ -16,7 +15,7 @@ import java.util.List;
 
 @Service
 public class RoleRepoImpl implements RolesRepo {
-  final String collection = Variables.col_usersExtraInfo;
+  
   final UniformLogger uniformLogger;
   final MongoTemplate mongoTemplate;
 

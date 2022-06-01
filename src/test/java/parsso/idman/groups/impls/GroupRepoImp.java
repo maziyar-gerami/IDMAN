@@ -2,12 +2,9 @@ package parsso.idman.groups.impls;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
