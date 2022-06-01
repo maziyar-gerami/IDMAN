@@ -37,10 +37,10 @@ import java.util.Objects;
 @Service
 @SuppressWarnings("unchecked")
 public class ImportGroups {
-  private GroupRepo.Create groupCreateRepo;
+  private GroupRepo groupRepo;
 
-  public ImportGroups(GroupRepo.Create groupCreateRepo) {
-    this.groupCreateRepo = groupCreateRepo;
+  public ImportGroups(GroupRepo groupRepo) {
+    this.groupRepo = groupRepo;
   }
 
   public JSONObject excelSheetAnalyze(String doerId, Sheet sheet, boolean hasHeader) throws ParseException {
@@ -89,7 +89,7 @@ public class ImportGroups {
         HttpStatus httpStatus = null;
         ;
         try {
-          httpStatus = groupCreateRepo.create(doerId, group);
+          httpStatus = groupRepo.create(doerId, group);
         } catch (Exception e) {
           nUnSuccessful++;
           continue;
@@ -197,7 +197,7 @@ public class ImportGroups {
           continue;
         }
         try {
-          groupCreateRepo.create(doerId, group);
+          groupRepo.create(doerId, group);
         } catch (Exception e) {
           nUnSuccessful++;
           continue;

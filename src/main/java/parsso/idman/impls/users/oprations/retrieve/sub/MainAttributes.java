@@ -17,17 +17,14 @@ import java.util.List;
 public class MainAttributes {
   final MongoTemplate mongoTemplate;
   LdapTemplate ldapTemplate;
-  final String BASE_DN;
 
-  public MainAttributes(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, String base_dn) {
+  public MainAttributes(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate) {
     this.mongoTemplate = mongoTemplate;
     this.ldapTemplate = ldapTemplate;
-    BASE_DN = base_dn;
   }
 
-  public MainAttributes(MongoTemplate mongoTemplate, String base_dn) {
+  public MainAttributes(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
-    BASE_DN = base_dn;
   }
 
   public ListUsers get(int page, int number, String sort, String role, String userId, String displayName) {

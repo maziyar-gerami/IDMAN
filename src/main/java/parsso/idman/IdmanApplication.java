@@ -1,5 +1,9 @@
 package parsso.idman;
 
+import java.util.prefs.Preferences;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -10,8 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.cas.ServiceProperties;
@@ -20,6 +26,8 @@ import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import parsso.idman.configs.CasUserDetailService;
+import parsso.idman.configs.Prefs;
+import parsso.idman.helpers.Variables;
 import parsso.idman.repos.FilesStorageService;
 
 @SuppressWarnings("unchecked")
@@ -38,11 +46,12 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Value("${cas.url.validator}")
   private String ticketValidator;
   @Value("${base.url}")
-  private String baseurl;
+  private String BASE_URL;
+  @Value("${spring.ldap.base.dn}")
+  private String BASE_DN;
 
   public IdmanApplication() {
   }
-
 
   public static void main(String[] args) {
 
@@ -51,7 +60,15 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
     } catch (Exception e) {
       e.printStackTrace();
     }
+
     logger.warn("Started!");
+
+  }
+
+  @EventListener(ApplicationReadyEvent.class)
+  public void doSomethingAfterStartup() {
+    new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
+    new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
   }
 
   @Override
@@ -73,7 +90,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Bean
   public ServiceProperties serviceProperties() {
     ServiceProperties serviceProperties = new ServiceProperties();
-    serviceProperties.setService(baseurl + "/login/cas");
+    serviceProperties.setService(BASE_URL + "/login/cas");
     serviceProperties.setSendRenew(false);
     return serviceProperties;
   }

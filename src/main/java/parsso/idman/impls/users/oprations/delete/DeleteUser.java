@@ -2,6 +2,8 @@ package parsso.idman.impls.users.oprations.delete;
 
 import lombok.val;
 import net.minidev.json.JSONObject;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
-import parsso.idman.impls.users.oprations.update.helper.Parameters;
+import parsso.idman.impls.Parameters;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
@@ -23,6 +25,8 @@ import java.util.List;
 @Service
 @SuppressWarnings({ "unchecked" })
 public class DeleteUser extends Parameters implements UserRepo.UsersOp.Delete {
+  @Value("${spring.ldap.base.dn}")
+  protected static String BASE_DN;
   public DeleteUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UserRepo.UsersOp.Retrieve userOpRetrieve) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);

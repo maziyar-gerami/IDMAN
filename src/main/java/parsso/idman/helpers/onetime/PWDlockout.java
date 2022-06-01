@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
@@ -25,15 +27,13 @@ import java.util.List;
 public class PWDlockout {
   final MongoTemplate mongoTemplate;
   final LdapTemplate ldapTemplate;
-  final String BASE_DN;
   final UniformLogger uniformLogger;
 
   public PWDlockout(LdapTemplate ldapTemplate,
-      MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN) {
+      MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
-    this.BASE_DN = BASE_DN;
   }
 
   public void run() {
@@ -57,12 +57,12 @@ public class PWDlockout {
 
     EqualsFilter equalsFilter = new EqualsFilter("objectclass", "person");
 
-    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(),
+    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), equalsFilter.encode(),
         searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
     int c = 0;
     char[] animationChars = new char[] { '|', '/', '-', '\\' };
-      for (User user : new FullAttributes(ldapTemplate, mongoTemplate, BASE_DN).get()) {
+      for (User user : new FullAttributes(ldapTemplate, mongoTemplate).get()) {
         ModificationItem[] modificationItems = new ModificationItem[1];
 
         modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
@@ -70,7 +70,7 @@ public class PWDlockout {
       
 
         try {
-          ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+          ldapTemplate.modifyAttributes(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(user.get_id().toString()),
               modificationItems);
       } catch (Exception e) {
         uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.get_id().toString(),

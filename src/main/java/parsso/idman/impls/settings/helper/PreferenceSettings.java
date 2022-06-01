@@ -22,7 +22,6 @@ public class PreferenceSettings {
       System.out.println(setting.get_id());
       systemPreferences.put(setting.get_id(), setting.getValue());
     }
-    System.out.println("Settings set!");
   }
 
 }

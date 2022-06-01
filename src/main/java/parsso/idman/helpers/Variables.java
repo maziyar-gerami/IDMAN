@@ -165,5 +165,7 @@ public class Variables {
   public static final List<String> EXT_PHOTO = Arrays.asList("png","jpg","jprg");
   public static final List<String> EXT_USER_GROUP_UPDATE = Arrays.asList("xlsx","xls","csv");
   public static final List<String> EXT_USER_IMPORT =  Arrays.asList("xlsx");
+  public static final String PREFS_BASE_URL = "BASE_URL";
+  public static final String PREFS_BASE_DN = "BASE_DN";
 
 }

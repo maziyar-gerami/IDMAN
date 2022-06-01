@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -24,12 +26,10 @@ import java.util.Objects;
 public class FullAttributes {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
-  final String BASE_DN;
 
-  public FullAttributes(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, String BASE_DN) {
+  public FullAttributes(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
-    this.BASE_DN = BASE_DN;
   }
 
   public List<User> get() {
@@ -40,7 +40,7 @@ public class FullAttributes {
     final AndFilter andFilter = new AndFilter();
     andFilter.and(new EqualsFilter("objectclass", "person"));
 
-    List<User> people = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
+    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), andFilter.toString(), searchControls,
         new UserAttributeMapper(mongoTemplate));
     List<User> relatedPeople = new LinkedList<>();
 
@@ -65,7 +65,7 @@ public class FullAttributes {
 
     User user = new User();
     UsersExtraInfo usersExtraInfo;
-    List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("uid", userId).encode(),
+    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), new EqualsFilter("uid", userId).encode(),
         searchControls, new UserAttributeMapper(mongoTemplate));
 
     if (people.size() != 0) {

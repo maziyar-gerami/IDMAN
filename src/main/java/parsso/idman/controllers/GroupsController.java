@@ -32,10 +32,6 @@ import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.excelView.GroupsExcelView;
 import parsso.idman.helpers.group.ImportGroups;
-import parsso.idman.impls.groups.CreateGroup;
-import parsso.idman.impls.groups.DeleteGroup;
-import parsso.idman.impls.groups.RetrieveGroup;
-import parsso.idman.impls.groups.UpdateGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
@@ -48,23 +44,15 @@ import parsso.idman.repos.UserRepo;
 public class GroupsController {
   private final UserRepo.UsersOp.Retrieve retrieveUsers;
   private final UserRepo.PasswordOp passwordOp;
-  private final RetrieveGroup retrieveGroup;
-  private final GroupRepo.Update updateGroup;
-  private final GroupRepo.Delete deleteGroup;
-  private final GroupRepo.Create createGroup;
+  private final GroupRepo groupRepo;
   private final MongoTemplate mongoTemplate;
   private Bucket bucket;
 
   @Autowired
-  public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp,
-      RetrieveGroup retrieveGroup, UpdateGroup updateGroup, DeleteGroup deleteGroup,
-      CreateGroup createGroup, MongoTemplate mongoTemplate) {
+  public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp, GroupRepo groupRepo, MongoTemplate mongoTemplate) {
     this.retrieveUsers = retrieveUsers;
     this.passwordOp = passwordOp;
-    this.retrieveGroup = retrieveGroup;
-    this.updateGroup = updateGroup;
-    this.deleteGroup = deleteGroup;
-    this.createGroup = createGroup;
+    this.groupRepo = groupRepo;
     this.mongoTemplate = mongoTemplate;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
@@ -82,7 +70,7 @@ public class GroupsController {
           HttpStatus.FORBIDDEN.value(), lang), HttpStatus.OK);
     }
 
-    List<Group> groups = retrieveGroup.retrieve(user);
+    List<Group> groups = groupRepo.retrieve(user);
     groups.removeAll(Collections.singleton(null));
     return new ResponseEntity<>(new Response(groups, Variables.MODEL_GROUP,
         HttpStatus.OK.value(), lang), HttpStatus.OK);
@@ -94,7 +82,7 @@ public class GroupsController {
       throws NoSuchFieldException, IllegalAccessException {
         if (bucket.tryConsume(1))
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
-        createGroup.create(request.getUserPrincipal().getName(), group).value(), lang),
+        groupRepo.create(request.getUserPrincipal().getName(), group).value(), lang),
         HttpStatus.OK);
         return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.OK);
         
@@ -106,11 +94,11 @@ public class GroupsController {
       throws NoSuchFieldException, IllegalAccessException {
     if (!id.equals("")) {
       return new ResponseEntity<>(
-          new Response(retrieveGroup.retrieve(false, id), Variables.MODEL_GROUP,
+          new Response(groupRepo.retrieve(false, id), Variables.MODEL_GROUP,
               HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     } else {
-      List<Group> groups = retrieveGroup.retrieve();
+      List<Group> groups = groupRepo.retrieve();
       groups.removeIf(t -> t.getName() == null);
       return new ResponseEntity<>(new Response(groups, Variables.MODEL_GROUP,
           HttpStatus.OK.value(), lang), HttpStatus.OK);
@@ -123,7 +111,7 @@ public class GroupsController {
       @RequestParam(value = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
-        deleteGroup.remove(request.getUserPrincipal().getName(), jsonObject).value(), lang),
+        groupRepo.remove(request.getUserPrincipal().getName(), jsonObject).value(), lang),
         HttpStatus.OK);
   }
 
@@ -132,7 +120,7 @@ public class GroupsController {
       @RequestBody Group ou, @RequestParam(value = "lang", defaultValue = "fa") String lang,@PathVariable(value = "ouID") String ouID)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
-        updateGroup.update(request.getUserPrincipal().getName(), ouID, ou).value(), lang),
+        groupRepo.update(request.getUserPrincipal().getName(), ouID, ou).value(), lang),
         HttpStatus.OK);
   }
 
@@ -153,7 +141,7 @@ public class GroupsController {
   public ModelAndView downloadExcel() {
     if (bucket.tryConsume(1))
     return new ModelAndView(new GroupsExcelView(
-          retrieveGroup, mongoTemplate), "listGroups", Object.class);
+      groupRepo, mongoTemplate), "listGroups", Object.class);
           return null;
   }
 
@@ -168,7 +156,7 @@ public class GroupsController {
 
        if( bucket.tryConsume(1)){
 
-    org.json.simple.JSONObject jsonObject = new ImportGroups(createGroup)
+    org.json.simple.JSONObject jsonObject = new ImportGroups(groupRepo)
         .importFileGroups(request.getUserPrincipal().getName(), file, true);
     if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) == 0) {
       return new ResponseEntity<>(

@@ -1,26 +1,23 @@
 package parsso.idman.helpers.group;
 
-import org.springframework.stereotype.Service;
-
-import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.models.groups.Group;
+import parsso.idman.repos.GroupRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Service
 public class GroupsChecks {
-  private final RetrieveGroup retrieveGroup;
+  private final GroupRepo groupRepo;
 
-  public GroupsChecks(RetrieveGroup retrieveGroup) {
-    this.retrieveGroup = retrieveGroup;
+  public GroupsChecks(GroupRepo groupRepo) {
+    this.groupRepo = groupRepo;
   }
 
   public boolean checkGroup(List<String> groups) {
     if (groups.size() == 1 && groups.get(0).equals(""))
       return true;
 
-    List<Group> realGroups = retrieveGroup.retrieve();
+    List<Group> realGroups = groupRepo.retrieve();
     List<String> realStrings = new LinkedList<>();
     for (Group group : realGroups)
       realStrings.add(group.getId());
@@ -33,7 +30,7 @@ public class GroupsChecks {
   }
 
   public List<String> invalidGroups(List<String> groups) {
-    List<Group> realGroups = retrieveGroup.retrieve();
+    List<Group> realGroups = groupRepo.retrieve();
     List<String> realStrings = new LinkedList<>();
     List<String> invalids = new LinkedList<>();
     for (Group group : realGroups)

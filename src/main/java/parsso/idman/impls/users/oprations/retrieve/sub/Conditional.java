@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 
+import parsso.idman.configs.Prefs;
+import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.impls.logs.transcripts.ServicesOfObject;
 import parsso.idman.models.users.User;
@@ -24,7 +26,6 @@ public class Conditional {
   ServiceRepo.Retrieve serviceRepo;
   MongoTemplate mongoTemplate;
   LogsRepo.TranscriptRepo transcriptRepo;
-  String BASE_DN;
 
   public Conditional(UserRepo.UsersOp.Retrieve userOpRetrieve,
       LogsRepo.TranscriptRepo transcriptRepo, MongoTemplate mongoTemplate, ServiceRepo.Retrieve serviceRepo) {
@@ -44,10 +45,9 @@ public class Conditional {
   public Conditional() {
   }
 
-  public Conditional(LdapTemplate ldapTemplate, String BASE_DN) {
+  public Conditional(LdapTemplate ldapTemplate) {
 
     this.ldapTemplate = ldapTemplate;
-    this.BASE_DN = BASE_DN;
   }
 
   public User licensed(String userId) {
@@ -66,7 +66,7 @@ public class Conditional {
     searchControls.setReturningAttributes(new String[] { "*", "+" });
     searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-    return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("ou", groupId).encode(), searchControls,
+    return ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), new EqualsFilter("ou", groupId).encode(), searchControls,
         new SimpleUserAttributeMapper());
 
   }

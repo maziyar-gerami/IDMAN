@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
@@ -15,6 +16,7 @@ import parsso.idman.helpers.onetime.RunOneTime;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.ExcelAnalyzer;
 import parsso.idman.helpers.user.UserAttributeMapper;
+import parsso.idman.impls.Parameters;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.users.User;
@@ -25,6 +27,9 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
+
+  @Value("${spring.ldap.base.dn}")
+  protected static String BASE_DN;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,

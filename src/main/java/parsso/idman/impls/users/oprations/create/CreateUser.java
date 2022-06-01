@@ -2,9 +2,12 @@ package parsso.idman.impls.users.oprations.create;
 
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -12,45 +15,43 @@ import parsso.idman.helpers.group.GroupsChecks;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.Operations;
-import parsso.idman.impls.groups.RetrieveGroup;
+import parsso.idman.impls.Parameters;
 import parsso.idman.impls.users.oprations.create.helper.UsersCompare;
-import parsso.idman.impls.users.oprations.update.helper.Parameters;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 @Service
 public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
   private final BuildAttributes buildAttributes;
   private final Operations operations;
-  private final RetrieveGroup retrieveGroup;
+  private final GroupRepo groupRepo;
 
   @Autowired
   public CreateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UserRepo.UsersOp.Retrieve userOpRetrieve,
-      BuildAttributes buildAttributes, Operations operations, RetrieveGroup retrieveGroup) {
+      BuildAttributes buildAttributes, Operations operations, GroupRepo groupRepo) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
     this.operations = operations;
-    this.retrieveGroup = retrieveGroup;
+    this.groupRepo = groupRepo;
   }
 
   @Override
   public JSONObject create(String doerID, User p) {
     p.setUserId(p.get_id().toString().toLowerCase());
 
-    if (p.get_id() == null || p.get_id().toString().equals("")) {
+    if (p.get_id() == null || p.get_id().toString().equals("") ) {
 
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("invalidGroups", p.get_id().toString());
       return jsonObject;
-
     }
     User user;
     try {
       user = userOpRetrieve.retrieveUsers(p.get_id().toString());
-
     } catch (Exception e) {
       user = null;
     }
@@ -78,10 +79,10 @@ public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
           return jsonObject;
         }
 
-        if (new GroupsChecks(retrieveGroup).checkGroup(p.getMemberOf())) {
+        if (new GroupsChecks(groupRepo).checkGroup(p.getMemberOf())) {
 
           // create user in ldap
-          ldapTemplate.bind(new BuildDnUser(BASE_DN).buildDn(p.get_id().toString()), null,
+          ldapTemplate.bind(new BuildDnUser(Prefs.get("BASE_DN")).buildDn(p.get_id().toString()), null,
               buildAttributes.build(p));
 
           if (p.getStatus() != null) {
@@ -104,7 +105,7 @@ public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
                   Variables.RESULT_FAILED, "group not exist"));
           JSONObject jsonObject = new JSONObject();
           jsonObject.put("userId", p.get_id().toString());
-          jsonObject.put("invalidGroups", new GroupsChecks(retrieveGroup).invalidGroups(p.getMemberOf()));
+          jsonObject.put("invalidGroups", new GroupsChecks(groupRepo).invalidGroups(p.getMemberOf()));
           return jsonObject;
         }
       } else {

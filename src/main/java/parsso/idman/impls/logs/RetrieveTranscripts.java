@@ -6,11 +6,11 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.LicensedAndUnlicensed;
-import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.models.license.License;
 import parsso.idman.models.services.Service;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.UsersExtraInfo;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
 
@@ -24,13 +24,13 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
 
   final ServiceRepo.Retrieve serviceRepo;
   final MongoTemplate mongoTemplate;
+  final GroupRepo groupRepo;
 
   @Autowired
-  public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo,
-      MongoTemplate mongoTemplate,
-      RetrieveGroup retrieveGroup) {
+  public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo,MongoTemplate mongoTemplate, GroupRepo groupRepo) {
     this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
+    this.groupRepo = groupRepo;
 
   }
 

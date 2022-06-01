@@ -20,9 +20,9 @@ import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.Operations;
-import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
+import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 
 
@@ -32,16 +32,16 @@ public class UpdateController extends UsersOps {
 
   private final UserRepo.UsersOp.Update update;
   private final Operations operations;
-  RetrieveGroup retrieveGroup;
+  private final GroupRepo groupRepo;
 
   @Autowired
   public UpdateController(Operations operations, Token tokenClass, LdapTemplate ldapTemplate,
       MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOpRetrieve,
-      UserRepo.UsersOp.Update updateOp, RetrieveGroup retrieveGroup) {
+      UserRepo.UsersOp.Update updateOp, GroupRepo groupRepo) {
     super(tokenClass, ldapTemplate, mongoTemplate, userOpRetrieve);
     this.update = updateOp;
     this.operations = operations;
-    this.retrieveGroup = retrieveGroup;
+    this.groupRepo = groupRepo;
   }
 
   @PutMapping("/api/user")
@@ -104,7 +104,7 @@ public class UpdateController extends UsersOps {
       @PathVariable(name = "groupId") String groupId,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
-        if(retrieveGroup.retrieve(true, groupId)==null)
+        if(groupRepo.retrieve(true, groupId)==null)
         return new ResponseEntity<>( new Response(null, Variables.MODEL_GROUP, HttpStatus.NOT_FOUND.value(), lang),
         HttpStatus.OK);
     JSONObject jsonObject = update.groupOfUsers(request.getUserPrincipal().getName(), groupId, gu);

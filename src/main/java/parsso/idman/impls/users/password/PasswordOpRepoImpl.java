@@ -33,7 +33,7 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
   final UserRepo.UsersOp.Retrieve usersOpRetrieve;
   final LdapTemplate ldapTemplate;
   final Token tokenClass;
-  final GroupRepo.Retrieve groupRepoRetrieve;
+  final GroupRepo groupRepo;
   final ExpirePassword expirePassword;
   final UserRepo.Supplementary supplementary;
 
@@ -47,7 +47,7 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
   public PasswordOpRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UserRepo.UsersOp.Retrieve usersOpRetrieve,
       LdapTemplate ldapTemplate, Token tokenClass,
-      ExpirePassword expirePassword, UserRepo.Supplementary supplementary, GroupRepo.Retrieve groupRepo) {
+      ExpirePassword expirePassword, UserRepo.Supplementary supplementary, GroupRepo groupRepo) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = usersOpRetrieve;
@@ -55,7 +55,7 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
     this.tokenClass = tokenClass;
     this.expirePassword = expirePassword;
     this.supplementary = supplementary;
-    this.groupRepoRetrieve = groupRepo;
+    this.groupRepo = groupRepo;
   }
 
   @Override
@@ -107,12 +107,12 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
     List<UsersExtraInfo> users = new LinkedList<>();
 
     if (((List<String>) jsonObject.get("names")).size() == 0) {
-      groups.addAll(groupRepoRetrieve.retrieve());
+      groups.addAll(groupRepo.retrieve());
 
     } else {
       final ArrayList<String> jsonArray = (ArrayList<String>) jsonObject.get("names");
       for (String temp : jsonArray) {
-        Group group = groupRepoRetrieve.retrieve(true, temp);
+        Group group = groupRepo.retrieve(true, temp);
         if (group == null) {
           notFound.add(temp);
         } else {

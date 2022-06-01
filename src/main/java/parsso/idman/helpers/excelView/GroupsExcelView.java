@@ -9,7 +9,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
-import parsso.idman.impls.groups.RetrieveGroup;
 import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.services.serviceType.MicroService;
@@ -22,13 +21,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class GroupsExcelView extends AbstractXlsView {
-  final GroupRepo.Retrieve retrieveGroup;
+  final GroupRepo groupRepo;
   final MongoTemplate mongoTemplate;
 
-  public GroupsExcelView(RetrieveGroup retrieveGroup, MongoTemplate mongoTemplate) {
-    this.retrieveGroup = retrieveGroup;
+  public GroupsExcelView(GroupRepo groupRepo, MongoTemplate mongoTemplate) {
+    this.groupRepo = groupRepo;
     this.mongoTemplate = mongoTemplate;
   }
 
@@ -37,7 +35,7 @@ public class GroupsExcelView extends AbstractXlsView {
       HttpServletResponse response) {
 
     // get data model which is passed by the Spring container
-    List<Group> groups = retrieveGroup.retrieve();
+    List<Group> groups = groupRepo.retrieve();
 
     for (Group group : groups)
       group.setService(new ServicesGroup(mongoTemplate).servicesOfGroup(group.getId()));

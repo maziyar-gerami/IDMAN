@@ -1,33 +1,28 @@
-package parsso.idman.impls.groups;
+package parsso.idman.impls.groups.sub;
 
 import javax.naming.directory.SearchControls;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
-import org.springframework.stereotype.Service;
 
+import parsso.idman.configs.Prefs;
+import parsso.idman.helpers.Variables;
 import parsso.idman.impls.groups.helper.OUAttributeMapper;
 import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.GroupRepo;
 
-@Service
-public class RetrieveGroup implements GroupRepo.Retrieve {
+public class RetrieveGroup {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
-  @Value("${spring.ldap.base.dn}")
-  protected String BASE_DN;
 
-  @Autowired
   public RetrieveGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
+    
   }
 
   public Group retrieve(boolean simple, String uid) {
@@ -61,7 +56,7 @@ public class RetrieveGroup implements GroupRepo.Retrieve {
     final AndFilter filter = new AndFilter();
     filter.and(new EqualsFilter("objectclass", "organizationalUnit"));
 
-    return ldapTemplate.search("ou=groups," + BASE_DN, filter.encode(),
+    return ldapTemplate.search("ou=groups," + Prefs.get(Variables.PREFS_BASE_DN), filter.encode(),
         new OUAttributeMapper(mongoTemplate));
   }
 }

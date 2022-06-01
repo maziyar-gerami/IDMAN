@@ -72,7 +72,6 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     Path path = Paths.get(photoPathRoot);
 
     try {
-      System.out.println(photoPathRoot);
 
       Files.copy(file.getInputStream(), path.resolve(name));
 

@@ -89,8 +89,7 @@ public class RunOneTime {
 
       @Override
       public void run() {
-        new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger,
-                basedn).run();
+        new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
       }
     };
 

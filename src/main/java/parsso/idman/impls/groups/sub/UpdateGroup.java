@@ -1,28 +1,28 @@
-package parsso.idman.impls.groups;
+package parsso.idman.impls.groups.sub;
 
 import org.json.simple.JSONArray;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
+import parsso.idman.impls.Parameters;
 import parsso.idman.impls.groups.helper.BuildAttribute;
 import parsso.idman.impls.groups.helper.BuildDnGroup;
 import parsso.idman.impls.services.DeleteService;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.services.update.UpdateService;
+import parsso.idman.impls.users.oprations.retrieve.RetrieveUser;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.UserRepo;
 import javax.naming.Name;
 
@@ -30,58 +30,51 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-@Service
-@SuppressWarnings({ "unchecked" })
-public class UpdateGroup implements GroupRepo.Update {
+public class UpdateGroup extends Parameters {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
   final FilesStorageService filesStorageService;
-  @Value("${spring.ldap.base.dn}")
-  protected String BASE_DN;
   final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final RetrieveGroup retrieveGroup;
   final CreateGroup createGroup;
 
-  @Autowired
   public UpdateGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UniformLogger uniformLogger, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      FilesStorageService filesStorageService, RetrieveGroup retrieveGroup, CreateGroup createGroup) {
+      UniformLogger uniformLogger, FilesStorageService filesStorageService) {
+    super(ldapTemplate, mongoTemplate, uniformLogger);
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.filesStorageService = filesStorageService;
-    this.usersOpRetrieve = usersOpRetrieve;
-    this.retrieveGroup = retrieveGroup;
-    this.createGroup = createGroup;
+    this.usersOpRetrieve = new RetrieveUser(ldapTemplate, mongoTemplate);
+    this.createGroup = new CreateGroup(ldapTemplate, mongoTemplate, uniformLogger);
   }
 
+  @SuppressWarnings("unchecked")
   public HttpStatus update(String doerID, String id, Group ou) {
 
-    Name dn = new BuildDnGroup(BASE_DN).buildDn(id);
+    if (ou.getId() == null || ou.getId().equals("") ||
+        ou.getName() == null || ou.getName().equals("") ||
+        ou.getDescription() == null || ou.getDescription().equals("") ||
+        id==null || id.equals(""))
+      return HttpStatus.BAD_REQUEST;
 
-    List<Group> groups = retrieveGroup.retrieve();
-
-    if (groups.size()==0)
+    if (new RetrieveGroup(ldapTemplate, mongoTemplate).retrieve(true, id) == null)
       return HttpStatus.NOT_FOUND;
 
-    for (Group group : groups)
-      if (!(id.equals(ou.getId())) && group.getId().equals(ou.getId()))
-        return HttpStatus.FOUND;
+    Name dn = new BuildDnGroup(Prefs.get("BASE_DN")).buildDn(id);
 
     if (!(id.equals(ou.getId()))) {
-
       ldapTemplate.unbind(dn);
       createGroup.create(doerID, ou);
-      DirContextOperations contextUser;
+
       uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, id, Variables.MODEL_GROUP,
           Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ou, ""));
 
       for (UsersExtraInfo user : usersOpRetrieve.retrieveUsersGroup(id)) {
         for (String group : user.getMemberOf()) {
           if (group.equalsIgnoreCase(id)) {
-            contextUser = ldapTemplate
-                .lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
+            DirContextOperations contextUser = ldapTemplate
+                .lookupContext(new BuildDnUser(Prefs.get("BASE_DN")).buildDn(user.get_id().toString()));
             contextUser.removeAttributeValue("ou", id);
             contextUser.addAttributeValue("ou", ou.getId());
             ldapTemplate.modifyAttributes(contextUser);
@@ -90,16 +83,16 @@ public class UpdateGroup implements GroupRepo.Update {
                 Variables.col_usersExtraInfo);
             if (usersExtraInfo != null) {
               usersExtraInfo.getMemberOf().remove(id);
-            }else{
+            } else {
               usersExtraInfo = new UsersExtraInfo(usersOpRetrieve.retrieveUsers(user.get_id().toString()));
             }
 
-            try{
+            try {
               usersExtraInfo.getMemberOf().add(ou.getId());
-            }catch(NullPointerException nu){
+            } catch (NullPointerException nu) {
               List<String> ls = new LinkedList<>();
               ls.add(ou.getId());
-              usersExtraInfo.setMemberOf(ls) ;
+              usersExtraInfo.setMemberOf(ls);
             }
 
             Objects.requireNonNull(usersExtraInfo).getMemberOf().add(ou.getId());
@@ -119,7 +112,7 @@ public class UpdateGroup implements GroupRepo.Update {
 
           // remove old id and add new id
           // noinspection unchecked
-          ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))
+          ((List<?>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))
               .remove(id);
           // noinspection unchecked
           ((List<String>) ((JSONArray) service.getAccessStrategy().getRequiredAttributes().get("ou")).get(1))

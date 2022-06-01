@@ -5,8 +5,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 
+import parsso.idman.impls.Parameters;
 import parsso.idman.impls.services.RetrieveService;
-import parsso.idman.impls.users.oprations.retrieve.helper.Parameters;
 import parsso.idman.impls.users.oprations.retrieve.sub.Conditional;
 import parsso.idman.impls.users.oprations.retrieve.sub.FullAttributes;
 import parsso.idman.impls.users.oprations.retrieve.sub.MainAttributes;
@@ -26,17 +26,17 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
 
   @Override
   public ListUsers mainAttributes(int page, int number, String sort, String role, String userId, String displayName) {
-    return new MainAttributes(mongoTemplate, ldapTemplate, BASE_DN).get(page, number, sort, role,userId,displayName);
+    return new MainAttributes(mongoTemplate, ldapTemplate).get(page, number, sort, role,userId,displayName);
   }
 
   @Override
   public List<User> fullAttributes() {
-    return new FullAttributes(ldapTemplate, mongoTemplate, BASE_DN).get();
+    return new FullAttributes(ldapTemplate, mongoTemplate).get();
   }
 
   @Override
   public User retrieveUsers(String userId) {
-    return new FullAttributes(ldapTemplate, mongoTemplate, BASE_DN).get(userId);
+    return new FullAttributes(ldapTemplate, mongoTemplate).get(userId);
   }
 
   @Override
@@ -46,23 +46,23 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
 
   @Override
   public UsersExtraInfo retrieveUserMain(String userId) {
-    return new MainAttributes(mongoTemplate, ldapTemplate, BASE_DN).get(userId);
+    return new MainAttributes(mongoTemplate, ldapTemplate).get(userId);
   }
 
   @Override
   public List<UsersExtraInfo> retrieveUsersGroup(String groupId) {
-    return new Conditional(ldapTemplate, BASE_DN).group(groupId);
+    return new Conditional(ldapTemplate).group(groupId);
   }
 
   @Override
   public User.ListUsers retrieveUsersMainWithGroupId(String groupId, int page, int nRec) {
-    return new Conditional(ldapTemplate, BASE_DN).group(groupId, page, nRec);
+    return new Conditional(ldapTemplate).group(groupId, page, nRec);
   }
 
   @Override
   public User.ListUsers mainAttributes(int page, int number, String sortType, String groupFilter, String searchUid,
       String searchDisplayName, String mobile, String userStatus) { 
-    return new MainAttributes(mongoTemplate, BASE_DN).get(page, number, sortType, groupFilter,
+    return new MainAttributes(mongoTemplate).get(page, number, sortType, groupFilter,
         searchUid, searchDisplayName, mobile, userStatus);
   }
 }

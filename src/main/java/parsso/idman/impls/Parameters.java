@@ -1,4 +1,4 @@
-package parsso.idman.impls.users.oprations.update.helper;
+package parsso.idman.impls;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.repos.UserRepo;
 
-@Service
 public class Parameters {
   protected LdapTemplate ldapTemplate;
   protected MongoTemplate mongoTemplate;
@@ -25,6 +24,17 @@ public class Parameters {
     this.userOpRetrieve = userOpRetrieve;
   }
 
-  @Value("${spring.ldap.base.dn}")
-  protected String BASE_DN;
+  @Autowired
+  public Parameters(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
+    this.ldapTemplate = ldapTemplate;
+    this.mongoTemplate = mongoTemplate;
+    this.uniformLogger = uniformLogger;
+  }
+
+  @Autowired
+  public Parameters(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
+    this.ldapTemplate = ldapTemplate;
+    this.mongoTemplate = mongoTemplate;
+  }
+
 }

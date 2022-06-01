@@ -13,11 +13,11 @@ import java.util.List;
 
 @SuppressWarnings({ "rawtypes" })
 public class GroupLicense {
-  GroupRepo.Retrieve groupRepoRetrieve;
+  GroupRepo groupRepo;
   ServiceRepo.Retrieve serviceRepo;
 
-  public GroupLicense(GroupRepo.Retrieve groupRepoRetrieve, ServiceRepo.Retrieve serviceRepo) {
-    this.groupRepoRetrieve = groupRepoRetrieve;
+  public GroupLicense(GroupRepo groupRepo, ServiceRepo.Retrieve serviceRepo) {
+    this.groupRepo = groupRepo;
     this.serviceRepo = serviceRepo;
   }
 
@@ -29,7 +29,7 @@ public class GroupLicense {
         .get(1);
     for (Object name : jsonArray)
       try {
-        groups.add(groupRepoRetrieve.retrieve(true, name.toString()));
+        groups.add(groupRepo.retrieve(true, name.toString()));
       } catch (NullPointerException ignored) {
       }
     return groups;
