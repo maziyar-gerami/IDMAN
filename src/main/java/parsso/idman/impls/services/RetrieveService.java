@@ -134,7 +134,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
     
     List<Service> services = listServicesFull();
 
-    List<Service> relatedList = new LinkedList();
+    List<Service> relatedList = new LinkedList<>();
 
     for (Service service : services) {
 
@@ -149,7 +149,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
                         if (user.getMemberOf() != null && s != null)
                             for (int i = 0; i < user.getMemberOf().size(); i++)
                                 for (int j = 0; j < ((JSONArray) s.get(1)).size(); j++) {
-                                    if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service)) {
+                                    if (user.getMemberOf().get(i).equals(((JSONArray) s.get(1)).get(j)) && !relatedList.contains(service) && service.getAccessStrategy().isEnabled()) {
                                         relatedList.add(service);
                                         break;
 
@@ -163,7 +163,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
                   if (memberUid != null) {
                     JSONArray s = (JSONArray) memberUid;
       
-                    if (((List) s.get(1)).contains(user.get_id()) && !relatedList.contains(service)) {
+                    if (((List<String>) s.get(1)).contains(user.get_id()) && !relatedList.contains(service)&& service.getAccessStrategy().isEnabled()) {
                       relatedList.add(service);
                       break;
       
