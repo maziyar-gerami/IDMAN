@@ -208,6 +208,7 @@ public class RetrieveService implements ServiceRepo.Retrieve {
           services.add(service);
           Collections.sort(services);
         } catch (Exception e) {
+          e.printStackTrace();
           uniformLogger.warn(Variables.DOER_SYSTEM,
               new ReportMessage(Variables.MODEL_SERVICE, service.getId(),
                   "", Variables.ACTION_RETRIEVE, Variables.RESULT_FAILED, "Unable to read service"));
