@@ -199,15 +199,6 @@ public class AccessStrategy {
 
     }
 
-    List<Object> tt = (List) tempReqiredAttribute.get("ou");
-    List<Object> tt1 = (List) tt.get(1);
-    if (tt1.size() == 0)
-      tempReqiredAttribute.remove("ou");
-
-    List<Object> pp = (List) tempReqiredAttribute.get("uid");
-    List<Object> pp1 = (List) pp.get(1);
-    if (pp1.size() == 0)
-      tempReqiredAttribute.remove("uid");
 
     accessStrategy.setRejectedAttributes(tempRejectedAttribute);
 
