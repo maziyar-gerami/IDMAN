@@ -11,6 +11,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.utils.convertor.DateConverter;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 
 @Setter
@@ -150,7 +151,8 @@ public class AccessStrategy {
       accessStrategy.setAcceptableResponseCodes(jsonObject.get("acceptableResponseCodes").toString());
     }
 
-    accessStrategy.setEnabled(jsonObject.get("enabled") != (null) && Boolean.parseBoolean(jsonObject.get("enabled").toString()));
+    accessStrategy
+        .setEnabled(jsonObject.get("enabled") != (null) && Boolean.parseBoolean(jsonObject.get("enabled").toString()));
 
     accessStrategy.setSsoEnabled(jsonObject.get("ssoEnabled") != (null) && (boolean) jsonObject.get("ssoEnabled"));
 
@@ -169,6 +171,16 @@ public class AccessStrategy {
 
     }
 
+    List<Object> t = (List) tempReqiredAttribute.get("ou");
+    List<Object> t1 = (List) t.get(1);
+    if (t1.size() == 0)
+      tempReqiredAttribute.remove("ou");
+
+    List<Object> p = (List) tempReqiredAttribute.get("uid");
+    List<Object> p1 = (List) p.get(1);
+    if (p1.size() == 0)
+      tempReqiredAttribute.remove("uid");
+
     accessStrategy.setRequiredAttributes(tempReqiredAttribute);
 
     JSONObject tempRejectedAttribute = new JSONObject();
@@ -186,6 +198,16 @@ public class AccessStrategy {
       tempRejectedAttribute.put("@class", "java.util.HashMap");
 
     }
+
+    List<Object> tt = (List) tempReqiredAttribute.get("ou");
+    List<Object> tt1 = (List) tt.get(1);
+    if (tt1.size() == 0)
+      tempReqiredAttribute.remove("ou");
+
+    List<Object> pp = (List) tempReqiredAttribute.get("uid");
+    List<Object> pp1 = (List) pp.get(1);
+    if (pp1.size() == 0)
+      tempReqiredAttribute.remove("uid");
 
     accessStrategy.setRejectedAttributes(tempRejectedAttribute);
 
