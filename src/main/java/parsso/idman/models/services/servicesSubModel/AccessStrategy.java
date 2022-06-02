@@ -170,21 +170,16 @@ public class AccessStrategy {
       tempReqiredAttribute.put("@class", "java.util.HashMap");
 
     }
-    try {
-      List<Object> t = (List) tempReqiredAttribute.get("ou");
-      List<Object> t1 = (List) t.get(1);
-      if (t1.size() == 0)
-        tempReqiredAttribute.remove("ou");
-    } catch (Exception e) {
-    }
 
-    try {
-      List<Object> p = (List) tempReqiredAttribute.get("uid");
-      List<Object> p1 = (List) p.get(1);
-      if (p1.size() == 0)
-        tempReqiredAttribute.remove("uid");
-    } catch (Exception e) {
-    }
+    List<Object> t = (List) tempReqiredAttribute.get("ou");
+    List<Object> t1 = (List) t.get(1);
+    if (t1.size() == 0)
+      tempReqiredAttribute.remove("ou");
+
+    List<Object> p = (List) tempReqiredAttribute.get("uid");
+    List<Object> p1 = (List) p.get(1);
+    if (p1.size() == 0)
+      tempReqiredAttribute.remove("uid");
 
     accessStrategy.setRequiredAttributes(tempReqiredAttribute);
 
@@ -202,9 +197,25 @@ public class AccessStrategy {
 
       tempRejectedAttribute.put("@class", "java.util.HashMap");
 
+    try{
+
+    List<Object> tt = (List) tempReqiredAttribute.get("ou");
+    List<Object> tt1 = (List) tt.get(1);
+    if (tt1.size() == 0)
+      tempReqiredAttribute.remove("ou");
+    }catch(Exception e){
+
     }
 
+    try{
+    List<Object> pp = (List) tempReqiredAttribute.get("uid");
+    List<Object> pp1 = (List) pp.get(1);
+    if (pp1.size() == 0)
+      tempReqiredAttribute.remove("uid");
+    }catch(Exception e){}
+
     accessStrategy.setRejectedAttributes(tempRejectedAttribute);
+  }
 
     return accessStrategy;
 

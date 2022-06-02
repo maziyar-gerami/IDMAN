@@ -106,6 +106,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
       Path pathServices = Paths.get(serviceIcon.toString());
       Files.copy(file.getInputStream(), pathServices.resolve(fileName));
     } catch (Exception e) {
+      e.printStackTrace();
       throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
     }
   }
