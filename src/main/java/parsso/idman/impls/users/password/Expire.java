@@ -8,7 +8,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.directory.BasicAttribute;
 import javax.naming.directory.DirContext;
@@ -22,10 +22,10 @@ public class Expire {
   final UniformLogger uniformLogger;
   final LdapTemplate ldapTemplate;
   private String BASE_DN;
-  UserRepo.UsersOp.Retrieve userOpRetrieve;
+  UsersRetrieveRepo userOpRetrieve;
 
   public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve, String BASE_DN) {
+      UsersRetrieveRepo userOpRetrieve, String BASE_DN) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.ldapTemplate = ldapTemplate;

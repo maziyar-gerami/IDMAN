@@ -48,11 +48,11 @@ import parsso.idman.impls.services.create.sublcasses.ServiceIcon;
 import parsso.idman.impls.services.update.UpdateService;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RestController
 public class ServicesController {
-  final UserRepo.UsersOp.Retrieve userOpRetrieve;
+  final UsersRetrieveRepo userOpRetrieve;
   final MongoTemplate mongoTemplate;
   final FilesStorageService storageService;
   final UniformLogger uniformLogger;
@@ -63,7 +63,7 @@ public class ServicesController {
   private final Bucket bucket;
 
   @Autowired
-  public ServicesController(UserRepo.UsersOp.Retrieve userOpRetrieve,
+  public ServicesController(UsersRetrieveRepo userOpRetrieve,
       MongoTemplate mongoTemplate, FilesStorageService storageService, UniformLogger uniformLogger,
       CreateService createService, DeleteService deleteService, UpdateService updateService,
       RetrieveService retrieveService) {

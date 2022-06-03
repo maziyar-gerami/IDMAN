@@ -17,13 +17,14 @@ import parsso.idman.controllers.users.oprations.UsersOps;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.InstantMessage;
 import parsso.idman.helpers.communicate.Token;
-import parsso.idman.impls.users.supplementary.Authenticate;
+import parsso.idman.impls.users.supplementary.helper.Authenticate;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.EmailService;
 import parsso.idman.repos.SkyroomRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.SupplementaryRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,14 +36,14 @@ public class Supplementary extends UsersOps {
   final SkyroomRepo skyroomRepo;
   EmailService emailService;
   InstantMessage instantMessage;
-  UserRepo.Supplementary supplementary;
+  SupplementaryRepo supplementary;
   Authenticate authenticate;
 
   @Autowired
   public Supplementary(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve,
+      UsersRetrieveRepo usersOpRetrieve,
       SkyroomRepo skyroomRepo, EmailService emailService, Authenticate authenticate,
-      InstantMessage instantMessage, UserRepo.Supplementary supplementary) {
+      InstantMessage instantMessage, SupplementaryRepo supplementary) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.skyroomRepo = skyroomRepo;
     this.emailService = emailService;

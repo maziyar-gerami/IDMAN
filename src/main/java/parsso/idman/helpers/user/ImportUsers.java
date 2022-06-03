@@ -16,7 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersCreateRepo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,9 +29,9 @@ import java.util.Objects;
 
 @Service
 public class ImportUsers {
-  private UserRepo.UsersOp.Create usersOpCreate;
+  private UsersCreateRepo usersOpCreate;
 
-  public ImportUsers(UserRepo.UsersOp.Create usersOpCreate) {
+  public ImportUsers(UsersCreateRepo usersOpCreate) {
     this.usersOpCreate = usersOpCreate;
   }
 

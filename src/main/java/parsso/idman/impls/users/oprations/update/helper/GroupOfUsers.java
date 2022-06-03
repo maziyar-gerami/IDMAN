@@ -2,18 +2,17 @@ package parsso.idman.impls.users.oprations.update.helper;
 
 import net.minidev.json.JSONObject;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
-import parsso.idman.repos.UserRepo.UsersOp.Retrieve;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class GroupOfUsers {
-  UserRepo.UsersOp.Retrieve retrieveOp;
+  UsersRetrieveRepo retrieveOp;
   UpdateUser updateUser;
 
-  public GroupOfUsers(Retrieve userOpRetrieve,
+  public GroupOfUsers(UsersRetrieveRepo userOpRetrieve,
       parsso.idman.impls.users.oprations.update.helper.UpdateUser updateUser2) {
     this.retrieveOp = userOpRetrieve;
     this.updateUser = updateUser2;

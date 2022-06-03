@@ -14,17 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.models.response.Response;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersDeleteRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 
 @RestController
 
 public class DeleteController extends UsersOps {
 
-  private final UserRepo.UsersOp.Delete usersOpDelete;
+  private final UsersDeleteRepo usersOpDelete;
 
   public DeleteController(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Delete usersOpDelete) {
+      UsersRetrieveRepo usersOpRetrieve, UsersDeleteRepo usersOpDelete) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.usersOpDelete = usersOpDelete;
   }

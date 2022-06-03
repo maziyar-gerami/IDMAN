@@ -27,7 +27,8 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.EmailService;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.SupplementaryRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 
 @Service
@@ -46,9 +47,9 @@ public class EmailServiceImpl implements EmailService {
   @Autowired
   Token tokenClass;
   @Autowired
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
   @Autowired
-  UserRepo.Supplementary supplementary;
+  SupplementaryRepo supplementary;
   @Autowired
   MailProperties mailProperties;
   @Autowired

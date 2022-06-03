@@ -4,7 +4,8 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,11 +15,11 @@ import java.util.List;
 
 @SuppressWarnings("rawtyoes")
 public class ExcelAnalyzer {
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final UserRepo.UsersOp.Update usersOpUpdate;
+  final UsersRetrieveRepo usersOpRetrieve;
+  final UsersUpdateRepo usersOpUpdate;
 
   public ExcelAnalyzer(
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Update usersOpUpdate) {
+      UsersRetrieveRepo usersOpRetrieve, UsersUpdateRepo usersOpUpdate) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;
   }

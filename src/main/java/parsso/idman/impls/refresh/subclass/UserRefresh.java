@@ -23,21 +23,21 @@ import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @Service
 public class UserRefresh {
   MongoTemplate mongoTemplate;
   LdapTemplate ldapTemplate;
   UniformLogger uniformLogger;
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
   DashboardData dashboardData;
   @Value("${spring.ldap.base.dn}")
   protected String BASE_DN;
 
   @Autowired
   public UserRefresh(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, DashboardData dashboardData) {
+      UsersRetrieveRepo usersOpRetrieve, DashboardData dashboardData) {
     this.mongoTemplate = mongoTemplate;
     this.ldapTemplate = ldapTemplate;
     this.uniformLogger = uniformLogger;

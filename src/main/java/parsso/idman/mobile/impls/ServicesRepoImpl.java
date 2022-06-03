@@ -22,7 +22,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.mobile.repos.ServicesRepo;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
@@ -37,7 +37,7 @@ public class ServicesRepoImpl implements ServicesRepo {
   @Value("${spring.ldap.base.dn}")
   private String BASE_DN;
   @Autowired
-  private UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private UsersRetrieveRepo usersOpRetrieve;
   @Autowired
   private MongoTemplate mongoTemplate;
 

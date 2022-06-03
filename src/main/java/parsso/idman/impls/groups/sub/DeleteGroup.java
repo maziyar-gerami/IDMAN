@@ -19,7 +19,7 @@ import parsso.idman.impls.users.oprations.retrieve.RetrieveUser;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.Name;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 @SuppressWarnings("unchecked")
 public class DeleteGroup extends Parameters {
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   final RetrieveGroup retrieveGroup;
   public DeleteGroup(LdapTemplate ldapTemplate,  MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
         super(ldapTemplate, mongoTemplate, uniformLogger);

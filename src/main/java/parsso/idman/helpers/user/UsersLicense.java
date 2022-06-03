@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.json.simple.JSONArray;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.ServiceRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.List;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class UsersLicense {
   ServiceRepo.Retrieve serviceRepo;
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
 
-  public UsersLicense(ServiceRepo.Retrieve serviceRepo, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+  public UsersLicense(ServiceRepo.Retrieve serviceRepo, UsersRetrieveRepo usersOpRetrieve) {
     this.serviceRepo = serviceRepo;
     this.usersOpRetrieve = usersOpRetrieve;
   }

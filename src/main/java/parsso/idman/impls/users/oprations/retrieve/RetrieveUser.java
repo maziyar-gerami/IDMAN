@@ -13,11 +13,12 @@ import parsso.idman.impls.users.oprations.retrieve.sub.MainAttributes;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.models.users.User.ListUsers;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+
 import java.util.List;
 
 @Service
-public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retrieve {
+public class RetrieveUser extends Parameters implements UsersRetrieveRepo {
 
   @Autowired
   public RetrieveUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
@@ -64,5 +65,11 @@ public class RetrieveUser extends Parameters implements UserRepo.UsersOp.Retriev
       String searchDisplayName, String mobile, String userStatus) { 
     return new MainAttributes(mongoTemplate).get(page, number, sortType, groupFilter,
         searchUid, searchDisplayName, mobile, userStatus);
+  }
+
+  @Override
+  public int retrieveUsersLDAPSize() {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }

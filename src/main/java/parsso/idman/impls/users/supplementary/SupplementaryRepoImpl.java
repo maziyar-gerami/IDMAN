@@ -13,18 +13,20 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
+import parsso.idman.impls.users.supplementary.helper.Authenticate;
 import parsso.idman.models.users.ChangePassword;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.SupplementaryRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 
 
 @Service
-public class SupplementaryRepoImpl implements UserRepo.Supplementary {
+public class SupplementaryRepoImpl implements SupplementaryRepo {
   final MongoTemplate mongoTemplate;
   final LdapTemplate ldapTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
 
   @Value("${spring.ldap.base.dn}")
   private String BASE_DN;
@@ -34,7 +36,7 @@ public class SupplementaryRepoImpl implements UserRepo.Supplementary {
 
   @Autowired
   SupplementaryRepoImpl(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      UsersRetrieveRepo usersOpRetrieve) {
     this.mongoTemplate = mongoTemplate;
     this.ldapTemplate = ldapTemplate;
     this.usersOpRetrieve = usersOpRetrieve;

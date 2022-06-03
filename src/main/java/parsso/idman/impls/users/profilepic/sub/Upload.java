@@ -1,4 +1,4 @@
-package parsso.idman.impls.users.profilepic;
+package parsso.idman.impls.users.profilepic.sub;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -7,18 +7,19 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 import java.io.File;
 
 public class Upload {
   final MongoTemplate mongoTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final UserRepo.UsersOp.Update usersOpUpdate;
+  final UsersRetrieveRepo usersOpRetrieve;
+  final UsersUpdateRepo usersOpUpdate;
   final FilesStorageService storageService;
 
-  public Upload(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      UserRepo.UsersOp.Update usersOpUpdate, FilesStorageService storageService) {
+  public Upload(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
+      UsersUpdateRepo usersOpUpdate, FilesStorageService storageService) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
     this.storageService = storageService;

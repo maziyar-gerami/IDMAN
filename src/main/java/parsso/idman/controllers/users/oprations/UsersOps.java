@@ -7,7 +7,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.bind.annotation.RestController;
 
 import parsso.idman.helpers.communicate.Token;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RestController
 public class UsersOps {
@@ -17,11 +17,11 @@ public class UsersOps {
   protected final Token tokenClass;
   protected final LdapTemplate ldapTemplate;
   protected final MongoTemplate mongoTemplate;
-  protected final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  protected final UsersRetrieveRepo usersOpRetrieve;
 
   @Autowired
   public UsersOps(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      UsersRetrieveRepo usersOpRetrieve) {
     this.tokenClass = tokenClass;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;

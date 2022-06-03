@@ -2,7 +2,6 @@ package parsso.idman.role;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,7 +17,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import net.minidev.json.JSONObject;
 import parsso.idman.repos.RolesRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersCreateRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
@@ -26,9 +26,9 @@ public class RoleRepoImpl {
   @Autowired
   RolesRepo rolesRepo;
   @Autowired
-  UserRepo.UsersOp.Retrieve userRepo;
+  UsersRetrieveRepo userRepo;
   @Autowired
-  UserRepo.UsersOp.Create userRepCreate;
+  UsersCreateRepo userRepCreate;
 
   @Test
   public void run() {

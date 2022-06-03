@@ -21,13 +21,13 @@ import parsso.idman.models.dashboarddata.Dashboard;
 import parsso.idman.models.logs.Event;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.utils.convertor.DateUtils;
 
 @Service
 public class DashboardData {
   final ZoneId zoneId = ZoneId.of(Variables.ZONE);
-  final UserRepo.UsersOp.Retrieve usersOp;
+  final UsersRetrieveRepo usersOp;
   final LogsRepo.EventRepo eventRepo;
   final MongoTemplate mongoTemplate;
   final SimpleUserAttributeMapper simpleUserAttributeMapper;
@@ -37,7 +37,7 @@ public class DashboardData {
   protected String baseDn;
 
   @Autowired
-  public DashboardData(UserRepo.UsersOp.Retrieve usersOp,
+  public DashboardData(UsersRetrieveRepo usersOp,
       LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate,
       SimpleUserAttributeMapper simpleUserAttributeMapper, LdapTemplate ldapTemplate) {
     this.usersOp = usersOp;

@@ -14,17 +14,17 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.tickets.Message;
 import parsso.idman.models.tickets.Ticket;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 public class CreateTickets {
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
 
   Logger logger;
 
   public CreateTickets(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      UsersRetrieveRepo usersOpRetrieve) {
     this.uniformLogger = uniformLogger;
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;

@@ -17,7 +17,9 @@ import parsso.idman.helpers.user.ExpirePassword;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.PasswordOpsRepo;
+import parsso.idman.repos.users.SupplementaryRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,15 +29,15 @@ import java.util.Set;
 
 @Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
+public class PasswordOpRepoImpl implements PasswordOpsRepo {
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   final LdapTemplate ldapTemplate;
   final Token tokenClass;
   final GroupRepo groupRepo;
   final ExpirePassword expirePassword;
-  final UserRepo.Supplementary supplementary;
+  final SupplementaryRepo supplementary;
 
   @Value("${base.url}")
   private String BASE_URL;
@@ -45,9 +47,9 @@ public class PasswordOpRepoImpl implements UserRepo.PasswordOp {
 
   @Autowired
   public PasswordOpRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve,
+      UsersRetrieveRepo usersOpRetrieve,
       LdapTemplate ldapTemplate, Token tokenClass,
-      ExpirePassword expirePassword, UserRepo.Supplementary supplementary, GroupRepo groupRepo) {
+      ExpirePassword expirePassword, SupplementaryRepo supplementary, GroupRepo groupRepo) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = usersOpRetrieve;

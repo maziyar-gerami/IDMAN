@@ -1,8 +1,6 @@
 package parsso.idman.impls.users.oprations.create;
 
 import net.minidev.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -21,17 +19,16 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.UserRepo;
-
+import parsso.idman.repos.users.oprations.sub.UsersCreateRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 @Service
-public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
+public class CreateUser extends Parameters implements UsersCreateRepo {
   private final BuildAttributes buildAttributes;
   private final Operations operations;
   private final GroupRepo groupRepo;
 
-  @Autowired
   public CreateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve,
+      UsersRetrieveRepo userOpRetrieve,
       BuildAttributes buildAttributes, Operations operations, GroupRepo groupRepo) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
@@ -43,7 +40,7 @@ public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
   public JSONObject create(String doerID, User p) {
     p.setUserId(p.get_id().toString().toLowerCase());
 
-    if (p.get_id() == null || p.get_id().toString().equals("") ) {
+    if (p.get_id() == null || p.get_id().toString().equals("")) {
 
       JSONObject jsonObject = new JSONObject();
       jsonObject.put("invalidGroups", p.get_id().toString());
@@ -125,7 +122,7 @@ public class CreateUser extends Parameters implements UserRepo.UsersOp.Create {
   @Override
   public JSONObject createUserImport(String doerID, User p) {
     if (p.getUserPassword() == null || p.getUserPassword().equals("")) {
-      
+
       p.setUserPassword(new Settings(mongoTemplate).retrieve(Variables.DEFAULT_USER_PASSWORD).getValue());
     }
 

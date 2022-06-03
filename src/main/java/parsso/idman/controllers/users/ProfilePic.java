@@ -13,18 +13,19 @@ import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
 import parsso.idman.models.response.Response;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.ProfilePicRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class ProfilePic extends UsersOps {
-  private UserRepo.ProfilePic profilePic;
+  private ProfilePicRepo profilePic;
 
   @Autowired
   public ProfilePic(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.ProfilePic profilePic, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      ProfilePicRepo profilePic, UsersRetrieveRepo usersOpRetrieve) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.profilePic = profilePic;
   }

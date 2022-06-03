@@ -15,7 +15,7 @@ import parsso.idman.configs.WebSecurityConfig;
 import parsso.idman.mobile.impls.JwtUtil;
 import parsso.idman.mobile.impls.ServicesRepoImpl;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
@@ -25,7 +25,7 @@ public class LoginwithQR {
   @Autowired
   WebSecurityConfig webSecurityConfig;
   @Autowired
-  private UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private UsersRetrieveRepo usersOpRetrieve;
   @Autowired
   private ServicesRepoImpl servicesRepo;
   @Autowired

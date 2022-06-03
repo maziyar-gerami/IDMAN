@@ -1,4 +1,4 @@
-package parsso.idman.impls.users.supplementary;
+package parsso.idman.impls.users.supplementary.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,17 +6,18 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
-import parsso.idman.repos.UserRepo;
+
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @Service
 public class Authenticate {
   final LdapTemplate ldapTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   @Value("${spring.ldap.base.dn}")
   private String BASE_DN;
 
   @Autowired
-  public Authenticate(LdapTemplate ldapTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+  public Authenticate(LdapTemplate ldapTemplate, UsersRetrieveRepo usersOpRetrieve) {
     this.ldapTemplate = ldapTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
   }

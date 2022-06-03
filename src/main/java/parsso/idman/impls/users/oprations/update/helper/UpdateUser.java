@@ -19,7 +19,7 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Time;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.Name;
 import java.util.Date;
@@ -33,13 +33,13 @@ public class UpdateUser {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
-  final UserRepo.UsersOp.Retrieve userOpRetrieve;
+  final UsersRetrieveRepo userOpRetrieve;
   final BuildAttributes buildAttributes;
   final ExcelAnalyzer excelAnalyzer;
   final String BASE_DN;
 
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer,
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer,
       String BASE_DN) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;

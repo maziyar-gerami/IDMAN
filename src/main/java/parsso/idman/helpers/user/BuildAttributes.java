@@ -9,7 +9,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.*;
@@ -20,7 +20,7 @@ import java.time.ZoneId;
 public class BuildAttributes {
   final ZoneId zoneId = ZoneId.of(Variables.ZONE);
   final MongoTemplate mongoTemplate;
-  private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private final UsersRetrieveRepo usersOpRetrieve;
   private final LdapTemplate ldapTemplate;
   private final Operations operations;
 
@@ -29,7 +29,7 @@ public class BuildAttributes {
 
   @Autowired
   BuildAttributes(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
-      Operations operations, UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      Operations operations, UsersRetrieveRepo usersOpRetrieve) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;

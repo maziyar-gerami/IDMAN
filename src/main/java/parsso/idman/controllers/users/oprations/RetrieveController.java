@@ -25,7 +25,7 @@ import parsso.idman.helpers.excelView.UsersExcelView;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.SystemRefresh;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RestController
 public class RetrieveController extends UsersOps {
@@ -35,7 +35,7 @@ public class RetrieveController extends UsersOps {
   @Autowired
   public RetrieveController(
       Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, SystemRefresh systemRefresh) {
+      UsersRetrieveRepo usersOpRetrieve, SystemRefresh systemRefresh) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.systemRefresh = systemRefresh;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));

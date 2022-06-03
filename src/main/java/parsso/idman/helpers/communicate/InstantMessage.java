@@ -14,7 +14,7 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.utils.captcha.repo.CAPTCHARepo;
 import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
@@ -26,7 +26,7 @@ public class InstantMessage {
 
   @Autowired
   public InstantMessage(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, Token tokenClass, CAPTCHARepo captchaRepo) {
+      UsersRetrieveRepo usersOpRetrieve, Token tokenClass, CAPTCHARepo captchaRepo) {
     this.mongoTemplate = mongoTemplate;
     this.ldapTemplate = ldapTemplate;
     this.tokenClass = tokenClass;
@@ -35,7 +35,7 @@ public class InstantMessage {
   }
 
   private final MongoTemplate mongoTemplate;
-  private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private final UsersRetrieveRepo usersOpRetrieve;
   private final LdapTemplate ldapTemplate;
   private final Token tokenClass;
   private final CAPTCHARepo captchaRepo;

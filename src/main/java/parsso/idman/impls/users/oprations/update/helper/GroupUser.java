@@ -6,7 +6,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.helpers.user.ExcelAnalyzer;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,13 +19,13 @@ import java.util.Objects;
 public class GroupUser {
 
   ExcelAnalyzer excelAnalyzer;
-  UserRepo.UsersOp.Retrieve retrieveOp;
+  UsersRetrieveRepo retrieveOp;
 
   public GroupUser(ExcelAnalyzer excelAnalyzer, String bASE_DN) {
     this.excelAnalyzer = excelAnalyzer;
   }
 
-  public GroupUser(UserRepo.UsersOp.Retrieve retrieveOp) {
+  public GroupUser(UsersRetrieveRepo retrieveOp) {
     this.retrieveOp = retrieveOp;
   }
 

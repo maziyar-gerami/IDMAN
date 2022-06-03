@@ -10,7 +10,7 @@ import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -23,10 +23,10 @@ public class Token {
   public static final String collection = Variables.col_usersExtraInfo;
 
   private final MongoTemplate mongoTemplate;
-  private final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private final UsersRetrieveRepo usersOpRetrieve;
 
   @Autowired
-  public Token(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOp) {
+  public Token(MongoTemplate mongoTemplate, UsersRetrieveRepo userOp) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = userOp;
   }

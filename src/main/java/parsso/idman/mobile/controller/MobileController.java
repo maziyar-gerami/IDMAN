@@ -16,7 +16,8 @@ import parsso.idman.models.logs.Event;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.LogsRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.ProfilePicRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class MobileController {
   @Value(value = "${base.url}")
   private String url;
   @Autowired
-  private UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  private UsersRetrieveRepo usersOpRetrieve;
   @Autowired
   private ServicesRepoImpl servicesRepo;
   @Autowired
@@ -37,7 +38,7 @@ public class MobileController {
   @Autowired
   private parsso.idman.helpers.user.Operations operations;
   @Autowired
-  UserRepo.ProfilePic profilePic;
+  ProfilePicRepo profilePic;
   @Autowired
   MongoTemplate mongoTemplate;
 

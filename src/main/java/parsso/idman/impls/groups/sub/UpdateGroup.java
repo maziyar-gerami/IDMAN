@@ -23,7 +23,8 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+
 import javax.naming.Name;
 
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class UpdateGroup extends Parameters {
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
   final FilesStorageService filesStorageService;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   final CreateGroup createGroup;
 
   public UpdateGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,

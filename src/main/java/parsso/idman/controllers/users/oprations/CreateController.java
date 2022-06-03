@@ -26,19 +26,20 @@ import parsso.idman.helpers.communicate.Token;
 import parsso.idman.helpers.user.ImportUsers;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersCreateRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RestController
 public class CreateController extends UsersOps {
 
   private final int[] defaultSequence = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
-  private final UserRepo.UsersOp.Create userOpCreate;
+  private final UsersCreateRepo userOpCreate;
   private Bucket bucket;
 
   @Autowired
   public CreateController(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve, UserRepo.UsersOp.Create create) {
+      UsersRetrieveRepo usersOpRetrieve, UsersCreateRepo create) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.userOpCreate = create;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));

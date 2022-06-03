@@ -20,10 +20,11 @@ import parsso.idman.impls.Parameters;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 @Service
-public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
+public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
@@ -33,7 +34,7 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
     this.retrieveService = retrieveService;
@@ -81,4 +82,5 @@ public class UpdateUser extends Parameters implements UserRepo.UsersOp.Update {
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate),retrieveService).postConstruct();
     //new PreferenceSettings(mongoTemplate).run();
   }
+
 }

@@ -6,20 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import parsso.idman.impls.users.profilepic.sub.Delete;
+import parsso.idman.impls.users.profilepic.sub.Retrieve;
+import parsso.idman.impls.users.profilepic.sub.Upload;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.FilesStorageService;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.ProfilePicRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 @Service
-public class ProfilePicRepoImpl implements UserRepo.ProfilePic {
+public class ProfilePicRepoImpl implements ProfilePicRepo {
   final MongoTemplate mongoTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final UserRepo.UsersOp.Update usersOpUpdate;
+  final UsersRetrieveRepo usersOpRetrieve;
+  final UsersUpdateRepo usersOpUpdate;
   final FilesStorageService storageService;
 
   @Autowired
-  public ProfilePicRepoImpl(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      UserRepo.UsersOp.Update usersOpUpdate, FilesStorageService storageService) {
+  public ProfilePicRepoImpl(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
+      UsersUpdateRepo usersOpUpdate, FilesStorageService storageService) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;

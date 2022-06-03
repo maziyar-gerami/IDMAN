@@ -35,11 +35,6 @@ public class Update {
     this.serviceRetrieve = serviceRetrieve;
   }
 
-
-    
-
-
-
   public HttpStatus update(String doerID, long id, JSONObject jsonObject, String system) {
     JSONObject JsonExtraInfo = null;
 

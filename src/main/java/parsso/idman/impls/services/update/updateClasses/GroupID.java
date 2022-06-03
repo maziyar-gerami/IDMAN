@@ -7,7 +7,7 @@ import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.services.Service;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.io.IOException;
 public class GroupID {
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
-  UserRepo.UsersOp.Update updateUsers;
+  UsersUpdateRepo updateUsers;
 
   public void change(String doerID, Service service, long sid, String name, String oldOu, String newOu)
       throws IOException {

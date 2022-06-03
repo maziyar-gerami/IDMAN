@@ -23,21 +23,22 @@ import parsso.idman.helpers.user.Operations;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 
 
 @RestController
 public class UpdateController extends UsersOps {
 
-  private final UserRepo.UsersOp.Update update;
+  private final UsersUpdateRepo update;
   private final Operations operations;
   private final GroupRepo groupRepo;
 
   @Autowired
   public UpdateController(Operations operations, Token tokenClass, LdapTemplate ldapTemplate,
-      MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve userOpRetrieve,
-      UserRepo.UsersOp.Update updateOp, GroupRepo groupRepo) {
+      MongoTemplate mongoTemplate, UsersRetrieveRepo userOpRetrieve,
+      UsersUpdateRepo updateOp, GroupRepo groupRepo) {
     super(tokenClass, ldapTemplate, mongoTemplate, userOpRetrieve);
     this.update = updateOp;
     this.operations = operations;

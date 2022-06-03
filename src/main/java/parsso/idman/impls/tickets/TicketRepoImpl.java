@@ -15,7 +15,7 @@ import parsso.idman.impls.tickets.subclass.UpdateTickets;
 import parsso.idman.models.tickets.ListTickets;
 import parsso.idman.models.tickets.Ticket;
 import parsso.idman.repos.TicketRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @Service
 public class TicketRepoImpl implements TicketRepo {
@@ -23,11 +23,11 @@ public class TicketRepoImpl implements TicketRepo {
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
   Logger logger;
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
 
   @Autowired
   public TicketRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve) {
+      UsersRetrieveRepo userOpRetrieve) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = userOpRetrieve;

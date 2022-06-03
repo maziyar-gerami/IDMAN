@@ -16,7 +16,8 @@ import parsso.idman.impls.Parameters;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersDeleteRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,11 +25,11 @@ import java.util.List;
 
 @Service
 @SuppressWarnings({ "unchecked" })
-public class DeleteUser extends Parameters implements UserRepo.UsersOp.Delete {
+public class DeleteUser extends Parameters implements UsersDeleteRepo {
   @Value("${spring.ldap.base.dn}")
   protected static String BASE_DN;
   public DeleteUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve userOpRetrieve) {
+      UsersRetrieveRepo userOpRetrieve) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
   }
 

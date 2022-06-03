@@ -15,20 +15,21 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.SupplementaryRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 public class Change {
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
-  final UserRepo.Supplementary supplementary;
+  final SupplementaryRepo supplementary;
   final String BASE_DN;
   Token tokenClass;
   final UniformLogger uniformLogger;
   final String BASE_URL;
 
-  public Change(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.Supplementary supplementary, String BASE_DN, String BASE_URL, UniformLogger uniformLogger) {
+  public Change(UsersRetrieveRepo usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
+      SupplementaryRepo supplementary, String BASE_DN, String BASE_URL, UniformLogger uniformLogger) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
@@ -38,8 +39,8 @@ public class Change {
     this.uniformLogger = uniformLogger;
   }
 
-  public Change(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.Supplementary supplementary, String BASE_DN, String BASE_URL, Token tokenClass,
+  public Change(UsersRetrieveRepo usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
+      SupplementaryRepo supplementary, String BASE_DN, String BASE_URL, Token tokenClass,
       UniformLogger uniformLogger) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;

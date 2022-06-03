@@ -36,20 +36,21 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.response.Response;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.GroupRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.PasswordOpsRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 
 @RequestMapping("/api/groups")
 @RestController
 public class GroupsController {
-  private final UserRepo.UsersOp.Retrieve retrieveUsers;
-  private final UserRepo.PasswordOp passwordOp;
+  private final UsersRetrieveRepo retrieveUsers;
+  private final PasswordOpsRepo passwordOp;
   private final GroupRepo groupRepo;
   private final MongoTemplate mongoTemplate;
   private Bucket bucket;
 
   @Autowired
-  public GroupsController(UserRepo.UsersOp.Retrieve retrieveUsers, UserRepo.PasswordOp passwordOp, GroupRepo groupRepo, MongoTemplate mongoTemplate) {
+  public GroupsController(UsersRetrieveRepo retrieveUsers, PasswordOpsRepo passwordOp, GroupRepo groupRepo, MongoTemplate mongoTemplate) {
     this.retrieveUsers = retrieveUsers;
     this.passwordOp = passwordOp;
     this.groupRepo = groupRepo;

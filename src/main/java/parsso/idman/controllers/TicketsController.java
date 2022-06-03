@@ -21,15 +21,15 @@ import parsso.idman.models.tickets.ListTickets;
 import parsso.idman.models.tickets.Ticket;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.TicketRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @RestController
 public class TicketsController {
-  final UserRepo.UsersOp.Retrieve retrieveUsers;
+  final UsersRetrieveRepo retrieveUsers;
   TicketRepo ticketRepo;
 
   @Autowired
-  public TicketsController(UserRepo.UsersOp.Retrieve retrieveUsers, TicketRepo ticketRepo) {
+  public TicketsController(UsersRetrieveRepo retrieveUsers, TicketRepo ticketRepo) {
     this.retrieveUsers = retrieveUsers;
     this.ticketRepo = ticketRepo;
   }

@@ -6,19 +6,20 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 import java.util.Date;
 import java.util.List;
 
 public class DisplayName {
   final MongoTemplate mongoTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final UserRepo.UsersOp.Update usersOpUpdate;
+  final UsersRetrieveRepo usersOpRetrieve;
+  final UsersUpdateRepo usersOpUpdate;
 
   @Autowired
-  DisplayName(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      UserRepo.UsersOp.Update usersOpUpdate) {
+  DisplayName(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
+      UsersUpdateRepo usersOpUpdate) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;

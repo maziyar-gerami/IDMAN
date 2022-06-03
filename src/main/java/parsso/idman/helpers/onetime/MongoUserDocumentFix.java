@@ -13,7 +13,7 @@ import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import java.util.Date;
 import java.util.List;
@@ -22,11 +22,11 @@ import javax.naming.directory.SearchControls;
 
 public class MongoUserDocumentFix {
   final MongoTemplate mongoTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
   final LdapTemplate ldapTemplate;
   final String BASE_DN;
 
-  MongoUserDocumentFix(MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOp, LdapTemplate ldapTemplate,
+  MongoUserDocumentFix(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOp, LdapTemplate ldapTemplate,
       String BASE_DN, UserAttributeMapper userAttributeMapper) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOp;

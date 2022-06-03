@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.models.users.User;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 public class UsersExcelView extends AbstractXlsView {
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  final UsersRetrieveRepo usersOpRetrieve;
 
-  public UsersExcelView(UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+  public UsersExcelView(UsersRetrieveRepo usersOpRetrieve) {
     this.usersOpRetrieve = usersOpRetrieve;
   }
 

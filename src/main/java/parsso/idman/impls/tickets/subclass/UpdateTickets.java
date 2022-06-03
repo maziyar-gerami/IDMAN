@@ -19,13 +19,13 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.tickets.Message;
 import parsso.idman.models.tickets.Ticket;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 @SuppressWarnings("unchecked")
 public class UpdateTickets {
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
   Logger logger;
 
   public UpdateTickets(MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
@@ -34,7 +34,7 @@ public class UpdateTickets {
   }
 
   public UpdateTickets(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve) {
+      UsersRetrieveRepo usersOpRetrieve) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = usersOpRetrieve;

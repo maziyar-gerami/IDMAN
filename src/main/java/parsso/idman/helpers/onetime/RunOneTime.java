@@ -10,20 +10,21 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.other.OneTime;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
 public class RunOneTime {
   final UniformLogger uniformLogger;
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
-  final UserRepo.UsersOp.Retrieve usersOpRetrieve;
-  final UserRepo.UsersOp.Update usersOpUpdate;
+  final UsersRetrieveRepo usersOpRetrieve;
+  final UsersUpdateRepo usersOpUpdate;
   final String basedn;
   final RetrieveService retrieveService;
 
   public RunOneTime(LdapTemplate ldapTemplate, 
-      MongoTemplate mongoTemplate, UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      UniformLogger uniformLogger, UserRepo.UsersOp.Update usersOpUpdate, String basedn,
+      MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
+      UniformLogger uniformLogger, UsersUpdateRepo usersOpUpdate, String basedn,
       UserAttributeMapper userAttributeMapper, RetrieveService retrieveService) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;

@@ -16,7 +16,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.Name;
 import javax.naming.directory.BasicAttribute;
@@ -31,13 +31,13 @@ import java.util.UUID;
 @Service
 @SuppressWarnings({ "unchecked" })
 public class Operations {
-  UserRepo.UsersOp.Retrieve usersOpRetrieve;
+  UsersRetrieveRepo usersOpRetrieve;
   LdapTemplate ldapTemplate;
   UniformLogger uniformLogger;
   MongoTemplate mongoTemplate;
 
   @Autowired
-  public Operations(UserRepo.UsersOp.Retrieve usersOpRetrieve, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
+  public Operations(UsersRetrieveRepo usersOpRetrieve, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
       MongoTemplate mongoTemplate) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;

@@ -1,4 +1,4 @@
-package parsso.idman.impls.users.profilepic;
+package parsso.idman.impls.users.profilepic.sub;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;

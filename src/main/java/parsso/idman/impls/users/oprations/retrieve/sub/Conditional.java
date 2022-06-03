@@ -14,20 +14,20 @@ import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.LogsRepo;
 import parsso.idman.repos.ServiceRepo;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.directory.SearchControls;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Conditional {
-  UserRepo.UsersOp.Retrieve userOpRetrieve;
+  UsersRetrieveRepo userOpRetrieve;
   LdapTemplate ldapTemplate;
   ServiceRepo.Retrieve serviceRepo;
   MongoTemplate mongoTemplate;
   LogsRepo.TranscriptRepo transcriptRepo;
 
-  public Conditional(UserRepo.UsersOp.Retrieve userOpRetrieve,
+  public Conditional(UsersRetrieveRepo userOpRetrieve,
       LogsRepo.TranscriptRepo transcriptRepo, MongoTemplate mongoTemplate, ServiceRepo.Retrieve serviceRepo) {
     this.userOpRetrieve = userOpRetrieve;
     this.transcriptRepo = transcriptRepo;
@@ -35,7 +35,7 @@ public class Conditional {
     this.mongoTemplate = mongoTemplate;
   }
 
-  public Conditional(UserRepo.UsersOp.Retrieve userOpRetrieve,
+  public Conditional(UsersRetrieveRepo userOpRetrieve,
       MongoTemplate mongoTemplate, ServiceRepo.Retrieve serviceRepo) {
     this.userOpRetrieve = userOpRetrieve;
     this.serviceRepo = serviceRepo;

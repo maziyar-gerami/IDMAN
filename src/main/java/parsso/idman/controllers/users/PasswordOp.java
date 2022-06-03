@@ -23,12 +23,13 @@ import parsso.idman.helpers.user.Password;
 import parsso.idman.models.other.Notification;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.response.Response;
-import parsso.idman.repos.UserRepo;
+import parsso.idman.repos.users.PasswordOpsRepo;
+import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 
 @RestController
 public class PasswordOp extends UsersOps {
-  final UserRepo.PasswordOp passwordOp;
+  final PasswordOpsRepo passwordOp;
   final InstantMessage instantMessage;
 
   @Value("${base.url}")
@@ -36,8 +37,8 @@ public class PasswordOp extends UsersOps {
 
   @Autowired
   public PasswordOp(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      UserRepo.UsersOp.Retrieve usersOpRetrieve,
-      UserRepo.PasswordOp passwordOp, InstantMessage instantMessage) {
+      UsersRetrieveRepo usersOpRetrieve,
+      PasswordOpsRepo passwordOp, InstantMessage instantMessage) {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.passwordOp = passwordOp;
     this.instantMessage = instantMessage;
