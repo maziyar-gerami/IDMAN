@@ -44,7 +44,7 @@
                   {{ data.description }}
                 </template>
               </Column>
-              <Column field="url" :header="$t('url')" bodyClass="text-center" style="flex: 0 0 15rem">
+              <Column field="url" :header="$t('url')" bodyClass="text-center" style="flex: 0 0 15rem" dir="ltr">
                 <template #body="{data}">
                   <a :href="data.url" target="_blank" style="text-decoration: none;">{{ data.url }}</a>
                 </template>
@@ -213,7 +213,7 @@
                       <div class="field p-fluid">
                         <label for="createServiceBuffer.logo">{{ $t("logo") }}</label>
                         <FileUpload id="createServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'create', 'logo')" accept="image/*" />
+                        @select="fileUploadHelper($event, 'create', 'logo')" accept=".png, .jpg, .jpeg" />
                       </div>
                     </div>
                   </div>
@@ -471,7 +471,7 @@
             <div v-if="editServiceLoader" class="text-center">
               <ProgressSpinner />
             </div>
-            <div v-else>
+            <BlockUI :blocked="editServiceLoader">
               <TabView v-model:activeIndex="tabActiveIndexEdit">
                 <TabPanel :header="$t('basicSettings')">
                   <h4>{{ $t("serviceInformation") }}</h4>
@@ -626,7 +626,7 @@
                       <div class="field p-fluid">
                         <label for="editServiceBuffer.logo">&nbsp;</label>
                         <FileUpload id="editServiceBuffer.logo" mode="basic" name="file" :chooseLabel="$t('selectFile')"
-                        @select="fileUploadHelper($event, 'edit', 'logo')" accept="image/*" />
+                        @select="fileUploadHelper($event, 'edit', 'logo')" accept=".png, .jpg, .jpeg" />
                       </div>
                     </div>
                   </div>
@@ -878,7 +878,7 @@
                   <Button :label="$t('back')" class="p-button-danger mt-3 mx-1" @click="resetState('editService')" />
                 </TabPanel>
               </TabView>
-            </div>
+            </BlockUI>
           </TabPanel>
         </TabView>
       </div>
@@ -1175,7 +1175,7 @@ export default {
           vm.loading = false
         })
       } else if (command === "getService") {
-        // this.editServiceLoader = true
+        this.editServiceLoader = true
         this.axios({
           url: "/api/services/" + vm.editServiceBuffer.id,
           method: "GET",
@@ -2281,10 +2281,10 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
-            console.log(res.data.status.code)
             if (res.data.status.code === 200) {
               vm.createServiceErrors.metadataLocation = ""
               vm.createServiceBuffer.metadataLocation = res.data.data
+              console.log(vm.createServiceBuffer.metadataLocation)
             } else {
               vm.createServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
@@ -2341,9 +2341,9 @@ export default {
           headers: { "Content-Type": "multipart/form-data" },
           data: logoFileBodyFormData
         }).then((res) => {
-          console.log(res.data.status.code)
           if (res.data.status.code === 200) {
             vm.createServiceBuffer.logo = res.data.data
+            console.log(vm.createServiceBuffer.logo)
           }
           vm.createServiceLoader = false
         }).catch(() => {
@@ -2468,10 +2468,39 @@ export default {
             headers: { "Content-Type": "multipart/form-data" },
             data: metadataFileBodyFormData
           }).then((res) => {
-            console.log(res.data.status.code)
             if (res.data.status.code === 200) {
               vm.editServiceErrors.metadataLocation = ""
               vm.editServiceBuffer.metadataLocation = res.data.data
+              if (vm.editServiceBuffer.logoFile !== null) {
+                const logoFileBodyFormData = new FormData()
+                logoFileBodyFormData.append("file", vm.editServiceBuffer.logoFile)
+                vm.editServiceLoader = true
+                vm.axios({
+                  url: "/api/services/icon",
+                  method: "POST",
+                  headers: { "Content-Type": "multipart/form-data" },
+                  data: logoFileBodyFormData
+                }).then((res) => {
+                  if (res.data.status.code === 200) {
+                    vm.editServiceBuffer.logo = res.data.data
+                    if (errorCount > 0) {
+                      vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                    } else {
+                      vm.servicesRequestMaster("editService")
+                    }
+                  }
+                  vm.editServiceLoader = false
+                }).catch(() => {
+                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  vm.editServiceLoader = false
+                })
+              } else {
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("editService")
+                }
+              }
             } else {
               vm.editServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
@@ -2509,46 +2538,38 @@ export default {
         } else {
           this.editServiceErrors.supportedResponseTypes = ""
         }
-      }
-
-      const i = setInterval(function () {
-        if (this.editServiceLoader === false) {
-          clearInterval(i)
-        }
-      }, 500)
-
-      if (this.editServiceBuffer.logoFile !== null) {
-        const logoFileBodyFormData = new FormData()
-        logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
-        const vm = this
-        this.editServiceLoader = true
-        this.axios({
-          url: "/api/services/icon",
-          method: "POST",
-          headers: { "Content-Type": "multipart/form-data" },
-          data: logoFileBodyFormData
-        }).then((res) => {
-          console.log(res.data.status.code)
-          if (res.data.status.code === 200) {
-            this.editServiceBuffer.logo = res.data.data
-          }
-          vm.editServiceLoader = false
-        }).catch(() => {
-          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          vm.editServiceLoader = false
-        })
-      }
-
-      const j = setInterval(function () {
-        if (this.editServiceLoader === false) {
-          clearInterval(j)
-        }
-      }, 500)
-
-      if (errorCount > 0) {
-        this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
-        this.servicesRequestMaster("editService")
+        if (this.editServiceBuffer.logoFile !== null) {
+          const logoFileBodyFormData = new FormData()
+          logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
+          const vm = this
+          this.editServiceLoader = true
+          this.axios({
+            url: "/api/services/icon",
+            method: "POST",
+            headers: { "Content-Type": "multipart/form-data" },
+            data: logoFileBodyFormData
+          }).then((res) => {
+            if (res.data.status.code === 200) {
+              vm.editServiceBuffer.logo = res.data.data
+              if (errorCount > 0) {
+                vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              } else {
+                vm.servicesRequestMaster("editService")
+              }
+            }
+            vm.editServiceLoader = false
+          }).catch(() => {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.editServiceLoader = false
+          })
+        } else {
+          if (errorCount > 0) {
+            this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          } else {
+            this.servicesRequestMaster("editService")
+          }
+        }
       }
     },
     deleteService (id, name) {

@@ -16,7 +16,7 @@
                       <AppAvatar :image="userAvatar" size="xlarge" shape="circle" class="avatar avatarBorder"></AppAvatar>
                     </a>
                     <form class="hidden">
-                      <input id="user.avatar" type="file" name="file" v-on:change="profileRequestMaster('editUserAvatar')" accept="image/*">
+                      <input id="user.avatar" type="file" name="file" v-on:change="profileRequestMaster('editUserAvatar')" accept=".png, .jpg, .jpeg">
                     </form>
                     <div class="grid">
                       <div class="col-12">
