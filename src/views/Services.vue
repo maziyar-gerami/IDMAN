@@ -1593,56 +1593,56 @@ export default {
         if (this.createServiceBuffer.serviceType === "CAS") {
           serviceType = "cas"
           serviceData = JSON.stringify({
-            name: vm.createServiceBuffer.name,
-            serviceId: vm.createServiceBuffer.serviceId,
-            extraInfo: vm.createServiceBuffer.extraInfo,
-            multifactorPolicy: vm.createServiceBuffer.multifactorPolicy,
-            description: vm.createServiceBuffer.description,
-            logo: vm.createServiceBuffer.logo,
-            informationUrl: vm.createServiceBuffer.informationUrl,
-            privacyUrl: vm.createServiceBuffer.privacyUrl,
-            logoutType: vm.createServiceBuffer.logoutType,
-            logoutUrl: vm.createServiceBuffer.logoutUrl,
-            accessStrategy: vm.createServiceBuffer.accessStrategy,
-            contacts: vm.createServiceBuffer.contacts
+            name: this.createServiceBuffer.name,
+            serviceId: this.createServiceBuffer.serviceId,
+            extraInfo: this.createServiceBuffer.extraInfo,
+            multifactorPolicy: this.createServiceBuffer.multifactorPolicy,
+            description: this.createServiceBuffer.description,
+            logo: this.createServiceBuffer.logo,
+            informationUrl: this.createServiceBuffer.informationUrl,
+            privacyUrl: this.createServiceBuffer.privacyUrl,
+            logoutType: this.createServiceBuffer.logoutType,
+            logoutUrl: this.createServiceBuffer.logoutUrl,
+            accessStrategy: this.createServiceBuffer.accessStrategy,
+            contacts: this.createServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         } else if (this.createServiceBuffer.serviceType === "SAML") {
           serviceType = "saml"
           serviceData = JSON.stringify({
-            name: vm.createServiceBuffer.name,
-            serviceId: vm.createServiceBuffer.serviceId,
-            extraInfo: vm.createServiceBuffer.extraInfo,
-            metadataLocation: vm.createServiceBuffer.metadataLocation,
-            multifactorPolicy: vm.createServiceBuffer.multifactorPolicy,
-            description: vm.createServiceBuffer.description,
-            logo: vm.createServiceBuffer.logo,
-            informationUrl: vm.createServiceBuffer.informationUrl,
-            privacyUrl: vm.createServiceBuffer.privacyUrl,
-            logoutType: vm.createServiceBuffer.logoutType,
-            logoutUrl: vm.createServiceBuffer.logoutUrl,
-            accessStrategy: vm.createServiceBuffer.accessStrategy,
-            contacts: vm.createServiceBuffer.contacts
+            name: this.createServiceBuffer.name,
+            serviceId: this.createServiceBuffer.serviceId,
+            extraInfo: this.createServiceBuffer.extraInfo,
+            metadataLocation: this.createServiceBuffer.metadataLocation,
+            multifactorPolicy: this.createServiceBuffer.multifactorPolicy,
+            description: this.createServiceBuffer.description,
+            logo: this.createServiceBuffer.logo,
+            informationUrl: this.createServiceBuffer.informationUrl,
+            privacyUrl: this.createServiceBuffer.privacyUrl,
+            logoutType: this.createServiceBuffer.logoutType,
+            logoutUrl: this.createServiceBuffer.logoutUrl,
+            accessStrategy: this.createServiceBuffer.accessStrategy,
+            contacts: this.createServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         } else if (this.createServiceBuffer.serviceType === "Oauth2") {
           serviceType = "oauth"
           serviceData = JSON.stringify({
-            name: vm.createServiceBuffer.name,
-            serviceId: vm.createServiceBuffer.serviceId,
-            clientId: vm.createServiceBuffer.clientId,
-            clientSecret: vm.createServiceBuffer.clientSecret,
-            supportedGrantTypes: vm.createServiceBuffer.supportedGrantTypes,
-            supportedResponseTypes: vm.createServiceBuffer.supportedResponseTypes,
-            extraInfo: vm.createServiceBuffer.extraInfo,
-            metadataLocation: vm.createServiceBuffer.metadataLocation,
-            multifactorPolicy: vm.createServiceBuffer.multifactorPolicy,
-            description: vm.createServiceBuffer.description,
-            logo: vm.createServiceBuffer.logo,
-            informationUrl: vm.createServiceBuffer.informationUrl,
-            privacyUrl: vm.createServiceBuffer.privacyUrl,
-            logoutType: vm.createServiceBuffer.logoutType,
-            logoutUrl: vm.createServiceBuffer.logoutUrl,
-            accessStrategy: vm.createServiceBuffer.accessStrategy,
-            contacts: vm.createServiceBuffer.contacts
+            name: this.createServiceBuffer.name,
+            serviceId: this.createServiceBuffer.serviceId,
+            clientId: this.createServiceBuffer.clientId,
+            clientSecret: this.createServiceBuffer.clientSecret,
+            supportedGrantTypes: this.createServiceBuffer.supportedGrantTypes,
+            supportedResponseTypes: this.createServiceBuffer.supportedResponseTypes,
+            extraInfo: this.createServiceBuffer.extraInfo,
+            metadataLocation: this.createServiceBuffer.metadataLocation,
+            multifactorPolicy: this.createServiceBuffer.multifactorPolicy,
+            description: this.createServiceBuffer.description,
+            logo: this.createServiceBuffer.logo,
+            informationUrl: this.createServiceBuffer.informationUrl,
+            privacyUrl: this.createServiceBuffer.privacyUrl,
+            logoutType: this.createServiceBuffer.logoutType,
+            logoutUrl: this.createServiceBuffer.logoutUrl,
+            accessStrategy: this.createServiceBuffer.accessStrategy,
+            contacts: this.createServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         }
         this.axios({
@@ -1667,7 +1667,6 @@ export default {
           vm.createServiceLoader = false
         })
       } else if (command === "editService") {
-        console.log(this.editServiceBuffer.logo)
         let serviceData = {}
         this.editServiceLoader = true
         const ouTemp = []
@@ -1896,7 +1895,6 @@ export default {
         this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
 
         let serviceType = ""
-        console.log(this.editServiceBuffer.logo)
         if (this.editServiceBuffer.serviceType === "CAS") {
           serviceType = "cas"
           serviceData = JSON.stringify({
@@ -2286,7 +2284,36 @@ export default {
             if (res.data.status.code === 200) {
               vm.createServiceErrors.metadataLocation = ""
               vm.createServiceBuffer.metadataLocation = res.data.data
-              console.log(vm.createServiceBuffer.metadataLocation)
+              if (vm.createServiceBuffer.logoFile !== null) {
+                const logoFileBodyFormData = new FormData()
+                logoFileBodyFormData.append("file", vm.createServiceBuffer.logoFile)
+                vm.createServiceLoader = true
+                vm.axios({
+                  url: "/api/services/icon",
+                  method: "POST",
+                  headers: { "Content-Type": "multipart/form-data" },
+                  data: logoFileBodyFormData
+                }).then((res) => {
+                  if (res.data.status.code === 200) {
+                    vm.createServiceBuffer.logo = res.data.data
+                    if (errorCount > 0) {
+                      vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                    } else {
+                      vm.servicesRequestMaster("createService")
+                    }
+                  }
+                  vm.createServiceLoader = false
+                }).catch(() => {
+                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  vm.createServiceLoader = false
+                })
+              } else {
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("createService")
+                }
+              }
             } else {
               vm.createServiceErrors.metadataLocation = "p-invalid"
               errorCount += 1
@@ -2324,46 +2351,38 @@ export default {
         } else {
           this.createServiceErrors.supportedResponseTypes = ""
         }
-      }
-
-      const i = setInterval(function () {
-        if (this.createServiceLoader === false) {
-          clearInterval(i)
-        }
-      }, 500)
-
-      if (this.createServiceBuffer.logoFile !== null) {
-        const logoFileBodyFormData = new FormData()
-        logoFileBodyFormData.append("file", this.createServiceBuffer.logoFile)
-        const vm = this
-        this.createServiceLoader = true
-        this.axios({
-          url: "/api/services/icon",
-          method: "POST",
-          headers: { "Content-Type": "multipart/form-data" },
-          data: logoFileBodyFormData
-        }).then((res) => {
-          if (res.data.status.code === 200) {
-            vm.createServiceBuffer.logo = res.data.data
-            console.log(vm.createServiceBuffer.logo)
-          }
-          vm.createServiceLoader = false
-        }).catch(() => {
-          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          vm.createServiceLoader = false
-        })
-      }
-
-      const j = setInterval(function () {
-        if (this.createServiceLoader === false) {
-          clearInterval(j)
-        }
-      }, 500)
-
-      if (errorCount > 0) {
-        this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
-        this.servicesRequestMaster("createService")
+        if (this.createServiceBuffer.logoFile !== null) {
+          const logoFileBodyFormData = new FormData()
+          logoFileBodyFormData.append("file", this.createServiceBuffer.logoFile)
+          const vm = this
+          this.createServiceLoader = true
+          this.axios({
+            url: "/api/services/icon",
+            method: "POST",
+            headers: { "Content-Type": "multipart/form-data" },
+            data: logoFileBodyFormData
+          }).then((res) => {
+            if (res.data.status.code === 200) {
+              vm.createServiceBuffer.logo = res.data.data
+              if (errorCount > 0) {
+                vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              } else {
+                vm.servicesRequestMaster("createService")
+              }
+            }
+            vm.createServiceLoader = false
+          }).catch(() => {
+            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            vm.createServiceLoader = false
+          })
+        } else {
+          if (errorCount > 0) {
+            this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          } else {
+            this.servicesRequestMaster("createService")
+          }
+        }
       }
     },
     editService (id) {
