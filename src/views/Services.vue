@@ -44,7 +44,7 @@
                   {{ data.description }}
                 </template>
               </Column>
-              <Column field="url" :header="$t('url')" bodyClass="text-center" style="flex: 0 0 15rem" dir="ltr">
+              <Column field="url" :header="$t('url')" bodyClass="text-center" bodyStyle="direction: ltr;" style="flex: 0 0 15rem">
                 <template #body="{data}">
                   <a :href="data.url" target="_blank" style="text-decoration: none;">{{ data.url }}</a>
                 </template>
@@ -1667,6 +1667,7 @@ export default {
           vm.createServiceLoader = false
         })
       } else if (command === "editService") {
+        console.log(this.editServiceBuffer.logo)
         let serviceData = {}
         this.editServiceLoader = true
         const ouTemp = []
@@ -1895,59 +1896,60 @@ export default {
         this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
 
         let serviceType = ""
+        console.log(this.editServiceBuffer.logo)
         if (this.editServiceBuffer.serviceType === "CAS") {
           serviceType = "cas"
           serviceData = JSON.stringify({
-            name: vm.editServiceBuffer.name,
-            serviceId: vm.editServiceBuffer.serviceId,
-            extraInfo: vm.editServiceBuffer.extraInfo,
-            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
-            description: vm.editServiceBuffer.description,
-            logo: vm.editServiceBuffer.logo,
-            informationUrl: vm.editServiceBuffer.informationUrl,
-            privacyUrl: vm.editServiceBuffer.privacyUrl,
-            logoutType: vm.editServiceBuffer.logoutType,
-            logoutUrl: vm.editServiceBuffer.logoutUrl,
-            accessStrategy: vm.editServiceBuffer.accessStrategy,
-            contacts: vm.editServiceBuffer.contacts
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         } else if (this.editServiceBuffer.serviceType === "SAML") {
           serviceType = "saml"
           serviceData = JSON.stringify({
-            name: vm.editServiceBuffer.name,
-            serviceId: vm.editServiceBuffer.serviceId,
-            extraInfo: vm.editServiceBuffer.extraInfo,
-            metadataLocation: vm.editServiceBuffer.metadataLocation,
-            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
-            description: vm.editServiceBuffer.description,
-            logo: vm.editServiceBuffer.logo,
-            informationUrl: vm.editServiceBuffer.informationUrl,
-            privacyUrl: vm.editServiceBuffer.privacyUrl,
-            logoutType: vm.editServiceBuffer.logoutType,
-            logoutUrl: vm.editServiceBuffer.logoutUrl,
-            accessStrategy: vm.editServiceBuffer.accessStrategy,
-            contacts: vm.editServiceBuffer.contacts
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            metadataLocation: this.editServiceBuffer.metadataLocation,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         } else if (this.editServiceBuffer.serviceType === "Oauth2") {
           serviceType = "oauth"
           serviceData = JSON.stringify({
-            name: vm.editServiceBuffer.name,
-            serviceId: vm.editServiceBuffer.serviceId,
-            clientId: vm.editServiceBuffer.clientId,
-            clientSecret: vm.editServiceBuffer.clientSecret,
-            supportedGrantTypes: vm.editServiceBuffer.supportedGrantTypes,
-            supportedResponseTypes: vm.editServiceBuffer.supportedResponseTypes,
-            extraInfo: vm.editServiceBuffer.extraInfo,
-            metadataLocation: vm.editServiceBuffer.metadataLocation,
-            multifactorPolicy: vm.editServiceBuffer.multifactorPolicy,
-            description: vm.editServiceBuffer.description,
-            logo: vm.editServiceBuffer.logo,
-            informationUrl: vm.editServiceBuffer.informationUrl,
-            privacyUrl: vm.editServiceBuffer.privacyUrl,
-            logoutType: vm.editServiceBuffer.logoutType,
-            logoutUrl: vm.editServiceBuffer.logoutUrl,
-            accessStrategy: vm.editServiceBuffer.accessStrategy,
-            contacts: vm.editServiceBuffer.contacts
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            clientId: this.editServiceBuffer.clientId,
+            clientSecret: this.editServiceBuffer.clientSecret,
+            supportedGrantTypes: this.editServiceBuffer.supportedGrantTypes,
+            supportedResponseTypes: this.editServiceBuffer.supportedResponseTypes,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            metadataLocation: this.editServiceBuffer.metadataLocation,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
           }).replace(/\\\\/g, "\\")
         }
         this.axios({
