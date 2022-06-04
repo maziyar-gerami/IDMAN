@@ -132,7 +132,6 @@ const store = createStore({
         state.accessLevel = 0
         runApp()
       })
-      runApp()
     }
   }
 })
