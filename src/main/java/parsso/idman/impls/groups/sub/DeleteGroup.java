@@ -85,8 +85,7 @@ public class DeleteGroup extends Parameters {
                 }
                 mongoTemplate.save(Objects.requireNonNull(simpleUser), Variables.col_usersExtraInfo);
                 uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_USER, user.get_id(),
-                    Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS,
-                    groupN + "Removing 'OU'=+" + groupN));
+                    Variables.MODEL_GROUP, Variables.ACTION_REMOVE, Variables.RESULT_SUCCESS, "Removing 'OU'=" + groupN));
 
               } catch (Exception e) {
                 e.printStackTrace();
