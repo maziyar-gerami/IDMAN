@@ -83,7 +83,7 @@ public class PWDreset {
               new BasicAttribute("pwdReset", "TRUE"));
 
         try {
-          ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(userLoggedIn.get_id()),
+          ldapTemplate.modifyAttributes(BuildDnUser.buildDn(userLoggedIn.get_id()),
               modificationItems);
         } catch (Exception ignore) {
 

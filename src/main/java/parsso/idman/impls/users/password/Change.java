@@ -66,7 +66,7 @@ public class Change {
       if (httpStatus == HttpStatus.OK) {
 
         DirContextOperations contextUser;
-        contextUser = ldapTemplate.lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
+        contextUser = ldapTemplate.lookupContext(BuildDnUser.buildDn(user.get_id().toString()));
         contextUser.setAttributeValue("userPassword", newPassword);
 
         try {
@@ -116,7 +116,7 @@ public class Change {
         return HttpStatus.FORBIDDEN;
       }
 
-      contextUser = ldapTemplate.lookupContext(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
+      contextUser = ldapTemplate.lookupContext(BuildDnUser.buildDn(user.get_id().toString()));
       contextUser.setAttributeValue("userPassword", newPassword);
       try {
         if (!supplementary.increaseSameDayPasswordChanges(usersOpRetrieve.retrieveUsers(userId))) {

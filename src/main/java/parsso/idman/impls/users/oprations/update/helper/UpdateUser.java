@@ -16,6 +16,7 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.BuildDnUser;
 import parsso.idman.helpers.user.ExcelAnalyzer;
+import parsso.idman.helpers.user.Operations;
 import parsso.idman.helpers.user.Password;
 import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Time;
@@ -54,7 +55,7 @@ public class UpdateUser {
   public HttpStatus update(String doerID, String usid, User p) {
 
     p.setUserId(usid.trim());
-    Name dn = new BuildDnUser(BASE_DN).buildDn(p.get_id().toString());
+    Name dn = BuildDnUser.buildDn(p.get_id().toString());
 
     User user = userOpRetrieve.retrieveUsers(p.get_id().toString());
 
@@ -81,11 +82,12 @@ public class UpdateUser {
       user.setUnDeletable(p.isUnDeletable());
     }
 
-    if (p.getCStatus() != null) {
-      if ((p.getCStatus().equals("unlock") || p.getCStatus().equals("enable"))
-          || (p.getStatus().equals("unlock") || p.getStatus().equals("enable"))) {
+    if (p.getStatus() != null) {
+      if ((p.getStatus().equals("enable"))) {
+            new Operations(userOpRetrieve,ldapTemplate,uniformLogger,mongoTemplate).enable(doerID,p.get_id().toString());
         p.setStatus("enable");
-      } else if (p.getCStatus().equals("disable") || p.getStatus().equals("disable")) {
+      } else if (p.getStatus().equals("disable")) {
+        new Operations(userOpRetrieve,ldapTemplate,uniformLogger,mongoTemplate).disable(doerID,p.get_id().toString());
         p.setStatus("disable");
       }
       Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());

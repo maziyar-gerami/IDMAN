@@ -68,7 +68,7 @@ public class DeleteGroup extends Parameters {
           for (String groupN : user.getMemberOf()) {
             if (groupN.equalsIgnoreCase(group.getId())) {
               context = ldapTemplate
-                  .lookupContext(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(user.get_id().toString()));
+                  .lookupContext(BuildDnUser.buildDn(user.get_id().toString()));
               context.removeAttributeValue("ou", group.getId());
               try {
                 ldapTemplate.modifyAttributes(context);

@@ -2,17 +2,15 @@ package parsso.idman.helpers.user;
 
 import org.springframework.ldap.support.LdapNameBuilder;
 
+import parsso.idman.configs.Prefs;
+import parsso.idman.helpers.Variables;
+
 import javax.naming.Name;
 
 public class BuildDnUser {
-  String BASE_DN;
 
-  public BuildDnUser(String BASE_DN) {
-    this.BASE_DN = BASE_DN;
-  }
-
-  public Name buildDn(String userId) {
-    return LdapNameBuilder.newInstance(BASE_DN).add("ou", "People").add("uid", userId).build();
+  public static Name buildDn(String userId) {
+    return LdapNameBuilder.newInstance(Prefs.get(Variables.PREFS_BASE_DN)).add("ou", "People").add("uid", userId).build();
   }
 
 }

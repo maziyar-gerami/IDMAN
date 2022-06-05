@@ -52,7 +52,7 @@ public class Expire {
             new BasicAttribute("pwdReset", "TRUE"));
 
         try {
-          ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+          ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
               modificationItems);
           user.setEndTimeEpoch(new Date().getTime());
           mongoTemplate.save(user, Variables.col_usersExtraInfo);
@@ -65,7 +65,7 @@ public class Expire {
           try {
             modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
                 new BasicAttribute("pwdReset", "TRUE"));
-            ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+            ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
                 modificationItems);
             user.setEndTimeEpoch(new Date().getTime());
             mongoTemplate.save(user, Variables.col_usersExtraInfo);

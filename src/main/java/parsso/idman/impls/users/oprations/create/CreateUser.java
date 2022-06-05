@@ -92,7 +92,7 @@ public class CreateUser extends Parameters implements UsersCreateRepo {
         if (new GroupsChecks(groupRepo).checkGroup(p.getMemberOf())) {
 
           // create user in ldap
-          ldapTemplate.bind(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(p.get_id().toString()), null,
+          ldapTemplate.bind(BuildDnUser.buildDn(p.get_id().toString()), null,
               buildAttributes.build(p));
 
           if (p.getStatus() != null) {

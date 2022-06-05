@@ -42,7 +42,7 @@ public class UsersWithSpecificOU {
       for (User user : getUsersOfOu(old_ou)) {
 
         DirContextOperations context = buildAttributes.buildAttributes(doerID, user.get_id().toString(), user,
-            new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
+            BuildDnUser.buildDn(user.get_id().toString()));
 
         context.removeAttributeValue("ou", old_ou);
         context.addAttributeValue("ou", new_ou);

@@ -58,7 +58,7 @@ public class DeleteUser extends Parameters implements UsersDeleteRepo {
         Query query = new Query(new Criteria("_id").is(user.get_id().toString()));
 
         try {
-          ldapTemplate.unbind(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()));
+          ldapTemplate.unbind(BuildDnUser.buildDn(user.get_id().toString()));
           mongoTemplate.remove(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
           uniformLogger.info(doer, new ReportMessage(Variables.MODEL_USER, user.get_id().toString(), "",
               Variables.ACTION_DELETE, Variables.RESULT_SUCCESS, ""));

@@ -70,7 +70,7 @@ public class PWDlockout {
       
 
         try {
-          ldapTemplate.modifyAttributes(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(user.get_id().toString()),
+          ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
               modificationItems);
       } catch (Exception e) {
         uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.get_id().toString(),

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.ReportMessage;
@@ -22,9 +24,6 @@ public class ExpirePassword {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
-
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
 
   @Autowired
   public ExpirePassword(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
@@ -49,7 +48,7 @@ public class ExpirePassword {
             new BasicAttribute("pwdReset", "TRUE"));
 
         try {
-          ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+          ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
               modificationItems);
           user.setEndTimeEpoch(new Date().getTime());
           mongoTemplate.save(user, Variables.col_usersExtraInfo);
@@ -62,7 +61,7 @@ public class ExpirePassword {
           try {
             modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
                 new BasicAttribute("pwdReset", "TRUE"));
-            ldapTemplate.modifyAttributes(new BuildDnUser(BASE_DN).buildDn(user.get_id().toString()),
+            ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
                 modificationItems);
             user.setEndTimeEpoch(new Date().getTime());
             mongoTemplate.save(user, Variables.col_usersExtraInfo);

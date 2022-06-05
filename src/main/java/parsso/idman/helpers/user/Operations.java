@@ -45,12 +45,9 @@ public class Operations {
     this.mongoTemplate = mongoTemplate;
   }
 
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
-
   public HttpStatus enable(String doer, String uid) {
 
-    Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
+    Name dn = BuildDnUser.buildDn(uid);
 
     ModificationItem[] modificationItems;
     modificationItems = new ModificationItem[1];
@@ -60,7 +57,7 @@ public class Operations {
         UsersExtraInfo.class, Variables.col_usersExtraInfo);
     String status = user.getStatus();
 
-    if (status.equalsIgnoreCase("disable")) {
+    if (status.equalsIgnoreCase("disable") || status.equalsIgnoreCase("lock")) {
       modificationItems[0] = new ModificationItem(DirContext.REMOVE_ATTRIBUTE,
           new BasicAttribute("pwdAccountLockedTime"));
       userExtraInfo.setStatus("enable");
@@ -88,7 +85,7 @@ public class Operations {
 
   public HttpStatus disable(String doerID, String uid) {
 
-    Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
+    Name dn = BuildDnUser.buildDn(uid);
 
     ModificationItem[] modificationItems;
     modificationItems = new ModificationItem[1];
@@ -126,7 +123,7 @@ public class Operations {
 
   public HttpStatus unlock(String doerID, String uid) {
 
-    Name dn = new BuildDnUser(BASE_DN).buildDn(uid);
+    Name dn = BuildDnUser.buildDn(uid);
 
     ModificationItem[] modificationItems;
     modificationItems = new ModificationItem[1];
