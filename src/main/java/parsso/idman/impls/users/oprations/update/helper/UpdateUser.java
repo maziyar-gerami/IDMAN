@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -39,15 +41,14 @@ public class UpdateUser {
   final String BASE_DN;
 
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer,
-      String BASE_DN) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.userOpRetrieve = userOpRetrieve;
     this.buildAttributes = buildAttributes;
     this.excelAnalyzer = excelAnalyzer;
-    this.BASE_DN = BASE_DN;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public HttpStatus update(String doerID, String usid, User p) {

@@ -23,6 +23,7 @@ import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.naming.Name;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
@@ -75,7 +76,10 @@ public class DeleteGroup extends Parameters {
                     new Query(Criteria.where("_id").is(user.get_id())), UsersExtraInfo.class,
                     Variables.col_usersExtraInfo);
                 try {
-                  Objects.requireNonNull(simpleUser).getMemberOf().remove(group.getId());
+                  List<String> s1 = Objects.requireNonNull(simpleUser).getMemberOf();
+                  int index = s1.indexOf(group.getId());
+                  s1.remove(index);
+                  simpleUser.setMemberOf(s1);
                 } catch (Exception e) {
                   e.printStackTrace();
                 }
