@@ -62,7 +62,7 @@ public class UpdateGroup extends Parameters {
     if (new RetrieveGroup(ldapTemplate, mongoTemplate).retrieve(true, id) == null)
       return HttpStatus.NOT_FOUND;
 
-    Name dn = new BuildDnGroup(Prefs.get("BASE_DN")).buildDn(id);
+    Name dn = new BuildDnGroup(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(id);
 
     if (!(id.equals(ou.getId()))) {
       ldapTemplate.unbind(dn);
@@ -75,7 +75,7 @@ public class UpdateGroup extends Parameters {
         for (String group : user.getMemberOf()) {
           if (group.equalsIgnoreCase(id)) {
             DirContextOperations contextUser = ldapTemplate
-                .lookupContext(new BuildDnUser(Prefs.get("BASE_DN")).buildDn(user.get_id().toString()));
+                .lookupContext(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(user.get_id().toString()));
             contextUser.removeAttributeValue("ou", id);
             contextUser.addAttributeValue("ou", ou.getId());
             ldapTemplate.modifyAttributes(contextUser);

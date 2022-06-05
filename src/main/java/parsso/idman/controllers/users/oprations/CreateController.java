@@ -53,13 +53,18 @@ public class CreateController extends UsersOps {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     if (bucket.tryConsume(1)) {
-      JSONObject jsonObject = userOpCreate.create(request.getUserPrincipal().getName(), user);
+      JSONObject jsonObject = userOpCreate.create("request.getUserPrincipal().getName()", user);
 
       if (jsonObject == null || jsonObject.size() == 0) {
         return new ResponseEntity<>(new Response(
             null, Variables.MODEL_USER, HttpStatus.CREATED.value(), lang),
             HttpStatus.OK);
-      } else {
+      } else if (jsonObject.get("invalid attributes")!=null) {
+        return new ResponseEntity<>(new Response(
+            jsonObject, Variables.MODEL_USER, HttpStatus.BAD_REQUEST.value(), lang),
+            HttpStatus.OK);
+      }
+      else {
         return new ResponseEntity<>(new Response(
             jsonObject, Variables.MODEL_USER, HttpStatus.FOUND.value(), lang),
             HttpStatus.OK);

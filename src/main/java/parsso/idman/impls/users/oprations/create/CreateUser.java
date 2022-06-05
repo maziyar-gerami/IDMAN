@@ -1,6 +1,10 @@
 package parsso.idman.impls.users.oprations.create;
 
 import net.minidev.json.JSONObject;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
@@ -38,14 +42,13 @@ public class CreateUser extends Parameters implements UsersCreateRepo {
 
   @Override
   public JSONObject create(String doerID, User p) {
+
+    if (p==null || p.get_id() == null || p.get_id().toString().equals("")) {
+      return null;
+    }
+
     p.setUserId(p.get_id().toString().toLowerCase());
 
-    if (p.get_id() == null || p.get_id().toString().equals("")) {
-
-      JSONObject jsonObject = new JSONObject();
-      jsonObject.put("invalidGroups", p.get_id().toString());
-      return jsonObject;
-    }
     User user;
     try {
       user = userOpRetrieve.retrieveUsers(p.get_id().toString());
@@ -63,23 +66,33 @@ public class CreateUser extends Parameters implements UsersCreateRepo {
               new ReportMessage(Variables.MODEL_USER, p.get_id().toString(), "", Variables.ACTION_CREATE,
                   Variables.RESULT_FAILED, "essential parameter not exist"));
           JSONObject jsonObject = new JSONObject();
+          List<String> invalidAttributes = new LinkedList<>();
           jsonObject.put("userId", p.get_id().toString());
-          if (p.getDisplayName() == null || p.getDisplayName().equals("")) {
-            jsonObject.put("invalidParameter", "ِDisplayName");
-          }
-          if (p.getMail() == null || p.getMail().equals("")) {
-            jsonObject.put("invalidParameter", "Mail");
-          }
-          if (p.getStatus() == null || p.getStatus().equals("")) {
-            jsonObject.put("invalidParameter", "Status");
-          }
+          if (p.getDisplayName() == null || p.getDisplayName().equals("")) invalidAttributes.add("ِDisplayName");
+          
+          if (p.getMail() == null || p.getMail().equals("")) invalidAttributes.add("Mail");
+          
+          if (p.getStatus() == null || p.getStatus().equals("")) invalidAttributes.add( "Status");
+
+          if (p.getMobile() == null || p.getMobile().equals("")) invalidAttributes.add( "Mobile");
+
+          if (p.getDisplayName() == null || p.getDisplayName().equals("")) invalidAttributes.add( "DisplayName");
+
+          if (p.getFirstName() == null || p.getFirstName().equals("")) invalidAttributes.add( "FirstName");
+
+          if (p.getLastName() == null || p.getLastName().equals("")) invalidAttributes.add( "LastName");
+
+          if (p.getPassword() == null || p.getPassword().equals("")) invalidAttributes.add( "Password");
+
+          jsonObject.put("invalid attributes", invalidAttributes);
+
           return jsonObject;
         }
 
         if (new GroupsChecks(groupRepo).checkGroup(p.getMemberOf())) {
 
           // create user in ldap
-          ldapTemplate.bind(new BuildDnUser(Prefs.get("BASE_DN")).buildDn(p.get_id().toString()), null,
+          ldapTemplate.bind(new BuildDnUser(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(p.get_id().toString()), null,
               buildAttributes.build(p));
 
           if (p.getStatus() != null) {

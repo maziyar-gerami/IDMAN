@@ -23,6 +23,7 @@ import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class RoleRepoImpl {
+  public RoleRepoImpl(){}
   @Autowired
   RolesRepo rolesRepo;
   @Autowired
@@ -31,19 +32,16 @@ public class RoleRepoImpl {
   UsersCreateRepo userRepCreate;
 
   @Test
-  public void run() {
-    retrieve();
-    List<String> names = new LinkedList<>();
-    names.add("su");
-    update(names);
-
-  }
-
-  private void retrieve() {
+  public void retrieve() {
     assertNotNull(rolesRepo.retrieve(), "retrieving all roles, failed");
   }
 
-  private void update(List<String> users) {
+  @Test
+  public void update() {
+
+    List<String> users = new LinkedList<>();
+    //TODO:Change it
+    users.add("su");
 
     ArrayList<String> names = new ArrayList<>();
     JSONObject jsonObject = new JSONObject();
