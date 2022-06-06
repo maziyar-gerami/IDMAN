@@ -118,7 +118,7 @@ public class UpdateUser {
     usersExtraInfo.setTimeStamp(new Date().getTime());
 
     if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
-      if(new Password(mongoTemplate).check(p.getUserPassword())){
+      if(!(new Password(mongoTemplate).check(p.getUserPassword()))){
         return HttpStatus.NOT_ACCEPTABLE;}
 
       context.setAttributeValue("userPassword", p.getUserPassword());
