@@ -17,7 +17,6 @@ import parsso.idman.mobile.impls.ServicesRepoImpl;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
-
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class LoginwithQR {

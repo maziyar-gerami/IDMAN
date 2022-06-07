@@ -21,9 +21,9 @@ public class SimpleServiceFix {
     this.retrieveService = retrieveService;
   }
 
-  public void run(){
-    List<SimpleService> sms = mongoTemplate.find(new Query(),SimpleService.class,Variables.col_servicesExtraInfo);
-    for (SimpleService simpleService : sms){
+  public void run() {
+    List<SimpleService> sms = mongoTemplate.find(new Query(), SimpleService.class, Variables.col_servicesExtraInfo);
+    for (SimpleService simpleService : sms) {
       Service tmp = retrieveService.retrieveService(simpleService.get_id());
       simpleService.setName(tmp.getName());
       simpleService.setServiceId(tmp.getServiceId());
@@ -33,5 +33,5 @@ public class SimpleServiceFix {
     }
     mongoTemplate.save(new OneTime(Variables.SIMPLESERVICE_FIX, true, new Date().getTime()), Variables.col_OneTime);
   }
-  
+
 }

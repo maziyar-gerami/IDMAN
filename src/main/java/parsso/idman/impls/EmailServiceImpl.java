@@ -20,6 +20,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -54,8 +56,6 @@ public class EmailServiceImpl implements EmailService {
   MailProperties mailProperties;
   @Autowired
   private JavaMailSender mailSender;
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
 
   public void sendSimpleMessage(User user, String subject, String url) {
     SimpleMailMessage message = new SimpleMailMessage();
@@ -257,7 +257,8 @@ public class EmailServiceImpl implements EmailService {
     SearchControls searchControls = new SearchControls();
     searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
     LinkedList<String> names = new LinkedList<>();
-    List<User> people = ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("mail", email).encode(),
+    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+        new EqualsFilter("mail", email).encode(),
         new UserAttributeMapper(mongoTemplate));
     for (User user : people)
       names.add(user.get_id().toString());

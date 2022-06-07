@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildDnUser;
@@ -28,11 +30,11 @@ public class PWDreset {
   final UniformLogger uniformLogger;
 
   public PWDreset(LdapTemplate ldapTemplate,
-      MongoTemplate mongoTemplate, UniformLogger uniformLogger, String BASE_DN) {
+      MongoTemplate mongoTemplate, UniformLogger uniformLogger) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
-    this.BASE_DN = BASE_DN;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void run() {

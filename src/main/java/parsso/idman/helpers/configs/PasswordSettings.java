@@ -55,7 +55,7 @@ public class PasswordSettings {
           continue;
 
         case "pwdLockout":
-          attrs[2] = new BasicAttribute("pwdLockout",  setting.getValue().toString().toUpperCase());
+          attrs[2] = new BasicAttribute("pwdLockout", setting.getValue().toString().toUpperCase());
           items[2] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[2]);
           continue;
 

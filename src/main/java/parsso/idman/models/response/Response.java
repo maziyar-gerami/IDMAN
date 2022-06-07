@@ -35,11 +35,10 @@ public class Response {
     public Status(String lang) {
       code = 200;
       if (lang.equals("fa"))
-          this.result = StringResult.COMMON_200_FA;
+        this.result = StringResult.COMMON_200_FA;
       else
-          result = StringResult.COMMON_200_EN;
-  }
-
+        result = StringResult.COMMON_200_EN;
+    }
 
     public Status(String model, int code, String lang) throws NoSuchFieldException, IllegalAccessException {
       this.code = code;

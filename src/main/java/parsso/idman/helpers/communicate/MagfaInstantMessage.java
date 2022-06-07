@@ -18,9 +18,6 @@ import parsso.idman.utils.sms.magfa.classes.MagfaSoapServer;
 import parsso.idman.utils.sms.magfa.classes.MagfaSoapServer_Service;
 import parsso.idman.utils.sms.magfa.classes.StringArray;
 
-
-
-
 public class MagfaInstantMessage {
   final MongoTemplate mongoTemplate;
   String message;

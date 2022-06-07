@@ -14,7 +14,7 @@ public class GroupsChecks {
   }
 
   public boolean checkGroup(List<String> groups) {
-    if (groups== null || (groups.size() == 1 && groups.get(0).equals("")))
+    if (groups == null || (groups.size() == 1 && groups.get(0).equals("")))
       return true;
 
     List<Group> realGroups = groupRepo.retrieve();

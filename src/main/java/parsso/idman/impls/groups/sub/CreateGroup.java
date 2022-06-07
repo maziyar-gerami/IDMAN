@@ -23,7 +23,7 @@ public class CreateGroup {
     this.uniformLogger = uniformLogger;
     this.mongoTemplate = mongoTemplate;
     this.retrieveGroup = new RetrieveGroup(ldapTemplate, mongoTemplate);
-    
+
   }
 
   public HttpStatus create(String doerID, Group ou) {
@@ -39,7 +39,8 @@ public class CreateGroup {
         return HttpStatus.FOUND;
 
       try {
-        ldapTemplate.bind(new BuildDnGroup(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(ou.getId()), null, new BuildAttribute().build(ou));
+        ldapTemplate.bind(new BuildDnGroup(Prefs.get(Variables.PREFS_BASE_DN)).buildDn(ou.getId()), null,
+            new BuildAttribute().build(ou));
         uniformLogger.info(doerID, new ReportMessage(Variables.MODEL_GROUP, ou.getId(), Variables.MODEL_GROUP,
             Variables.ACTION_CREATE, Variables.RESULT_SUCCESS, ""));
 

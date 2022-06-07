@@ -47,14 +47,16 @@ public class MainAttributes {
     }
 
     if (page == -1 && number == -1) {
-      return new ListUsers((int)(mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo)),
-      mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo), 1);
+      return new ListUsers((int) (mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo)),
+          mongoTemplate.find(query, UsersExtraInfo.class, Variables.col_usersExtraInfo), 1);
     }
 
-    else{
-      int count = (int) mongoTemplate.count(query, UsersExtraInfo.class,Variables.col_usersExtraInfo);
+    else {
+      int count = (int) mongoTemplate.count(query, UsersExtraInfo.class, Variables.col_usersExtraInfo);
       return new ListUsers(count,
-      mongoTemplate.find(query.skip((page-1)*number).limit(number), UsersExtraInfo.class, Variables.col_usersExtraInfo), (int) Math.ceil(count/number)+1);
+          mongoTemplate.find(query.skip((page - 1) * number).limit(number), UsersExtraInfo.class,
+              Variables.col_usersExtraInfo),
+          (int) Math.ceil(count / number) + 1);
     }
   }
 

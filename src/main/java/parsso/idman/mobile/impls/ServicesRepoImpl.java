@@ -17,6 +17,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.support.LdapNameBuilder;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
@@ -27,15 +29,11 @@ import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
 
-
-
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @Service
 public class ServicesRepoImpl implements ServicesRepo {
   static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
   static final SecureRandom rnd = new SecureRandom();
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
   @Autowired
   private UsersRetrieveRepo usersOpRetrieve;
   @Autowired
@@ -67,7 +65,8 @@ public class ServicesRepoImpl implements ServicesRepo {
   }
 
   public Name buildDn(String userId) {
-    return LdapNameBuilder.newInstance(BASE_DN).add("ou", "People").add("uid", userId).build();
+    return LdapNameBuilder.newInstance(Prefs.get(Variables.PREFS_BASE_DN)).add("ou", "People").add("uid", userId)
+        .build();
   }
 
   public String insertMobileToken1(User user) {

@@ -170,7 +170,6 @@ public class ReportMessage {
     time = Time.longToPersianTime(millis);
   }
 
-  
   @SuppressWarnings("DuplicatedCode")
   @Override
   public String toString() {
@@ -213,7 +212,6 @@ public class ReportMessage {
     }
     return last;
   }
-  
 
   private List<Change> difference(Object o1, Object o2) {
     Javers javers = JaversBuilder.javers().build();

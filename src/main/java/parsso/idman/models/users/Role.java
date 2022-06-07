@@ -7,9 +7,10 @@ import lombok.Setter;
 @Getter
 public class Role {
   public Role(int _id, String role) {
-    this._id=_id;
+    this._id = _id;
     this.role = role;
   }
+
   int _id;
   String role;
 }

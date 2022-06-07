@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -19,20 +21,18 @@ public class RunOneTime {
   final MongoTemplate mongoTemplate;
   final UsersRetrieveRepo usersOpRetrieve;
   final UsersUpdateRepo usersOpUpdate;
-  final String basedn;
   final RetrieveService retrieveService;
 
-  public RunOneTime(LdapTemplate ldapTemplate, 
+  public RunOneTime(LdapTemplate ldapTemplate,
       MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
-      UniformLogger uniformLogger, UsersUpdateRepo usersOpUpdate, String basedn,
+      UniformLogger uniformLogger, UsersUpdateRepo usersOpUpdate,
       UserAttributeMapper userAttributeMapper, RetrieveService retrieveService) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.usersOpRetrieve = usersOpRetrieve;
     this.usersOpUpdate = usersOpUpdate;
-    this.retrieveService =retrieveService;
-    this.basedn = basedn;
+    this.retrieveService = retrieveService;
   }
 
   public void postConstruct() throws InterruptedException {
@@ -49,7 +49,7 @@ public class RunOneTime {
 
       @Override
       public void run() {
-        new PWDreset(ldapTemplate, mongoTemplate, uniformLogger, basedn).run();
+        new PWDreset(ldapTemplate, mongoTemplate, uniformLogger).run();
       }
     };
 
@@ -73,7 +73,7 @@ public class RunOneTime {
 
       @Override
       public void run() {
-        new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate, basedn,
+        new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
             new UserAttributeMapper(mongoTemplate)).run();
       }
     };
@@ -98,7 +98,7 @@ public class RunOneTime {
 
       @Override
       public void run() {
-        new SimpleServiceFix(mongoTemplate,retrieveService).run();
+        new SimpleServiceFix(mongoTemplate, retrieveService).run();
       }
     };
 

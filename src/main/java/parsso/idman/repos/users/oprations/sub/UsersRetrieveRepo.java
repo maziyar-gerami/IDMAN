@@ -25,7 +25,6 @@ public interface UsersRetrieveRepo {
   ListUsers mainAttributes(int page, int number, String sortType, String groupFilter, String searchUid,
       String searchDisplayName, String mobile, String userStatus);
 
-    int retrieveUsersLDAPSize();
+  int retrieveUsersLDAPSize();
 
-  
 }

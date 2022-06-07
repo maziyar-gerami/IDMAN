@@ -12,7 +12,6 @@ import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.models.logs.Change;
 import parsso.idman.models.logs.ReportMessage;
 
-
 @Service
 public class UniformLogger {
   @Autowired

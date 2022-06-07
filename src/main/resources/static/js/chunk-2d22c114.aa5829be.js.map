@@ -1,1 +1,21 @@
-{"version":3,"sources":["webpack:///./src/views/Services.vue","webpack:///./src/views/Services.vue?055a"],"names":["class","$t","name","__exports__","render"],"mappings":"0IACOA,MAAM,Q,GACJA,MAAM,U,GACJA,MAAM,Q,gDAFf,eAMM,MANN,EAMM,CALJ,eAIM,MAJN,EAIM,CAHJ,eAEM,MAFN,EAEM,CADJ,eAA6B,yBAAtB,EAAAC,GAAE,sBAOF,OACbC,KAAM,Y,qBCPR,MAAMC,EAA2B,IAAgB,EAAQ,CAAC,CAAC,SAASC,KAErD","file":"js/chunk-2d22c114.aa5829be.js","sourcesContent":["<template>\r\n  <div class=\"grid\">\r\n    <div class=\"col-12\">\r\n      <div class=\"card\">\r\n        <h3>{{ $t(\"services\") }}</h3>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nexport default {\r\n  name: \"Services\"\r\n}\r\n</script>\r\n","import { render } from \"./Services.vue?vue&type=template&id=07f5942a\"\nimport script from \"./Services.vue?vue&type=script&lang=js\"\nexport * from \"./Services.vue?vue&type=script&lang=js\"\n\nimport exportComponent from \"A:\\\\APA\\\\NewFrontend\\\\node_modules\\\\vue-loader-v16\\\\dist\\\\exportHelper.js\"\nconst __exports__ = /*#__PURE__*/exportComponent(script, [['render',render]])\n\nexport default __exports__"],"sourceRoot":""}
+{
+  "version": 3,
+  "sources": [
+    "webpack:///./src/views/Services.vue",
+    "webpack:///./src/views/Services.vue?055a"
+  ],
+  "names": [
+    "class",
+    "$t",
+    "name",
+    "__exports__",
+    "render"
+  ],
+  "mappings": "0IACOA,MAAM,Q,GACJA,MAAM,U,GACJA,MAAM,Q,gDAFf,eAMM,MANN,EAMM,CALJ,eAIM,MAJN,EAIM,CAHJ,eAEM,MAFN,EAEM,CADJ,eAA6B,yBAAtB,EAAAC,GAAE,sBAOF,OACbC,KAAM,Y,qBCPR,MAAMC,EAA2B,IAAgB,EAAQ,CAAC,CAAC,SAASC,KAErD",
+  "file": "js/chunk-2d22c114.aa5829be.js",
+  "sourcesContent": [
+    "<template>\r\n  <div class=\"grid\">\r\n    <div class=\"col-12\">\r\n      <div class=\"card\">\r\n        <h3>{{ $t(\"services\") }}</h3>\r\n      </div>\r\n    </div>\r\n  </div>\r\n</template>\r\n\r\n<script>\r\nexport default {\r\n  name: \"Services\"\r\n}\r\n</script>\r\n",
+    "import { render } from \"./Services.vue?vue&type=template&id=07f5942a\"\nimport script from \"./Services.vue?vue&type=script&lang=js\"\nexport * from \"./Services.vue?vue&type=script&lang=js\"\n\nimport exportComponent from \"A:\\\\APA\\\\NewFrontend\\\\node_modules\\\\vue-loader-v16\\\\dist\\\\exportHelper.js\"\nconst __exports__ = /*#__PURE__*/exportComponent(script, [['render',render]])\n\nexport default __exports__"
+  ],
+  "sourceRoot": ""
+}

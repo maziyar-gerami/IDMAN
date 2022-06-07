@@ -26,8 +26,7 @@ import java.util.List;
 @Service
 @SuppressWarnings({ "unchecked" })
 public class DeleteUser extends Parameters implements UsersDeleteRepo {
-  @Value("${spring.ldap.base.dn}")
-  protected static String BASE_DN;
+
   public DeleteUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UsersRetrieveRepo userOpRetrieve) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);

@@ -18,16 +18,16 @@ public class Retrieve {
     this.mongoTemplate = mongoTemplate;
   }
 
-  public String retrieve(HttpServletResponse response, User user){
+  public String retrieve(HttpServletResponse response, User user) {
     String uploadedFilesPath = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
 
-    if (user.getPhoto() == null){
+    if (user.getPhoto() == null) {
       return "NotExist";
     }
 
     File file = new File(uploadedFilesPath + user.getPhoto());
 
-    if (file.exists()){
+    if (file.exists()) {
       try {
         String contentType = "image/png";
         response.setContentType(contentType);

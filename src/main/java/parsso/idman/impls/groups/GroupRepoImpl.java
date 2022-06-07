@@ -21,18 +21,18 @@ import parsso.idman.repos.FilesStorageService;
 import parsso.idman.repos.GroupRepo;
 
 @Service
-public class GroupRepoImpl extends Parameters implements GroupRepo  {
+public class GroupRepoImpl extends Parameters implements GroupRepo {
   private FilesStorageService filesStorageService;
 
-
   @Autowired
-  public GroupRepoImpl(LdapTemplate ldapTemplate,MongoTemplate mongoTemplate, UniformLogger uniformLogger, FilesStorageService filesStorageService){
-    super(ldapTemplate, mongoTemplate,uniformLogger);
+  public GroupRepoImpl(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
+      FilesStorageService filesStorageService) {
+    super(ldapTemplate, mongoTemplate, uniformLogger);
   }
 
   @Override
   public HttpStatus create(String doerId, Group ou) {
-    return new CreateGroup(ldapTemplate,mongoTemplate, uniformLogger).create(doerId, ou);
+    return new CreateGroup(ldapTemplate, mongoTemplate, uniformLogger).create(doerId, ou);
   }
 
   @Override
@@ -42,7 +42,7 @@ public class GroupRepoImpl extends Parameters implements GroupRepo  {
 
   @Override
   public Group retrieve(boolean simple, String name) {
-    return new RetrieveGroup(ldapTemplate,mongoTemplate).retrieve(simple, name);
+    return new RetrieveGroup(ldapTemplate, mongoTemplate).retrieve(simple, name);
   }
 
   @Override
@@ -59,5 +59,5 @@ public class GroupRepoImpl extends Parameters implements GroupRepo  {
   public HttpStatus remove(String doerId, JSONObject jsonObject) {
     return new DeleteGroup(ldapTemplate, mongoTemplate, uniformLogger).remove(doerId, jsonObject);
   }
-  
+
 }

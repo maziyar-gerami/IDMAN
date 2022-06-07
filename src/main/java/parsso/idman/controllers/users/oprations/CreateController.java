@@ -59,12 +59,11 @@ public class CreateController extends UsersOps {
         return new ResponseEntity<>(new Response(
             null, Variables.MODEL_USER, HttpStatus.CREATED.value(), lang),
             HttpStatus.OK);
-      } else if (jsonObject.get("invalid attributes")!=null) {
+      } else if (jsonObject.get("invalid attributes") != null) {
         return new ResponseEntity<>(new Response(
             jsonObject, Variables.MODEL_USER, HttpStatus.BAD_REQUEST.value(), lang),
             HttpStatus.OK);
-      }
-      else {
+      } else {
         return new ResponseEntity<>(new Response(
             jsonObject, Variables.MODEL_USER, HttpStatus.FOUND.value(), lang),
             HttpStatus.OK);
@@ -81,8 +80,9 @@ public class CreateController extends UsersOps {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException {
 
-        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_IMPORT))
-          return new ResponseEntity(new Response(null,Variables.MODEL_USER,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+    if (!Extentsion.check(file.getOriginalFilename(), Variables.EXT_USER_IMPORT))
+      return new ResponseEntity(
+          new Response(null, Variables.MODEL_USER, HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), lang), HttpStatus.OK);
 
     if (bucket.tryConsume(1)) {
 

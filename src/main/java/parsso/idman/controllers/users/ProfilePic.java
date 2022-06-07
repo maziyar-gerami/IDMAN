@@ -52,8 +52,9 @@ public class ProfilePic extends UsersOps {
   public ResponseEntity<Response> uploadProfilePic(@RequestParam("file") MultipartFile file,
       HttpServletRequest request, @RequestParam(name = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
-        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_PHOTO))
-          return new ResponseEntity(new Response(null,Variables.MODEL_USER,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+    if (!Extentsion.check(file.getOriginalFilename(), Variables.EXT_PHOTO))
+      return new ResponseEntity(
+          new Response(null, Variables.MODEL_USER, HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), lang), HttpStatus.OK);
     if (profilePic.upload(file, request.getUserPrincipal().getName()))
       return new ResponseEntity<>(new Response(true, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);

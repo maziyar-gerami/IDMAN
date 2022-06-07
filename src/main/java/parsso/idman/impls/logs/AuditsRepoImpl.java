@@ -31,17 +31,17 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
   public Audit.ListAudits retrieve(String userId, String startDate, String endDate, int p, int n, long sid) {
     long[] range = null;
     Query query = new Query(Criteria.where("actionPerformed")
-        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon").exists(true));
-    
+        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon")
+        .exists(true));
 
     if (!userId.equals("")) {
       query.addCriteria(Criteria.where("principal").is(userId));
     }
 
-    if(sid!=(0)){
+    if (sid != (0)) {
       parsso.idman.models.services.Service ms = retrieveService.retrieveService(sid);
       query.addCriteria(Criteria.where(
-            "resourceOperatedUpon").regex(ms.getServiceId()));
+          "resourceOperatedUpon").regex(ms.getServiceId()));
     }
 
     range = LogTime.rangeCreator(startDate, endDate);
@@ -59,13 +59,13 @@ public class AuditsRepoImpl implements LogsRepo.AuditRepo {
 
     for (Audit audit : audits) {
       for (parsso.idman.models.services.Service service : retrieveService.listServicesFull()) {
-        if(audit.getResourceOperatedUpon().contains(service.getServiceId())){
+        if (audit.getResourceOperatedUpon().contains(service.getServiceId())) {
           audit.setService(service.getName());
           break;
         }
       }
     }
-  
+
     return new Audit.ListAudits(audits, size, (int) Math.ceil((double) size / (double) n));
   }
 

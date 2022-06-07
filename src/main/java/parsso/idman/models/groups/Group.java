@@ -24,11 +24,12 @@ public class Group {
   public Group() {
   }
 
-  public Group(String id,String name,String description){
+  public Group(String id, String name, String description) {
     this.id = id;
     this.name = name;
     this.description = description;
   }
+
   @Setter
   @Getter
   public static class GroupUsers {

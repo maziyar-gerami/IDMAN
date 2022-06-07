@@ -1,1 +1,13 @@
-.p-toolbar[data-v-27a2cadd]{border-radius:6px 6px 0 0}.p-column-header-content[data-v-27a2cadd]{-webkit-box-pack:justify!important;-ms-flex-pack:justify!important;justify-content:space-between!important}.p-column-filter-menu[data-v-27a2cadd]{margin:0}
+.p-toolbar[data-v-27a2cadd] {
+  border-radius: 6px 6px 0 0
+}
+
+.p-column-header-content[data-v-27a2cadd] {
+  -webkit-box-pack: justify !important;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important
+}
+
+.p-column-filter-menu[data-v-27a2cadd] {
+  margin: 0
+}

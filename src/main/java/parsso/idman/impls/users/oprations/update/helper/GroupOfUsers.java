@@ -29,7 +29,7 @@ public class GroupOfUsers {
         try {
           User user = retrieveOp.retrieveUsers(uid);
           if (user.getMemberOf() != null) {
-            if (!user.getMemberOf().contains(groupId)){
+            if (!user.getMemberOf().contains(groupId)) {
               List<String> temp = user.getMemberOf();
               temp.add(groupId);
               user.setMemberOf(temp);

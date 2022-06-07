@@ -40,11 +40,11 @@ public class Notification implements Comparable {
       return -1;
   }
 
-  public boolean sendPasswordChangeNotify(User user, String baseUrl) {
+  public boolean sendPasswordChangeNotify(User user) {
     String SMS_sdk = new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue().toString();
 
     if (SMS_sdk.equalsIgnoreCase("KaveNegar")) {
-      return new Notification(mongoTemplate).sendMessagePasswordNotifyKaveNegar(mongoTemplate, user, baseUrl) > 0;
+      return new Notification(mongoTemplate).sendMessagePasswordNotifyKaveNegar(mongoTemplate, user) > 0;
     } else if (SMS_sdk.equalsIgnoreCase("Magfa")) {
       return sendMessagePasswordNotifyMagfa(mongoTemplate, user) > 0;
     }
@@ -72,7 +72,7 @@ public class Notification implements Comparable {
 
   }
 
-  private int sendMessagePasswordNotifyKaveNegar(MongoTemplate mongoTemplate, User user, String baseurl) {
+  private int sendMessagePasswordNotifyKaveNegar(MongoTemplate mongoTemplate, User user) {
     try {
       Texts texts = new Texts();
       texts.passwordChangeNotification();
@@ -83,7 +83,7 @@ public class Notification implements Comparable {
       String h = time.getHours() + ":" + time.getMinutes();
       String dh = d + " ساعت " + h;
       api.verifyLookup(user.getMobile(), user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')),
-          dh, baseurl, "changePass");
+          dh, Prefs.get(Variables.PREFS_BASE_URL);, "changePass");
       return Integer
           .parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
     } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.

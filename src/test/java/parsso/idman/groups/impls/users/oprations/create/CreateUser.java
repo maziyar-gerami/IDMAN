@@ -33,7 +33,6 @@ public class CreateUser {
 
   @Test
   public void createTest() {
-    
 
     // Create null user
     User user = new User();
@@ -80,13 +79,12 @@ public class CreateUser {
 
     int[] sequence = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
 
-
     File file = new File("src/test/resources/users_ok.txt");
     FileInputStream input = new FileInputStream(file);
     MultipartFile multipartFile = new MockMultipartFile("file",
         file.getName(), "text/plain", IOUtils.toByteArray(input));
 
-        new ImportUsers(usersCreateRepo).importFileUsers("tester", multipartFile, sequence, true);
+    new ImportUsers(usersCreateRepo).importFileUsers("tester", multipartFile, sequence, true);
   }
 
 }

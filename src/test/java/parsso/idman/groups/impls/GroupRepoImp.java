@@ -1,4 +1,5 @@
 package parsso.idman.groups.impls;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -18,63 +19,74 @@ import net.minidev.json.JSONObject;
 import parsso.idman.models.groups.Group;
 import parsso.idman.repos.GroupRepo;
 
-@RunWith(SpringRunner.class) 
-@SpringBootTest(webEnvironment =  WebEnvironment.NONE)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class GroupRepoImp {
 
   @Autowired
   private GroupRepo groupRepo;
 
   @Test
-  public void run(){
+  public void run() {
     create();
     retrieve();
     update();
     delete();
   }
-  
-  public void create(){
-    
-    //Bad Request
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group(null,"test","test")));
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group("test_001",null,"test")));
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group("test_001","test",null)));
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group("","test","test")));
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group("test_001","","test")));
-    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST, groupRepo.create("Tester", new Group("test_001","test","")));
 
-    //Created
-    assertEquals("Create group failed.", HttpStatus.CREATED, groupRepo.create("Tester", new Group("test_001","test","test")));
-    assertEquals("Create group failed.", HttpStatus.CREATED, groupRepo.create("Tester", new Group("test_002","test","test")));
-    assertEquals("Create group failed.", HttpStatus.CREATED, groupRepo.create("Tester", new Group("test_003","test","test")));
-    assertEquals("Create group failed.", HttpStatus.CREATED, groupRepo.create("Tester", new Group("test_004","test","test")));
-    assertEquals("Create group failed.", HttpStatus.CREATED, groupRepo.create("Tester", new Group("test_005","test","test")));
+  public void create() {
 
-    //Found
-    assertEquals("Create group failed. This group already exist", HttpStatus.FOUND, groupRepo.create("Tester", new Group("test_001","test","test")));
-        
+    // Bad Request
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group(null, "test", "test")));
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group("test_001", null, "test")));
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group("test_001", "test", null)));
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group("", "test", "test")));
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group("test_001", "", "test")));
+    assertEquals("Create group failed. Not valid data", HttpStatus.BAD_REQUEST,
+        groupRepo.create("Tester", new Group("test_001", "test", "")));
+
+    // Created
+    assertEquals("Create group failed.", HttpStatus.CREATED,
+        groupRepo.create("Tester", new Group("test_001", "test", "test")));
+    assertEquals("Create group failed.", HttpStatus.CREATED,
+        groupRepo.create("Tester", new Group("test_002", "test", "test")));
+    assertEquals("Create group failed.", HttpStatus.CREATED,
+        groupRepo.create("Tester", new Group("test_003", "test", "test")));
+    assertEquals("Create group failed.", HttpStatus.CREATED,
+        groupRepo.create("Tester", new Group("test_004", "test", "test")));
+    assertEquals("Create group failed.", HttpStatus.CREATED,
+        groupRepo.create("Tester", new Group("test_005", "test", "test")));
+
+    // Found
+    assertEquals("Create group failed. This group already exist", HttpStatus.FOUND,
+        groupRepo.create("Tester", new Group("test_001", "test", "test")));
+
   }
 
-  public void retrieve(){
-    assertTrue((groupRepo.retrieve()).size()>0, "Retrieve failed");
-    assertEquals("Group Retrieve Failed",  new Group("test_001","test",""),  groupRepo.retrieve(true,"test_001"));
-    assertEquals("Group Retrieve Failed",  null,  groupRepo.retrieve(true,"xx2345gf"));
-    assertEquals("Group Retrieve Failed",  null,  groupRepo.retrieve(true,""));
-    assertEquals("Bad request",  null,  groupRepo.retrieve(true,""));
-    assertEquals("Bad request",  null,  groupRepo.retrieve(true,null));
-    assertEquals("Bad request",  null,  groupRepo.retrieve(false,""));
-    assertEquals("Bad request",  null,  groupRepo.retrieve(false,null));
-    assertTrue( groupRepo.retrieve().size()>4 ,"Bad request");
-    assertTrue( groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_001")) ,"Bad request");
-    assertTrue( groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_002")) ,"Bad request");
-    assertTrue( groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_003")) ,"Bad request");
-    assertTrue( groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_004")) ,"Bad request");
-    assertNotNull( groupRepo.retrieve(true, "test_001"), "reatrieve created group with simple attributes failed");
-    assertNotNull( groupRepo.retrieve(false, "test_001"), "reatrieve created group with full attributes failed");
+  public void retrieve() {
+    assertTrue((groupRepo.retrieve()).size() > 0, "Retrieve failed");
+    assertEquals("Group Retrieve Failed", new Group("test_001", "test", ""), groupRepo.retrieve(true, "test_001"));
+    assertEquals("Group Retrieve Failed", null, groupRepo.retrieve(true, "xx2345gf"));
+    assertEquals("Group Retrieve Failed", null, groupRepo.retrieve(true, ""));
+    assertEquals("Bad request", null, groupRepo.retrieve(true, ""));
+    assertEquals("Bad request", null, groupRepo.retrieve(true, null));
+    assertEquals("Bad request", null, groupRepo.retrieve(false, ""));
+    assertEquals("Bad request", null, groupRepo.retrieve(false, null));
+    assertTrue(groupRepo.retrieve().size() > 4, "Bad request");
+    assertTrue(groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_001")), "Bad request");
+    assertTrue(groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_002")), "Bad request");
+    assertTrue(groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_003")), "Bad request");
+    assertTrue(groupRepo.retrieve().stream().anyMatch(ou -> ou.getId().equals("test_004")), "Bad request");
+    assertNotNull(groupRepo.retrieve(true, "test_001"), "reatrieve created group with simple attributes failed");
+    assertNotNull(groupRepo.retrieve(false, "test_001"), "reatrieve created group with full attributes failed");
   }
 
-  
-  public void update(){
+  public void update() {
     Group ou = new Group("jfdf", "name", "description");
 
     assertEquals("Update group faild, group not found", HttpStatus.NOT_FOUND, groupRepo.update("tester", "jdfsh", ou));
@@ -89,7 +101,7 @@ public class GroupRepoImp {
     assertEquals("Update group failed", HttpStatus.OK, groupRepo.update("tester", "test_001", ou));
   }
 
-  public void delete(){
+  public void delete() {
     JSONObject json1 = new JSONObject();
     ArrayList<String> names = new ArrayList<String>();
     names.add("test_001");
@@ -117,5 +129,5 @@ public class GroupRepoImp {
     assertNull("test_004 not deleted", groupRepo.retrieve(true, "test_004"));
     assertNull("test_005 not deleted", groupRepo.retrieve(true, "test_005"));
   }
-  
+
 }

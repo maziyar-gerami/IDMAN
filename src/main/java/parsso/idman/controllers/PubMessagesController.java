@@ -13,7 +13,6 @@ import parsso.idman.models.other.PublicMessage;
 import parsso.idman.models.response.Response;
 import parsso.idman.repos.PubMessageRepo;
 
-
 @RestController
 public class PubMessagesController {
   final PubMessageRepo pubMessageRepo;
@@ -23,10 +22,9 @@ public class PubMessagesController {
   }
 
   @GetMapping("/api/public/publicMessages")
-    public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage() {
-        return new ResponseEntity<>(pubMessageRepo.showVisiblePubicMessages(), HttpStatus.OK);
-    }
-
+  public ResponseEntity<List<PublicMessage>> getVisiblePublicMessage() {
+    return new ResponseEntity<>(pubMessageRepo.showVisiblePubicMessages(), HttpStatus.OK);
+  }
 
   @GetMapping("/api/users/publicMessages")
   public ResponseEntity<Response> getAllPublicMessage(
@@ -34,7 +32,7 @@ public class PubMessagesController {
       @RequestParam(value = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-          pubMessageRepo.showAllPubicMessages(id), Variables.MODEL_PUBICMESSAGE,
+        pubMessageRepo.showAllPubicMessages(id), Variables.MODEL_PUBICMESSAGE,
         HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -45,30 +43,32 @@ public class PubMessagesController {
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
         new Response(null, Variables.MODEL_PUBICMESSAGE, pubMessageRepo.postPubicMessage(
-          request.getUserPrincipal().getName(), message).value(), lang),
+            request.getUserPrincipal().getName(), message).value(), lang),
         HttpStatus.OK);
   }
 
   @PutMapping("/api/users/publicMessage")
   public ResponseEntity<Response> editPublicMessage(
-        HttpServletRequest request, @RequestBody PublicMessage message,
+      HttpServletRequest request, @RequestBody PublicMessage message,
       @RequestParam(value = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
         new Response(null, Variables.MODEL_PUBICMESSAGE,
             pubMessageRepo.editPubicMessage(
-                  request.getUserPrincipal().getName(), message).value(), lang),
+                request.getUserPrincipal().getName(), message).value(),
+            lang),
         HttpStatus.OK);
   }
 
   @DeleteMapping("/api/users/publicMessages")
   public ResponseEntity<Response> deletePublicMessage(
-        HttpServletRequest request, @RequestBody JSONObject jsonObject,
+      HttpServletRequest request, @RequestBody JSONObject jsonObject,
       @RequestParam(value = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_PUBICMESSAGE,
         pubMessageRepo.deletePubicMessage(
-            request.getUserPrincipal().getName(), jsonObject).value(), lang),
+            request.getUserPrincipal().getName(), jsonObject).value(),
+        lang),
         HttpStatus.OK);
   }
 }

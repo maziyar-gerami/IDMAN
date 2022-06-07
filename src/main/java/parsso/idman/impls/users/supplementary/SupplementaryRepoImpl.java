@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
@@ -20,19 +22,11 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.users.SupplementaryRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
-
-
 @Service
 public class SupplementaryRepoImpl implements SupplementaryRepo {
   final MongoTemplate mongoTemplate;
   final LdapTemplate ldapTemplate;
   final UsersRetrieveRepo usersOpRetrieve;
-
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
-
-  @Value("${base.url}")
-  private String BASE_URL;
 
   @Autowired
   SupplementaryRepoImpl(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate,
@@ -46,9 +40,9 @@ public class SupplementaryRepoImpl implements SupplementaryRepo {
   public boolean accessChangePassword(User user) {
 
     if (Boolean.valueOf(new Settings(mongoTemplate).retrieve(
-          (Variables.PASSWORD_CHANGE_LIMIT)).getValue())) {
+        (Variables.PASSWORD_CHANGE_LIMIT)).getValue())) {
       if (sameDayPasswordChanges(new Date().getTime(),
-           user.getUsersExtraInfo().getChangePassword().getTime())) {
+          user.getUsersExtraInfo().getChangePassword().getTime())) {
         if (user.getUsersExtraInfo().getChangePassword().getN() >= Integer
             .parseInt(new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_LIMIT_NUMBER)
                 .getValue())) {
@@ -82,7 +76,7 @@ public class SupplementaryRepoImpl implements SupplementaryRepo {
 
   @Override
   public String createUrl(String userId, String token) {
-    return BASE_URL + /* "" + */ "/api/public/validateEmailToken/" + userId + "/" + token;
+    return Prefs.get(Variables.PREFS_BASE_URL) + /* "" + */ "/api/public/validateEmailToken/" + userId + "/" + token;
   }
 
   @Override
@@ -129,11 +123,9 @@ public class SupplementaryRepoImpl implements SupplementaryRepo {
     Date lastDateChange = new Date(last);
     Date currentDate = new Date(current);
 
-    LocalDate localDateLastChange 
-        = lastDateChange.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
+    LocalDate localDateLastChange = lastDateChange.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
 
-    LocalDate localDateCurrentChange 
-        = currentDate.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
+    LocalDate localDateCurrentChange = currentDate.toInstant().atZone(ZoneId.of(Variables.ZONE)).toLocalDate();
 
     return localDateCurrentChange.isEqual(localDateLastChange);
   }

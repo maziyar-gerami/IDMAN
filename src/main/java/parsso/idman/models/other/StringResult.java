@@ -39,10 +39,9 @@ public class StringResult {
   public static String COMMON_429_FA = "تعداد درخواست ها بیش از حد مجاز است.";
   public static String COMMON_429_EN = "Too many requests";
 
-  
   public static String SERVICE_204_FA = "سرویس حذف شد";
   public static String SERVICE_204_EN = "The service delete was successful";
-  
+
   public static String COMMON_204_FA = "حذف شد";
   public static String COMMON_204_EN = "Delete successful";
 
@@ -94,7 +93,6 @@ public class StringResult {
   public static String GROUP_400_FA = "مشکل در پارامترهای ارسالی";
   public static String GROUP_400_EN = "Parameter Problem";
 
-  
   public static String GROUP_404_FA = "گروهی  با این شناسه یافت نشد";
   public static String GROUP_404_EN = "Group not found";
 

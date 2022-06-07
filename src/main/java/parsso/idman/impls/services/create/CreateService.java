@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.service.Position;
@@ -34,8 +36,6 @@ public class CreateService implements ServiceRepo.Create {
   MongoTemplate mongoTemplate;
   UniformLogger uniformLogger;
   FilesStorageService storageService;
-  @Value("${base.url}")
-  private String BASE_URL;
 
   @Autowired
   public CreateService(MongoTemplate mongoTemplate, UniformLogger uniformLogger, FilesStorageService storageService) {
@@ -57,17 +57,17 @@ public class CreateService implements ServiceRepo.Create {
     }
     long id = 0;
     JSONObject jsonExtraInfo = new JSONObject();
-    
-    String name= jsonObject.get("name").toString();
 
-    String serviceId= jsonObject.get("serviceId").toString();
+    String name = jsonObject.get("name").toString();
+
+    String serviceId = jsonObject.get("serviceId").toString();
 
     String description = jsonObject.get("description").toString();
 
     extraInfo.setUrl(jsonExtraInfo.get("url") != null ? jsonExtraInfo.get("url").toString()
         : jsonObject.get("serviceId").toString());
 
-    if (BASE_URL.contains("localhost"))
+    if (Prefs.get(Variables.PREFS_BASE_URL).contains("localhost"))
       extraInfo.setUUID(GenerateUUID.getUUID());
 
     if (system.equalsIgnoreCase("cas"))
@@ -87,7 +87,7 @@ public class CreateService implements ServiceRepo.Create {
       jsonObject.remove("accessStrategy");
       jsonObjectTemp.remove("@class");
       jsonObjectTemp.put("@class", "org.apereo.cas.services.RemoteEndpointServiceAccessStrategy");
-      jsonObjectTemp.put("endPointUrl", BASE_URL + "/api/serviceCheck/" + id);
+      jsonObjectTemp.put("endPointUrl", Prefs.get(Variables.PREFS_BASE_URL) + "/api/serviceCheck/" + id);
       jsonObjectTemp.put("acceptableResponseCodes", "200");
       jsonObject.put("accessStrategy", jsonObjectTemp);
       new UpdateService(storageService).updateService("System", id, jsonObject, system);
@@ -100,10 +100,10 @@ public class CreateService implements ServiceRepo.Create {
     JSONObject jsonObjectExtraInfo = (JSONObject) parser.parse(jsonString);
 
     extraInfo = new ExtraInfo().setExtraInfo(id, extraInfo, jsonObjectExtraInfo,
-        new Position(mongoTemplate).lastPosition() + 1, name, serviceId,description);
+        new Position(mongoTemplate).lastPosition() + 1, name, serviceId, description);
 
     try {
-      
+
       mongoTemplate.save(extraInfo, Variables.col_servicesExtraInfo);
 
       return id;

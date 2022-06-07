@@ -66,7 +66,8 @@ public class Conditional {
     searchControls.setReturningAttributes(new String[] { "*", "+" });
     searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-    return ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), new EqualsFilter("ou", groupId).encode(), searchControls,
+    return ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+        new EqualsFilter("ou", groupId).encode(), searchControls,
         new SimpleUserAttributeMapper());
 
   }

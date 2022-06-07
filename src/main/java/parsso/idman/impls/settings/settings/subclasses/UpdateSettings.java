@@ -54,8 +54,6 @@ public class UpdateSettings {
             storedSetting.setValue(ldapPasswords.getPwdLockout());
             break;
 
-
-
           case "pwdMaxFailure":
             storedSetting.setValue(ldapPasswords.getPwdMaxFailure());
             break;
@@ -70,8 +68,7 @@ public class UpdateSettings {
 
         }
         ldapProperties.add(property);
-      }
-      else if (storedSetting!=null&&!storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
+      } else if (storedSetting != null && !storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
         mongoProperties.add(property);
     }
 

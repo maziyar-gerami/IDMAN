@@ -1,1 +1,13 @@
-.p-toolbar[data-v-a7caab2c]{border-radius:6px 6px 0 0}.p-column-header-content[data-v-a7caab2c]{-webkit-box-pack:justify!important;-ms-flex-pack:justify!important;justify-content:space-between!important}.p-column-filter-menu[data-v-a7caab2c]{margin:0}
+.p-toolbar[data-v-a7caab2c] {
+  border-radius: 6px 6px 0 0
+}
+
+.p-column-header-content[data-v-a7caab2c] {
+  -webkit-box-pack: justify !important;
+  -ms-flex-pack: justify !important;
+  justify-content: space-between !important
+}
+
+.p-column-filter-menu[data-v-a7caab2c] {
+  margin: 0
+}

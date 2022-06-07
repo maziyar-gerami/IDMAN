@@ -10,6 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import parsso.idman.configs.Prefs;
+import parsso.idman.helpers.Variables;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.mobile.impls.ServicesRepoImpl;
 import parsso.idman.models.logs.Event;
@@ -27,8 +29,6 @@ import java.util.List;
 @SuppressWarnings("SpringJavaAutowiredFieldsWarningInspection")
 @RestController
 public class MobileController {
-  @Value(value = "${base.url}")
-  private String url;
   @Autowired
   private UsersRetrieveRepo usersOpRetrieve;
   @Autowired
@@ -46,7 +46,8 @@ public class MobileController {
   public @ResponseBody byte[] GetQr(HttpServletRequest request) throws IOException, WriterException {
     Principal principal = request.getUserPrincipal();
     User user = usersOpRetrieve.retrieveUsers(principal.getName());
-    String temp = url + "/api/mobile/sendsms" + "," + user.get_id() + "," + user.getUsersExtraInfo().getQrToken();
+    String temp = Prefs.get(Variables.PREFS_BASE_URL) + "/api/mobile/sendsms" + "," + user.get_id() + ","
+        + user.getUsersExtraInfo().getQrToken();
 
     return servicesRepo.getQRCodeImage(temp, 500, 500);
   }
@@ -116,7 +117,7 @@ public class MobileController {
     User user = usersOpRetrieve.retrieveUsers(uid);
     if (MobileToken.equals(user.getUsersExtraInfo().getMobileToken()))
       return new ResponseEntity<>(eventRepo.retrieveListSizeEvents(Integer.parseInt(page),
-       Integer.parseInt(n), action), HttpStatus.OK);
+          Integer.parseInt(n), action), HttpStatus.OK);
     else {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }

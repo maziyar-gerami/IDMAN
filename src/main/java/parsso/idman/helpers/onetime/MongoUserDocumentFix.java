@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.models.other.OneTime;
@@ -27,11 +28,11 @@ public class MongoUserDocumentFix {
   final String BASE_DN;
 
   MongoUserDocumentFix(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOp, LdapTemplate ldapTemplate,
-      String BASE_DN, UserAttributeMapper userAttributeMapper) {
+      UserAttributeMapper userAttributeMapper) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOp;
     this.ldapTemplate = ldapTemplate;
-    this.BASE_DN = BASE_DN;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void run() {

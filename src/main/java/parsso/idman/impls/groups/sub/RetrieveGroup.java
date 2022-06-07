@@ -22,7 +22,7 @@ public class RetrieveGroup {
   public RetrieveGroup(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
-    
+
   }
 
   public Group retrieve(boolean simple, String uid) {

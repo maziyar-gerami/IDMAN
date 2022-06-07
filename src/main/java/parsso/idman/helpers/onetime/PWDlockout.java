@@ -57,21 +57,21 @@ public class PWDlockout {
 
     EqualsFilter equalsFilter = new EqualsFilter("objectclass", "person");
 
-    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), equalsFilter.encode(),
+    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+        equalsFilter.encode(),
         searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
     int c = 0;
     char[] animationChars = new char[] { '|', '/', '-', '\\' };
-      for (User user : new FullAttributes(ldapTemplate, mongoTemplate).get()) {
-        ModificationItem[] modificationItems = new ModificationItem[1];
+    for (User user : new FullAttributes(ldapTemplate, mongoTemplate).get()) {
+      ModificationItem[] modificationItems = new ModificationItem[1];
 
-        modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
-              new BasicAttribute("pwdLockout", "TRUE"));
-      
+      modificationItems[0] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE,
+          new BasicAttribute("pwdLockout", "TRUE"));
 
-        try {
-          ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
-              modificationItems);
+      try {
+        ldapTemplate.modifyAttributes(BuildDnUser.buildDn(user.get_id().toString()),
+            modificationItems);
       } catch (Exception e) {
         uniformLogger.info("System", new ReportMessage(Variables.MODEL_USER, user.get_id().toString(),
             Variables.ATTR_LOGGEDIN, Variables.ACTION_SET, Variables.RESULT_FAILED, "Writing to DB"));

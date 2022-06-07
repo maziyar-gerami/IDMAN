@@ -46,10 +46,10 @@ public class Position {
 
   public HttpStatus decrease(long id) {
     Query query = new Query(Criteria.where("_id").is(Long.valueOf(id)));
-    SimpleService ms=new SimpleService();
-    try{
-     ms = mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo);
-    }catch(Exception e){
+    SimpleService ms = new SimpleService();
+    try {
+      ms = mongoTemplate.findOne(query, SimpleService.class, Variables.col_servicesExtraInfo);
+    } catch (Exception e) {
       e.printStackTrace();
     }
     int position = Objects.requireNonNull(ms).getPosition();

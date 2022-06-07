@@ -28,7 +28,6 @@ import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import java.io.IOException;
 
 @RestController
@@ -123,8 +122,8 @@ public class Supplementary extends UsersOps {
     }
 
     ResponseEntity<Integer> response = getIntegerResponseEntity(time);
-    if(time==0 || time==-1){
-      mongoTemplate.remove(new Query(Criteria.where("_id").is("cid")),Variables.col_captchas);
+    if (time == 0 || time == -1) {
+      mongoTemplate.remove(new Query(Criteria.where("_id").is("cid")), Variables.col_captchas);
     }
     return new ResponseEntity<>(
         new Response(response.getBody(), Variables.MODEL_USER, response.getStatusCode().value(), lang),

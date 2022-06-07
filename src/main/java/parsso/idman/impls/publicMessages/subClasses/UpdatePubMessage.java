@@ -37,7 +37,8 @@ public class UpdatePubMessage {
     message.setCreator(oldMessage.getCreator());
     message.setCreateDate(oldMessage.getCreateDate());
 
-    PublicMessage publicMessage = mongoTemplate.findOne(new Query(Criteria.where("messageId").is(message.getMessageId())),
+    PublicMessage publicMessage = mongoTemplate.findOne(
+        new Query(Criteria.where("messageId").is(message.getMessageId())),
         PublicMessage.class, Variables.col_publicMessage);
     message.set_id(Objects.requireNonNull(publicMessage).get_id());
     try {

@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.controllers.users.oprations.UsersOps;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
@@ -26,14 +28,10 @@ import parsso.idman.models.response.Response;
 import parsso.idman.repos.users.PasswordOpsRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
-
 @RestController
 public class PasswordOp extends UsersOps {
   final PasswordOpsRepo passwordOp;
   final InstantMessage instantMessage;
-
-  @Value("${base.url}")
-  private String url;
 
   @Autowired
   public PasswordOp(Token tokenClass, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
@@ -76,14 +74,14 @@ public class PasswordOp extends UsersOps {
     String token = input.getAsString("token");
 
     JSONObject objectResult = new JSONObject();
-    String dn = "cn=DefaultPPolicy,ou=Policies," + basedn;
+    String dn = "cn=DefaultPPolicy,ou=Policies," + Prefs.get(Variables.PREFS_BASE_DN);
     PWD pwd = this.ldapTemplate.lookup(dn, new PwdAttributeMapper());
     int pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
     objectResult.put("pwdInHistory", pwdin);
 
-    if(!(new Password(mongoTemplate).check(newPassword))){
+    if (!(new Password(mongoTemplate).check(newPassword))) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
           HttpStatus.OK);
     }
 
@@ -91,12 +89,12 @@ public class PasswordOp extends UsersOps {
 
     if (httpStatus == HttpStatus.OK) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
+          null, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
 
     return new ResponseEntity<>(new Response(
-      null, Variables.MODEL_PASSWORD, httpStatus.value(), lang),
+        null, Variables.MODEL_PASSWORD, httpStatus.value(), lang),
         HttpStatus.OK);
   }
 
@@ -109,13 +107,12 @@ public class PasswordOp extends UsersOps {
     if (jsonObject.getAsString("token") != null) {
       token = jsonObject.getAsString("token");
     }
-    
 
     String pwdInHistory = "";
     int pwdin = -1;
 
     try {
-      String dn = "cn=DefaultPPolicy,ou=Policies," + basedn;
+      String dn = "cn=DefaultPPolicy,ou=Policies," + Prefs.get(Variables.PREFS_BASE_DN);
       PWD pwd = this.ldapTemplate.lookup(dn, new PwdAttributeMapper());
       pwdin = Integer.parseInt(pwd.getPwdInHistory().replaceAll("[^0-9]", ""));
       objectResult.put("pwdInHistory", pwdin);
@@ -131,16 +128,16 @@ public class PasswordOp extends UsersOps {
     objectResult.put("pwdInHistory", pwdin);
     String password = jsonObject.getAsString("newPassword");
 
-    if(!(new Password(mongoTemplate).check(password))){
+    if (!(new Password(mongoTemplate).check(password))) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
           HttpStatus.OK);
     }
 
     HttpStatus httpStatus = passwordOp.change(
         request.getUserPrincipal().getName(), password, token);
     return new ResponseEntity<>(new Response(
-      objectResult, Variables.MODEL_PASSWORD, httpStatus.value(), lang),
+        objectResult, Variables.MODEL_PASSWORD, httpStatus.value(), lang),
         HttpStatus.OK);
 
   }
@@ -154,28 +151,28 @@ public class PasswordOp extends UsersOps {
     String userId = jsonObject.getAsString("userId");
     HttpStatus httpStatus = passwordOp.changePublic(userId, currentPassword, newPassword);
 
-    if(!(new Password(mongoTemplate).check(newPassword))){
+    if (!(new Password(mongoTemplate).check(newPassword))) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
+          null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
           HttpStatus.OK);
     }
 
     if (Boolean
         .parseBoolean(new Settings(mongoTemplate)
-          .retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue())
+            .retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue())
         && httpStatus == HttpStatus.OK) {
       new Notification(mongoTemplate)
-        .sendPasswordChangeNotify(usersOpRetrieve.retrieveUsers(userId), url);
+          .sendPasswordChangeNotify(usersOpRetrieve.retrieveUsers(userId));
     }
 
     if (httpStatus == HttpStatus.OK) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
+          null, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
 
-    return new ResponseEntity<>(new Response(null, 
-      Variables.MODEL_PASSWORD, httpStatus.value(), lang),
+    return new ResponseEntity<>(new Response(null,
+        Variables.MODEL_PASSWORD, httpStatus.value(), lang),
         HttpStatus.OK);
 
   }
@@ -184,8 +181,7 @@ public class PasswordOp extends UsersOps {
   public ResponseEntity<Response> requestMessage(HttpServletRequest request,
       @RequestParam(value = "lang", defaultValue = "fa") String lang)
       throws NoSuchFieldException, IllegalAccessException {
-    parsso.idman.models.users.User user = 
-        usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName());
+    parsso.idman.models.users.User user = usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName());
     if (user == null) {
       return new ResponseEntity<>(
           new Response(null, Variables.MODEL_PASSWORD, HttpStatus.NOT_FOUND.value(), lang),
@@ -195,12 +191,12 @@ public class PasswordOp extends UsersOps {
 
     if (status > 0 && user != null) {
       return new ResponseEntity<>(new Response(
-        status, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
+          status, Variables.MODEL_PASSWORD, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
 
     return new ResponseEntity<>(new Response(
-      null, Variables.MODEL_PASSWORD, HttpStatus.BAD_REQUEST.value(), lang),
+        null, Variables.MODEL_PASSWORD, HttpStatus.BAD_REQUEST.value(), lang),
         HttpStatus.OK);
   }
 

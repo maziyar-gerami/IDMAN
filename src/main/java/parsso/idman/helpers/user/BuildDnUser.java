@@ -10,7 +10,8 @@ import javax.naming.Name;
 public class BuildDnUser {
 
   public static Name buildDn(String userId) {
-    return LdapNameBuilder.newInstance(Prefs.get(Variables.PREFS_BASE_DN)).add("ou", "People").add("uid", userId).build();
+    return LdapNameBuilder.newInstance(Prefs.get(Variables.PREFS_BASE_DN)).add("ou", "People").add("uid", userId)
+        .build();
   }
 
 }

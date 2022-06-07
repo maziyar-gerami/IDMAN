@@ -6,6 +6,7 @@ import parsso.idman.models.groups.Group;
 import parsso.idman.models.users.User;
 
 import java.util.List;
+
 public interface GroupRepo {
   List<Group> retrieve();
 

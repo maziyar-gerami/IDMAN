@@ -21,16 +21,14 @@ public class Expire {
   final MongoTemplate mongoTemplate;
   final UniformLogger uniformLogger;
   final LdapTemplate ldapTemplate;
-  private String BASE_DN;
   UsersRetrieveRepo userOpRetrieve;
 
   public Expire(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, String BASE_DN) {
+      UsersRetrieveRepo userOpRetrieve) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.ldapTemplate = ldapTemplate;
     this.userOpRetrieve = userOpRetrieve;
-    this.BASE_DN = BASE_DN;
   }
 
   public List<String> expire(String doer, List<UsersExtraInfo> usersExtraInfo) {

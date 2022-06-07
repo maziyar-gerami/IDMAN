@@ -6,6 +6,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -29,25 +31,28 @@ public class Change {
   final String BASE_URL;
 
   public Change(UsersRetrieveRepo usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      SupplementaryRepo supplementary, String BASE_DN, String BASE_URL, UniformLogger uniformLogger) {
+      SupplementaryRepo supplementary, UniformLogger uniformLogger) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.supplementary = supplementary;
-    this.BASE_DN = BASE_DN;
-    this.BASE_URL = BASE_URL;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
+    ;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
+    ;
     this.uniformLogger = uniformLogger;
   }
 
   public Change(UsersRetrieveRepo usersOpRetrieve, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      SupplementaryRepo supplementary, String BASE_DN, String BASE_URL, Token tokenClass,
-      UniformLogger uniformLogger) {
+      SupplementaryRepo supplementary, Token tokenClass, UniformLogger uniformLogger) {
     this.usersOpRetrieve = usersOpRetrieve;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.supplementary = supplementary;
-    this.BASE_DN = BASE_DN;
-    this.BASE_URL = BASE_URL;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_URL);
+    ;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
+    ;
     this.tokenClass = tokenClass;
     this.uniformLogger = uniformLogger;
   }
@@ -80,7 +85,7 @@ public class Change {
               Variables.ACTION_UPDATE, Variables.RESULT_SUCCESS, ""));
           if (Boolean.parseBoolean(
               new Settings(mongoTemplate).retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue())) {
-            new Notification(mongoTemplate).sendPasswordChangeNotify(user, BASE_URL);
+            new Notification(mongoTemplate).sendPasswordChangeNotify(user);
           }
 
           return HttpStatus.OK;

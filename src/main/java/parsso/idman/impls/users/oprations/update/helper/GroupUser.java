@@ -21,7 +21,7 @@ public class GroupUser {
   ExcelAnalyzer excelAnalyzer;
   UsersRetrieveRepo retrieveOp;
 
-  public GroupUser(ExcelAnalyzer excelAnalyzer, String bASE_DN) {
+  public GroupUser(ExcelAnalyzer excelAnalyzer) {
     this.excelAnalyzer = excelAnalyzer;
   }
 

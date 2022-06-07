@@ -27,7 +27,7 @@ public class RetrieveTranscripts implements LogsRepo.TranscriptRepo {
   final GroupRepo groupRepo;
 
   @Autowired
-  public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo,MongoTemplate mongoTemplate, GroupRepo groupRepo) {
+  public RetrieveTranscripts(ServiceRepo.Retrieve serviceRepo, MongoTemplate mongoTemplate, GroupRepo groupRepo) {
     this.serviceRepo = serviceRepo;
     this.mongoTemplate = mongoTemplate;
     this.groupRepo = groupRepo;

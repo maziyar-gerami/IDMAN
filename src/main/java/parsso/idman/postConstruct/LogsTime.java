@@ -10,7 +10,6 @@ import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Audit;
 import parsso.idman.models.logs.Event;
 
-
 public class LogsTime {
   final MongoTemplate mongoTemplate;
 

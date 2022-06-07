@@ -10,6 +10,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -39,9 +41,6 @@ public class InstantMessage {
   private final LdapTemplate ldapTemplate;
   private final Token tokenClass;
   private final CAPTCHARepo captchaRepo;
-
-  @Value("${spring.ldap.base.dn}")
-  private String basedn;
 
   public int sendMessage(String mobile, String cid, String answer) {
 
@@ -325,7 +324,8 @@ public class InstantMessage {
 
   public LinkedList<String> checkMobile(String mobile) {
 
-    List<User> people = ldapTemplate.search(basedn, new EqualsFilter("mobile", mobile).encode(),
+    List<User> people = ldapTemplate.search(Prefs.get(Variables.PREFS_BASE_DN),
+        new EqualsFilter("mobile", mobile).encode(),
         new UserAttributeMapper(mongoTemplate));
     LinkedList<String> names = new LinkedList<String>();
     for (User user : people) {
@@ -408,8 +408,8 @@ public class InstantMessage {
               new MagfaInstantMessage(mongoTemplate, texts.getMainMessage()).SendMessage(user.getMobile(), 1L);
               mongoTemplate.remove(query, Variables.col_captchas);
               return Integer.parseInt(
-                new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS)
-                .getValue().toString());
+                  new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS)
+                      .getValue().toString());
             } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
 
               System.out.print("HttpException  : " + ex.getMessage());

@@ -28,8 +28,7 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
 
   @Override
   public UserDetails loadUserDetails(Authentication token) throws UsernameNotFoundException {
-    CasAssertionAuthenticationToken casAssertionAuthenticationToken 
-        = (CasAssertionAuthenticationToken) token;
+    CasAssertionAuthenticationToken casAssertionAuthenticationToken = (CasAssertionAuthenticationToken) token;
     AttributePrincipal principal = casAssertionAuthenticationToken.getAssertion().getPrincipal();
     Collection<SimpleGrantedAuthority> collection = new ArrayList<>();
     Query query = new Query(Criteria.where("_id").is(principal.getName().toLowerCase()));

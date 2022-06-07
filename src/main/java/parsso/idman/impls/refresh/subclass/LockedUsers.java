@@ -18,6 +18,7 @@ import org.springframework.ldap.filter.NotFilter;
 import org.springframework.ldap.filter.PresentFilter;
 import org.springframework.stereotype.Service;
 
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -31,8 +32,6 @@ public class LockedUsers {
   MongoTemplate mongoTemplate;
   LdapTemplate ldapTemplate;
   UniformLogger uniformLogger;
-  @Value("${spring.ldap.base.dn}")
-  protected String BASE_DN;
 
   @Autowired
   public LockedUsers(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger) {
@@ -54,7 +53,8 @@ public class LockedUsers {
 
     List<User> users = new LinkedList<>();
     try {
-      users = ldapTemplate.search(BASE_DN, andFilter.encode(), new UserAttributeMapper(mongoTemplate));
+      users = ldapTemplate.search(Prefs.get(Variables.PREFS_BASE_DN), andFilter.encode(),
+          new UserAttributeMapper(mongoTemplate));
     } catch (Exception ignored) {
     }
     for (User user : users) {
@@ -79,7 +79,8 @@ public class LockedUsers {
       Query query = new Query(Criteria.where("_id").is(simple.get_id()));
 
       if (ldapTemplate
-          .search("ou=People," + BASE_DN, new EqualsFilter("uid", simple.get_id().toString()).encode(),
+          .search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+              new EqualsFilter("uid", simple.get_id().toString()).encode(),
               searchControls, new UserAttributeMapper(mongoTemplate))
           .size() == 0) {
 

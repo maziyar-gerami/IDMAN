@@ -3,6 +3,8 @@ package parsso.idman.impls.users.oprations.retrieve.helper;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.SimpleUserAttributeMapper;
 
@@ -15,11 +17,11 @@ public class UsersCount {
 
   public UsersCount(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
-  public UsersCount(LdapTemplate ldapTemplate, String BASE_DN) {
+  public UsersCount(LdapTemplate ldapTemplate) {
     this.ldapTemplate = ldapTemplate;
-    this.BASE_DN = BASE_DN;
   }
 
   public int mongoSize(String groupFilter, String searchUid, String searchDisplayName, String mobile,

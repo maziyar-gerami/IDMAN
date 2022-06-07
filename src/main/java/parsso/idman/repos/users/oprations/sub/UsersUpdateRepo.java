@@ -19,5 +19,5 @@ public interface UsersUpdateRepo {
   void usersWithSpecificOU(String doerID, String old_ou, String new_ou);
 
   List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException, java.io.IOException;
-  
+
 }

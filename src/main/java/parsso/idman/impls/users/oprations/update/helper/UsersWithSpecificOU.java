@@ -7,6 +7,8 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.BuildAttributes;
@@ -27,12 +29,12 @@ public class UsersWithSpecificOU {
   final String BASE_DN;
 
   public UsersWithSpecificOU(UniformLogger uniformLogger, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
-      BuildAttributes buildAttributes, UserAttributeMapper userAttributeMapper, String BASE_DN) {
+      BuildAttributes buildAttributes, UserAttributeMapper userAttributeMapper) {
     this.uniformLogger = uniformLogger;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.buildAttributes = buildAttributes;
-    this.BASE_DN = BASE_DN;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {

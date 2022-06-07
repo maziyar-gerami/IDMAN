@@ -40,7 +40,8 @@ public class FullAttributes {
     final AndFilter andFilter = new AndFilter();
     andFilter.and(new EqualsFilter("objectclass", "person"));
 
-    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), andFilter.toString(), searchControls,
+    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), andFilter.toString(),
+        searchControls,
         new UserAttributeMapper(mongoTemplate));
     List<User> relatedPeople = new LinkedList<>();
 
@@ -65,7 +66,8 @@ public class FullAttributes {
 
     User user = new User();
     UsersExtraInfo usersExtraInfo;
-    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), new EqualsFilter("uid", userId).encode(),
+    List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+        new EqualsFilter("uid", userId).encode(),
         searchControls, new UserAttributeMapper(mongoTemplate));
 
     if (people.size() != 0) {

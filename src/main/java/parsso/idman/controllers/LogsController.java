@@ -27,7 +27,6 @@ import parsso.idman.models.response.Response;
 import parsso.idman.postconstruct.LogsTime;
 import parsso.idman.repos.LogsRepo;
 
-
 @RestController
 @RequestMapping("/api/logs")
 public class LogsController {
@@ -55,14 +54,14 @@ public class LogsController {
     this.mongoTemplate = mongoTemplate;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
-            .addLimit(limit)
-            .build();
+        .addLimit(limit)
+        .build();
   }
 
   @GetMapping("/audits/users")
   public ResponseEntity<Response> getUsersAudits(
-        @RequestParam(value = "userID", defaultValue = "") String userID,
-      @RequestParam(value  = "startDate", defaultValue = "") String startDate,
+      @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value = "startDate", defaultValue = "") String startDate,
       @RequestParam(value = "endDate", defaultValue = "") String endDate,
       @RequestParam(value = "service", defaultValue = "") String service,
       @RequestParam(name = "page") String page,
@@ -72,7 +71,7 @@ public class LogsController {
     return new ResponseEntity<>(new Response(
         auditRepo.retrieve(userID, startDate, endDate, Integer.parseInt(page),
             Integer.parseInt(count), (service.equals("") ? 0l : Long.parseLong(service))),
-                Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
+        Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
   @GetMapping("/audits/user")
@@ -91,14 +90,15 @@ public class LogsController {
         new Response(
             auditRepo.retrieve(request.getUserPrincipal().getName(), startDate,
                 endDate,
-                Integer.parseInt(page), Integer.parseInt(count),(service.equals("") ? 0l : Long.parseLong(service))),
-            Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
+                Integer.parseInt(page), Integer.parseInt(count), (service.equals("") ? 0l : Long.parseLong(service))),
+            Variables.MODEL_LOGS, HttpStatus.OK.value(), lang),
+        HttpStatus.OK);
 
   }
 
   @GetMapping("/events/users")
   public ResponseEntity<Response> getUsersEvents(
-        @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value = "userID", defaultValue = "") String userID,
       @RequestParam(value = "startDate", defaultValue = "") String startDate,
       @RequestParam(value = "endDate", defaultValue = "") String endDate,
       @RequestParam(name = "action", defaultValue = "") String action,
@@ -132,17 +132,17 @@ public class LogsController {
     return new ResponseEntity<>(new Response(
         eventRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate,
             !page.equals("") ? Integer.parseInt(page) : 0,
-            !count.equals("") ? Integer.parseInt(count) : 0,action),
+            !count.equals("") ? Integer.parseInt(count) : 0, action),
         Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }
 
   @GetMapping("/reports/users")
   public ResponseEntity<Response> getUsersReports(
-        @RequestParam(value = "userID", defaultValue = "") String userID,
+      @RequestParam(value = "userID", defaultValue = "") String userID,
       @RequestParam(value = "startDate", defaultValue = "") String startDate,
       @RequestParam(value = "endDate", defaultValue = "") String endDate,
-      @RequestParam(value  = "services", defaultValue = "") List<String> services,
+      @RequestParam(value = "services", defaultValue = "") List<String> services,
       @RequestParam(name = "page") String page,
       @RequestParam(name = "count") String count,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
@@ -166,7 +166,7 @@ public class LogsController {
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
         reportsRepo.retrieve(request.getUserPrincipal().getName(), startDate, endDate, Integer.parseInt(page),
-            Integer.parseInt(count),services),
+            Integer.parseInt(count), services),
         Variables.MODEL_LOGS, HttpStatus.OK.value(), lang), HttpStatus.OK);
 
   }
@@ -181,7 +181,7 @@ public class LogsController {
       @RequestParam(value = "doerID", defaultValue = "") String doerId,
       @RequestParam(name = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NumberFormatException, NoSuchFieldException, IllegalAccessException {
-        
+
     long l = !id.equals("") ? Long.parseLong(id) : 0;
     int page = !p.equals("") ? Integer.parseInt(p) : 0;
     int count = !n.equals("") ? Integer.parseInt(n) : 0;
@@ -198,21 +198,21 @@ public class LogsController {
   @GetMapping("/export")
   public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
     // return a view which will be resolved by an excel view resolver
-    if (bucket.tryConsume(1)){
-    Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
-    lt.start();
+    if (bucket.tryConsume(1)) {
+      Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
+      lt.start();
 
-    switch (type) {
-      case "audits":
-        return new ModelAndView(auditsExcelView, "listAudits", null);
-      case "events":
-        return new ModelAndView(eventsExcelView, "listEvents", null);
-      case "reports":
-        return new ModelAndView(logsExcelView, "listLogs", null);
-      default:
-        return null;
+      switch (type) {
+        case "audits":
+          return new ModelAndView(auditsExcelView, "listAudits", null);
+        case "events":
+          return new ModelAndView(eventsExcelView, "listEvents", null);
+        case "reports":
+          return new ModelAndView(logsExcelView, "listLogs", null);
+        default:
+          return null;
+      }
     }
+    return null;
   }
-  return null;
-}
 }

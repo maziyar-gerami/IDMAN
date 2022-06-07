@@ -5,6 +5,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.impls.services.types.CAS;
@@ -27,10 +29,10 @@ public class Update {
   final UniformLogger uniformLogger;
   final ServiceRepo.Retrieve serviceRetrieve;
 
-  public Update(MongoTemplate mongoTemplate, String BASE_URL, UniformLogger uniformLogger,
+  public Update(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       ServiceRepo.Retrieve serviceRetrieve) {
     this.mongoTemplate = mongoTemplate;
-    this.BASE_URL = BASE_URL;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
     this.uniformLogger = uniformLogger;
     this.serviceRetrieve = serviceRetrieve;
   }

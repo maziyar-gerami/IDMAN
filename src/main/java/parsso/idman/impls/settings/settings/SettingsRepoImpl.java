@@ -25,7 +25,6 @@ import parsso.idman.models.other.Property;
 import parsso.idman.models.other.Setting;
 import parsso.idman.repos.SettingsRepo;
 
-
 @Service
 public class SettingsRepoImpl implements SettingsRepo {
   PasswordSettings passwordSettings;
@@ -63,7 +62,7 @@ public class SettingsRepoImpl implements SettingsRepo {
   public HttpStatus update(String doer, List<Property> properties) {
 
     return new UpdateSettings(
-      passwordSettings, mongoTemplate, uniformLogger).update(doer, properties);
+        passwordSettings, mongoTemplate, uniformLogger).update(doer, properties);
   }
 
   @Override

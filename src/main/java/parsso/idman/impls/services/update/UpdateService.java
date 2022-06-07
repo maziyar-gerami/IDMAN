@@ -19,14 +19,13 @@ import parsso.idman.repos.ServiceRepo;
 @org.springframework.stereotype.Service
 public class UpdateService implements ServiceRepo.Update {
   FilesStorageService filesStorageService;
-  @Value("${base.url}")
-  private String BASE_URL;
   private UniformLogger uniformLogger;
   private RetrieveService retrieveService;
   private MongoTemplate mongoTemplate;
 
   @Autowired
-  public UpdateService(FilesStorageService filesStorageService, UniformLogger uniformLogger,RetrieveService retrieveService, MongoTemplate mongoTemplate) {
+  public UpdateService(FilesStorageService filesStorageService, UniformLogger uniformLogger,
+      RetrieveService retrieveService, MongoTemplate mongoTemplate) {
     this.filesStorageService = filesStorageService;
     this.uniformLogger = uniformLogger;
     this.retrieveService = retrieveService;
@@ -34,11 +33,12 @@ public class UpdateService implements ServiceRepo.Update {
   }
 
   public UpdateService(FilesStorageService storageService) {
+    this.filesStorageService = storageService;
   }
 
   @Override
   public String uploadMetadata(MultipartFile file) {
-    return new Metadata(filesStorageService, BASE_URL).upload(file);
+    return new Metadata(filesStorageService).upload(file);
   }
 
   @Override
@@ -48,11 +48,11 @@ public class UpdateService implements ServiceRepo.Update {
 
   @Override
   public HttpStatus updateService(String doerID, long id, JSONObject jsonObject, String system) {
-    return new Update(mongoTemplate, BASE_URL, uniformLogger,retrieveService).update(doerID, id, jsonObject, system);
+    return new Update(mongoTemplate, uniformLogger, retrieveService).update(doerID, id, jsonObject, system);
   }
 
   @Override
   public String uploadIcon(MultipartFile file) {
-    return new ServiceIcon(filesStorageService, BASE_URL,mongoTemplate).upload(file);
+    return new ServiceIcon(filesStorageService, mongoTemplate).upload(file);
   }
 }

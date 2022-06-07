@@ -14,5 +14,5 @@ public interface ProfilePicRepo {
   boolean upload(MultipartFile file, String name);
 
   boolean delete(User user);
-  
+
 }

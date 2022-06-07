@@ -25,17 +25,15 @@ public class SystemRefreshRepoImpl implements SystemRefresh {
   public SystemRefreshRepoImpl(LockedUsers lockedUsers) {
     this.lockedUsers = lockedUsers;
   }
-  
+
   @Autowired
-  public SystemRefreshRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRefresh userRefresh, LockedUsers lockedUsers) {
+  public SystemRefreshRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger, UserRefresh userRefresh,
+      LockedUsers lockedUsers) {
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
     this.userRefresh = userRefresh;
     this.lockedUsers = lockedUsers;
   }
-
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
 
   @Override
   public HttpStatus userRefresh(String doer) {

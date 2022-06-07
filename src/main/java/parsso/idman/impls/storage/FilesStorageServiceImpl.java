@@ -30,26 +30,28 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   @Override
   public void init() {
     /*
-    String path = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
-    photoPathRoot = Paths.get(path);
-
-    try {
-      if (Files.notExists(photoPathRoot))
-        Files.createDirectory(photoPathRoot);
-    } catch (IOException e) {
-      throw new RuntimeException("Could not initialize folder for upload photo!");
-    }
-
-    path = new Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue();
-    servicesPathRoot = Paths.get(path);
-
-    try {
-      if (Files.notExists(servicesPathRoot))
-        Files.createDirectory(servicesPathRoot);
-    } catch (IOException e) {
-      throw new RuntimeException("Could not initialize folder for services!");
-    }
-    */
+     * String path = new
+     * Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
+     * photoPathRoot = Paths.get(path);
+     * 
+     * try {
+     * if (Files.notExists(photoPathRoot))
+     * Files.createDirectory(photoPathRoot);
+     * } catch (IOException e) {
+     * throw new RuntimeException("Could not initialize folder for upload photo!");
+     * }
+     * 
+     * path = new
+     * Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue();
+     * servicesPathRoot = Paths.get(path);
+     * 
+     * try {
+     * if (Files.notExists(servicesPathRoot))
+     * Files.createDirectory(servicesPathRoot);
+     * } catch (IOException e) {
+     * throw new RuntimeException("Could not initialize folder for services!");
+     * }
+     */
 
   }
 
@@ -84,7 +86,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   public Resource load(String filename) {
     String photoPathRoot = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
     Path path = Paths.get(photoPathRoot);
-    
+
     try {
       Path file = path.resolve(filename);
       Resource resource = new UrlResource(file.toUri());

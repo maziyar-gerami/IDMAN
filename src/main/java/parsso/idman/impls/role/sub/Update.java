@@ -57,11 +57,10 @@ public class Update {
 
       }
 
-
     }
     List<String> temp = (List<String>) users.get("names");
-    
-    if (i>0 && i== temp.size())
+
+    if (i > 0 && i == temp.size())
       return HttpStatus.BAD_REQUEST;
     if (i > 0)
       return HttpStatus.PARTIAL_CONTENT;

@@ -2,7 +2,6 @@ package parsso.idman.helpers.user;
 
 import java.util.regex.Pattern;
 
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import parsso.idman.helpers.Settings;

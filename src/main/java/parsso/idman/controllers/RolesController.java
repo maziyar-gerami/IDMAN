@@ -41,7 +41,7 @@ public class RolesController {
     }
     return new ResponseEntity<>(new Response(
         null, Variables.MODEL_ROLE, HttpStatus.BAD_REQUEST.value(), lang),
-          HttpStatus.BAD_REQUEST);
+        HttpStatus.BAD_REQUEST);
   }
 
   @PutMapping("/{role}")

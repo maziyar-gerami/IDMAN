@@ -34,10 +34,10 @@ public class Audit {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String service;
 
-
   public static List<Audit> analyze(MongoTemplate mongoTemplate, int skip, int limit) {
     Query query = new Query(Criteria.where("actionPerformed")
-    .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon").exists(true)).with(Sort.by(Sort.Direction.DESC, "_id"));
+        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal").ne("audit:unknown").and("resourceOperatedUpon")
+        .exists(true)).with(Sort.by(Sort.Direction.DESC, "_id"));
     return mongoTemplate.find(query, Audit.class, Variables.col_audit);
   }
 
@@ -57,7 +57,6 @@ public class Audit {
     long size;
     int pages;
     List<Audit> auditList;
-    
 
     public ListAudits(List<Audit> relativeAudits, long size, int pages) {
       this.size = size;

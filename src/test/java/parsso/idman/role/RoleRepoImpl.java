@@ -23,7 +23,9 @@ import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 public class RoleRepoImpl {
-  public RoleRepoImpl(){}
+  public RoleRepoImpl() {
+  }
+
   @Autowired
   RolesRepo rolesRepo;
   @Autowired
@@ -40,7 +42,7 @@ public class RoleRepoImpl {
   public void update() {
 
     List<String> users = new LinkedList<>();
-    //TODO:Change it
+    // TODO:Change it
     users.add("su");
 
     ArrayList<String> names = new ArrayList<>();
@@ -63,9 +65,9 @@ public class RoleRepoImpl {
     jsonObject.put("names", names);
     assertEquals(HttpStatus.PARTIAL_CONTENT, rolesRepo.updateRole("tester", "SUPERUSER", jsonObject),
         "User role Update failed for partial content: Step 3");
-names = new ArrayList<>();
-        names.add("jsdvns");
-        names.add("jsd1vns");
+    names = new ArrayList<>();
+    names.add("jsdvns");
+    names.add("jsd1vns");
     jsonObject.put("names", names);
     assertEquals(HttpStatus.BAD_REQUEST, rolesRepo.updateRole("tester", "SUPERUSER", jsonObject),
         "User role Update failed for bad reques: Step 4");

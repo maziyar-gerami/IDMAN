@@ -60,7 +60,6 @@ public class UsersExtraInfo {
     }
   }
 
-  
   public Time getExpiredTime() {
     if (endTimeEpoch != 0) {
       return Time.longToPersianTime(endTimeEpoch);
@@ -110,19 +109,18 @@ public class UsersExtraInfo {
     this.role = "USER";
   }
 
-  public void setRoleID(String role){
+  public void setRoleID(String role) {
     this.roleClass = RoleClass.getRoleClass(role);
   }
 
-  public Role getRoleClass(){
-    try{
+  public Role getRoleClass() {
+    try {
       roleClass.getRole();
       return this.roleClass;
-    }catch(Exception e){
+    } catch (Exception e) {
       return RoleClass.getRoleClass(role);
     }
   }
-
 
   public List<String> getMemberOf() {
     if (!(memberOf == null || memberOf.size() == 0)) {

@@ -25,6 +25,7 @@ import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.users.oprations.sub.UsersCreateRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
+
 @Service
 public class CreateUser extends Parameters implements UsersCreateRepo {
   private final BuildAttributes buildAttributes;
@@ -43,7 +44,7 @@ public class CreateUser extends Parameters implements UsersCreateRepo {
   @Override
   public JSONObject create(String doerID, User p) {
 
-    if (p==null || p.get_id() == null || p.get_id().toString().equals("")) {
+    if (p == null || p.get_id() == null || p.get_id().toString().equals("")) {
       return null;
     }
 
@@ -68,21 +69,29 @@ public class CreateUser extends Parameters implements UsersCreateRepo {
           JSONObject jsonObject = new JSONObject();
           List<String> invalidAttributes = new LinkedList<>();
           jsonObject.put("userId", p.get_id().toString());
-          if (p.getDisplayName() == null || p.getDisplayName().equals("")) invalidAttributes.add("ِDisplayName");
-          
-          if (p.getMail() == null || p.getMail().equals("")) invalidAttributes.add("Mail");
-          
-          if (p.getStatus() == null || p.getStatus().equals("")) invalidAttributes.add( "Status");
+          if (p.getDisplayName() == null || p.getDisplayName().equals(""))
+            invalidAttributes.add("ِDisplayName");
 
-          if (p.getMobile() == null || p.getMobile().equals("")) invalidAttributes.add( "Mobile");
+          if (p.getMail() == null || p.getMail().equals(""))
+            invalidAttributes.add("Mail");
 
-          if (p.getDisplayName() == null || p.getDisplayName().equals("")) invalidAttributes.add( "DisplayName");
+          if (p.getStatus() == null || p.getStatus().equals(""))
+            invalidAttributes.add("Status");
 
-          if (p.getFirstName() == null || p.getFirstName().equals("")) invalidAttributes.add( "FirstName");
+          if (p.getMobile() == null || p.getMobile().equals(""))
+            invalidAttributes.add("Mobile");
 
-          if (p.getLastName() == null || p.getLastName().equals("")) invalidAttributes.add( "LastName");
+          if (p.getDisplayName() == null || p.getDisplayName().equals(""))
+            invalidAttributes.add("DisplayName");
 
-          if (p.getPassword() == null || p.getPassword().equals("")) invalidAttributes.add( "Password");
+          if (p.getFirstName() == null || p.getFirstName().equals(""))
+            invalidAttributes.add("FirstName");
+
+          if (p.getLastName() == null || p.getLastName().equals(""))
+            invalidAttributes.add("LastName");
+
+          if (p.getPassword() == null || p.getPassword().equals(""))
+            invalidAttributes.add("Password");
 
           jsonObject.put("invalid attributes", invalidAttributes);
 

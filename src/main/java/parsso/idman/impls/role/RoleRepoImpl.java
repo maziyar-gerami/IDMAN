@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 public class RoleRepoImpl implements RolesRepo {
-  
+
   final UniformLogger uniformLogger;
   final MongoTemplate mongoTemplate;
 

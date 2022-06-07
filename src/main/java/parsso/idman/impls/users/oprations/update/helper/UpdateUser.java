@@ -84,10 +84,12 @@ public class UpdateUser {
 
     if (p.getStatus() != null) {
       if ((p.getStatus().equals("enable"))) {
-            new Operations(userOpRetrieve,ldapTemplate,uniformLogger,mongoTemplate).enable(doerID,p.get_id().toString());
+        new Operations(userOpRetrieve, ldapTemplate, uniformLogger, mongoTemplate).enable(doerID,
+            p.get_id().toString());
         p.setStatus("enable");
       } else if (p.getStatus().equals("disable")) {
-        new Operations(userOpRetrieve,ldapTemplate,uniformLogger,mongoTemplate).disable(doerID,p.get_id().toString());
+        new Operations(userOpRetrieve, ldapTemplate, uniformLogger, mongoTemplate).disable(doerID,
+            p.get_id().toString());
         p.setStatus("disable");
       }
       Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
@@ -118,8 +120,9 @@ public class UpdateUser {
     usersExtraInfo.setTimeStamp(new Date().getTime());
 
     if (p.getUserPassword() != null && !p.getUserPassword().equals("")) {
-      if(!(new Password(mongoTemplate).check(p.getUserPassword()))){
-        return HttpStatus.NOT_ACCEPTABLE;}
+      if (!(new Password(mongoTemplate).check(p.getUserPassword()))) {
+        return HttpStatus.NOT_ACCEPTABLE;
+      }
 
       context.setAttributeValue("userPassword", p.getUserPassword());
       p.setPasswordChangedTime(

@@ -56,7 +56,7 @@ public class UpdateGroup extends Parameters {
     if (ou.getId() == null || ou.getId().equals("") ||
         ou.getName() == null || ou.getName().equals("") ||
         ou.getDescription() == null || ou.getDescription().equals("") ||
-        id==null || id.equals(""))
+        id == null || id.equals(""))
       return HttpStatus.BAD_REQUEST;
 
     if (new RetrieveGroup(ldapTemplate, mongoTemplate).retrieve(true, id) == null)

@@ -33,9 +33,6 @@ public class DashboardData {
   final SimpleUserAttributeMapper simpleUserAttributeMapper;
   final LdapTemplate ldapTemplate;
 
-  @Value("${spring.ldap.base.dn}")
-  protected String baseDn;
-
   @Autowired
   public DashboardData(UsersRetrieveRepo usersOp,
       LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate,
@@ -72,7 +69,7 @@ public class DashboardData {
 
     Thread userData = new Thread(() -> {
       // ________users data____________
-      int users = new UsersCount(ldapTemplate, baseDn).ldapSize();
+      int users = new UsersCount(ldapTemplate).ldapSize();
       // int nUsers = (int) mongoTemplate.count(new Query(),
       // UsersExtraInfo.class,Variables.col_usersExtraInfo);
 
@@ -114,7 +111,7 @@ public class DashboardData {
     Thread loginData = new Thread(() -> {
       // __________________login data____________
 
-      List<Event> events = eventRepo.analyze(0, 0,"");
+      List<Event> events = eventRepo.analyze(0, 0, "");
       int nSuccessful = 0;
       int nUnSucceful = 0;
 

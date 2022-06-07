@@ -65,11 +65,11 @@ public class CaptchaRepoImp implements CAPTCHARepo {
   @Override
   public boolean check(String cid, String answer) {
 
-    try{
-    CAPTCHA captcha = mongoTemplate.findOne(new Query(Criteria.where("_id").is(cid)),
-     CAPTCHA.class, Variables.col_captchas);
-     return captcha.getPhrase().equalsIgnoreCase(answer);
-    }catch(Exception e){
+    try {
+      CAPTCHA captcha = mongoTemplate.findOne(new Query(Criteria.where("_id").is(cid)),
+          CAPTCHA.class, Variables.col_captchas);
+      return captcha.getPhrase().equalsIgnoreCase(answer);
+    } catch (Exception e) {
       return false;
     }
   }

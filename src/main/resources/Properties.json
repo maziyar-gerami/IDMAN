@@ -381,84 +381,82 @@
         }
     },
     {
-        "_id" : "password.quality.smallalphabet",
-        "descriptionEN" : "Password containing small alphabets",
-        "descriptionFA" : "شامل حروف کوچک",
-        "groupFA" : "گذرواژه",
-        "groupEN" : "Password",
-        "helpEN" : "This attribute specifies if the password should containg small alphabet",
-        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف کوچک الفبای انگلیسی باشد.",
-        "type" : {
-            "class" : "switch"
+        "_id": "password.quality.smallalphabet",
+        "descriptionEN": "Password containing small alphabets",
+        "descriptionFA": "شامل حروف کوچک",
+        "groupFA": "گذرواژه",
+        "groupEN": "Password",
+        "helpEN": "This attribute specifies if the password should containg small alphabet",
+        "helpFA": "این متغیر بررسی می کند که پسورد شامل حروف کوچک الفبای انگلیسی باشد.",
+        "type": {
+            "class": "switch"
         },
-        "value" : "false"
+        "value": "false"
     },
     {
-        "_id" : "password.quality.capitalalphabet",
-        "descriptionEN" : "Password containing capital alphabets",
-        "descriptionFA" : "شامل حروف بزرگ باشد",
-        "groupFA" : "گذرواژه",
-        "groupEN" : "Password",
-        "helpEN" : "This attribute specifies if the password should containg capital alphabet",
-        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف بزرگ الفبای انگلیسی باشد.",
-        "type" : {
-            "class" : "switch"
+        "_id": "password.quality.capitalalphabet",
+        "descriptionEN": "Password containing capital alphabets",
+        "descriptionFA": "شامل حروف بزرگ باشد",
+        "groupFA": "گذرواژه",
+        "groupEN": "Password",
+        "helpEN": "This attribute specifies if the password should containg capital alphabet",
+        "helpFA": "این متغیر بررسی می کند که پسورد شامل حروف بزرگ الفبای انگلیسی باشد.",
+        "type": {
+            "class": "switch"
         },
-        "value" : "false"
+        "value": "false"
     },
     {
-        "_id" : "password.quality.number",
-        "descriptionEN" : "Password containing at least one number",
-        "descriptionFA" : "شامل حداقل یک عدد باشد.",
-        "groupFA" : "گذرواژه",
-        "groupEN" : "Password",
-        "helpEN" : "This attribute specifies if the password should containg at least one number",
-        "helpFA" : "این متغیر بررسی می کند که گذرواژه شامل حداقل یک عدد باشد.",
-        "type" : {
-            "class" : "switch"
+        "_id": "password.quality.number",
+        "descriptionEN": "Password containing at least one number",
+        "descriptionFA": "شامل حداقل یک عدد باشد.",
+        "groupFA": "گذرواژه",
+        "groupEN": "Password",
+        "helpEN": "This attribute specifies if the password should containg at least one number",
+        "helpFA": "این متغیر بررسی می کند که گذرواژه شامل حداقل یک عدد باشد.",
+        "type": {
+            "class": "switch"
         },
-        "value" : "false"
+        "value": "false"
     },
     {
-        "_id" : "password.quality.length",
-        "descriptionEN" : "lenght of Password",
-        "descriptionFA" : "طول پسورد",
-        "groupFA" : "گذرواژه",
-        "groupEN" : "Password",
-        "helpEN" : "This attribute specifies if the length of password",
-        "helpFA" : "این متغیر طول گذرواژه را مشخص می کند.",
-        "type" : {
-            "class" : "integer"
+        "_id": "password.quality.length",
+        "descriptionEN": "lenght of Password",
+        "descriptionFA": "طول پسورد",
+        "groupFA": "گذرواژه",
+        "groupEN": "Password",
+        "helpEN": "This attribute specifies if the length of password",
+        "helpFA": "این متغیر طول گذرواژه را مشخص می کند.",
+        "type": {
+            "class": "integer"
         },
-        "value" : "7"
-    },
-
-    {
-        "_id" : "password.quality.specialchar",
-        "descriptionEN" : "Password containing special char",
-        "descriptionFA" : "شامل حروف خاص باشد",
-        "groupFA" : "گذرواژه",
-        "groupEN" : "Password",
-        "helpEN" : "This attribute specifies if the password should contain special charachters",
-        "helpFA" : "این متغیر بررسی می کند که پسورد شامل حروف بزرگ کاراکترهای خاص باشد.",
-        "type" : {
-            "class" : "switch"
-        },
-        "value" : "false"
+        "value": "7"
     },
     {
-        "_id" : "qr.devices.path",
-        "value" : "/etc/cas/config/qrdevices.json",
-        "descriptionEN" : "Qr devices's saving file path",
-        "descriptionFA" : "محل ذخیره سازی فایل حاوی دستگاههای ذخیره شده با QR",
-        "groupFA" : "ذخیره سازی",
-        "groupEN" : "Storage",
-        "helpEN" : "Specifes the path of the JSON file containing users' devices information",
-        "helpFA" : "آدرس قرارگیری فایل JSON که حاوی اطلاعات دستگاههای کاربران است را مشخص می کند",
-        "type" : {
-            "class" : "path"
+        "_id": "password.quality.specialchar",
+        "descriptionEN": "Password containing special char",
+        "descriptionFA": "شامل حروف خاص باشد",
+        "groupFA": "گذرواژه",
+        "groupEN": "Password",
+        "helpEN": "This attribute specifies if the password should contain special charachters",
+        "helpFA": "این متغیر بررسی می کند که پسورد شامل حروف بزرگ کاراکترهای خاص باشد.",
+        "type": {
+            "class": "switch"
         },
-        "_class" : "parsso.idman.models.other.Setting"
+        "value": "false"
+    },
+    {
+        "_id": "qr.devices.path",
+        "value": "/etc/cas/config/qrdevices.json",
+        "descriptionEN": "Qr devices's saving file path",
+        "descriptionFA": "محل ذخیره سازی فایل حاوی دستگاههای ذخیره شده با QR",
+        "groupFA": "ذخیره سازی",
+        "groupEN": "Storage",
+        "helpEN": "Specifes the path of the JSON file containing users' devices information",
+        "helpFA": "آدرس قرارگیری فایل JSON که حاوی اطلاعات دستگاههای کاربران است را مشخص می کند",
+        "type": {
+            "class": "path"
+        },
+        "_class": "parsso.idman.models.other.Setting"
     }
-
 ]

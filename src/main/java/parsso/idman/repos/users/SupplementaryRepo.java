@@ -26,6 +26,4 @@ public interface SupplementaryRepo {
 
   void removeCurrentEndTime(String uid);
 
-  
 }
-  

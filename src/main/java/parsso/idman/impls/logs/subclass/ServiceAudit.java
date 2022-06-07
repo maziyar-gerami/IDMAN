@@ -17,15 +17,14 @@ public class ServiceAudit {
   final MongoTemplate mongoTemplate;
   List<String> services;
 
-
   public ServiceAudit(RetrieveService retrieveService, MongoTemplate mongoTemplate) {
     this.retrieveService = retrieveService;
     this.mongoTemplate = mongoTemplate;
     services = new LinkedList<>();
   }
 
-  public List<JSONObject> usedService(String userId){
-    List<SimpleService> microServices = retrieveService.listServicesMain("","");
+  public List<JSONObject> usedService(String userId) {
+    List<SimpleService> microServices = retrieveService.listServicesMain("", "");
     Query query;
     List<JSONObject> result = new LinkedList<>();
     for (SimpleService microService : microServices) {
@@ -42,5 +41,4 @@ public class ServiceAudit {
     return result;
   }
 
-  
 }

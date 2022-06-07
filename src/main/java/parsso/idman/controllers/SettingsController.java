@@ -95,9 +95,11 @@ public class SettingsController {
   public class PublicSettingsController {
 
     @GetMapping
-    public ResponseEntity<Response> password(@RequestParam(value = "lang", defaultValue = "fa") String lang) throws NoSuchFieldException, IllegalAccessException {
+    public ResponseEntity<Response> password(@RequestParam(value = "lang", defaultValue = "fa") String lang)
+        throws NoSuchFieldException, IllegalAccessException {
       return new ResponseEntity<>(
-        new Response(new Settings(mongoTemplate).password(), Variables.MODEL_SETTINGS, HttpStatus.OK.value(), lang),HttpStatus.OK);
+          new Response(new Settings(mongoTemplate).password(), Variables.MODEL_SETTINGS, HttpStatus.OK.value(), lang),
+          HttpStatus.OK);
     }
   }
 }

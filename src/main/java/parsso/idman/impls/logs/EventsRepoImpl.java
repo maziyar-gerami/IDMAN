@@ -35,10 +35,10 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
       query.addCriteria(Criteria.where("principalId").is(userId));
     }
 
-    if (!action.equals("")){
-      if (action.equals("success")){
+    if (!action.equals("")) {
+      if (action.equals("success")) {
         query.addCriteria(Criteria.where("type").regex("CasTicketGrantingTicketCreatedEvent"));
-      } else if (action.equals("failure")){
+      } else if (action.equals("failure")) {
         query.addCriteria(Criteria.where("type").regex("CasAuthenticationTransactionFailureEvent"));
       } else {
         return null;
@@ -74,10 +74,10 @@ public class EventsRepoImpl implements LogsRepo.EventRepo {
   public List<Event> analyze(int skip, int limit, String action) {
     Query query = new Query();
 
-    if (!action.equals("")){
-      if (action.equals("success")){
+    if (!action.equals("")) {
+      if (action.equals("success")) {
         query.addCriteria(Criteria.where("type").is("CasTicketGrantingTicketCreatedEvent"));
-      } else if (action.equals("failure")){
+      } else if (action.equals("failure")) {
         query.addCriteria(Criteria.where("type").is("CasAuthenticationTransactionFailureEvent"));
       } else {
         return null;

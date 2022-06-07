@@ -39,12 +39,6 @@ public class PasswordOpRepoImpl implements PasswordOpsRepo {
   final ExpirePassword expirePassword;
   final SupplementaryRepo supplementary;
 
-  @Value("${base.url}")
-  private String BASE_URL;
-
-  @Value("${spring.ldap.base.dn}")
-  private String BASE_DN;
-
   @Autowired
   public PasswordOpRepoImpl(MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UsersRetrieveRepo usersOpRetrieve,
@@ -62,14 +56,14 @@ public class PasswordOpRepoImpl implements PasswordOpsRepo {
 
   @Override
   public HttpStatus change(String uId, String newPassword, String token) {
-    return new Change(usersOpRetrieve, ldapTemplate, mongoTemplate, supplementary, BASE_DN, BASE_URL, tokenClass,
+    return new Change(usersOpRetrieve, ldapTemplate, mongoTemplate, supplementary, tokenClass,
         uniformLogger)
         .change(uId, newPassword, token);
   }
 
   @Override
   public HttpStatus reset(String userId, String newPassword, String token) {
-    return new Change(usersOpRetrieve, ldapTemplate, mongoTemplate, supplementary, BASE_DN, BASE_URL, tokenClass,
+    return new Change(usersOpRetrieve, ldapTemplate, mongoTemplate, supplementary, tokenClass,
         uniformLogger).change(userId, newPassword, token);
   }
 
@@ -97,7 +91,7 @@ public class PasswordOpRepoImpl implements PasswordOpsRepo {
     JSONObject exceptions = new JSONObject();
     exceptions.put("notFound", notFound);
     exceptions.put("superUsers",
-        new Expire(mongoTemplate, ldapTemplate, uniformLogger, usersOpRetrieve, BASE_DN).expire(doer, users));
+        new Expire(mongoTemplate, ldapTemplate, uniformLogger, usersOpRetrieve).expire(doer, users));
 
     return exceptions;
   }
@@ -131,7 +125,7 @@ public class PasswordOpRepoImpl implements PasswordOpsRepo {
     Set<String> set = new HashSet<>(users.size());
     users.removeIf(p -> !set.add((p.get_id()).toString()));
     exceptions.put("superUsers",
-        new Expire(mongoTemplate, ldapTemplate, uniformLogger, usersOpRetrieve, BASE_DN).expire(doer, users));
+        new Expire(mongoTemplate, ldapTemplate, uniformLogger, usersOpRetrieve).expire(doer, users));
 
     return exceptions;
   }
@@ -139,7 +133,7 @@ public class PasswordOpRepoImpl implements PasswordOpsRepo {
   @Override
   public HttpStatus changePublic(String userId, String currentPassword, String newPassword) {
     return new Change(usersOpRetrieve, ldapTemplate,
-        mongoTemplate, supplementary, BASE_DN, BASE_URL, tokenClass, uniformLogger)
+        mongoTemplate, supplementary, tokenClass, uniformLogger)
         .publicChange(userId, currentPassword, newPassword);
   }
 

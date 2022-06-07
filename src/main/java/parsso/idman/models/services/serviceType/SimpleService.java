@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SimpleService implements Comparable  {
+public class SimpleService implements Comparable {
   long _id;
   String url;
   int position;

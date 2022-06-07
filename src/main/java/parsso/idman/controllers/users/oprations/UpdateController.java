@@ -26,8 +26,6 @@ import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
-
-
 @RestController
 public class UpdateController extends UsersOps {
 
@@ -57,7 +55,7 @@ public class UpdateController extends UsersOps {
 
   @PutMapping("/api/users")
   public ResponseEntity<Response> update(
-        HttpServletRequest request, @RequestBody parsso.idman.models.users.User user,
+      HttpServletRequest request, @RequestBody parsso.idman.models.users.User user,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_USER,
@@ -67,36 +65,39 @@ public class UpdateController extends UsersOps {
 
   @PutMapping("/api/users/ou/{ou}")
   public ResponseEntity<Response> addGroups(
-        HttpServletRequest request, @RequestParam("file") MultipartFile file,
+      HttpServletRequest request, @RequestParam("file") MultipartFile file,
       @PathVariable("ou") String ou,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException {
-        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_GROUP_UPDATE))
-          return new ResponseEntity(new Response(null,Variables.MODEL_USER,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+    if (!Extentsion.check(file.getOriginalFilename(), Variables.EXT_USER_GROUP_UPDATE))
+      return new ResponseEntity(
+          new Response(null, Variables.MODEL_USER, HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), lang), HttpStatus.OK);
     List<String> notExist = update.addGroupToUsers(request.getUserPrincipal().getName(), file, ou);
     if (notExist == null) {
       return new ResponseEntity<>(new Response(
-            null, Variables.MODEL_USER, HttpStatus.FORBIDDEN.value(), lang),
+          null, Variables.MODEL_USER, HttpStatus.FORBIDDEN.value(), lang),
           HttpStatus.OK);
     } else if (notExist.size() == 0) {
       return new ResponseEntity<>(new Response(
-            null, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          null, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(
-          new Response(notExist, Variables.MODEL_USER, 
-            HttpStatus.MULTI_STATUS.value(), lang), HttpStatus.OK);
+          new Response(notExist, Variables.MODEL_USER,
+              HttpStatus.MULTI_STATUS.value(), lang),
+          HttpStatus.OK);
     }
   }
 
   @PutMapping("/api/users/import/massUpdate")
   public ResponseEntity<Response> updateConflicts(
-        HttpServletRequest request, @RequestBody List<User> users,
+      HttpServletRequest request, @RequestBody List<User> users,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-      new Response(update.mass(request.getUserPrincipal().getName(), users),
-        Variables.MODEL_USER, HttpStatus.OK.value(), lang), HttpStatus.OK);
+        new Response(update.mass(request.getUserPrincipal().getName(), users),
+            Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+        HttpStatus.OK);
   }
 
   @PutMapping("/api/users/group/{groupId}")
@@ -105,19 +106,20 @@ public class UpdateController extends UsersOps {
       @PathVariable(name = "groupId") String groupId,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
-        if(groupRepo.retrieve(true, groupId)==null)
-        return new ResponseEntity<>( new Response(null, Variables.MODEL_GROUP, HttpStatus.NOT_FOUND.value(), lang),
-        HttpStatus.OK);
+    if (groupRepo.retrieve(true, groupId) == null)
+      return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP, HttpStatus.NOT_FOUND.value(), lang),
+          HttpStatus.OK);
     JSONObject jsonObject = update.groupOfUsers(request.getUserPrincipal().getName(), groupId, gu);
     if (jsonObject.isEmpty()) {
       return new ResponseEntity<>(
-        new Response(null, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          new Response(null, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
 
     return new ResponseEntity<>(
-        new Response(jsonObject, 
-          Variables.MODEL_USER, HttpStatus.MULTI_STATUS.value(), lang), HttpStatus.OK);
+        new Response(jsonObject,
+            Variables.MODEL_USER, HttpStatus.MULTI_STATUS.value(), lang),
+        HttpStatus.OK);
   }
 
   @PutMapping("/api/users/status")
@@ -145,7 +147,8 @@ public class UpdateController extends UsersOps {
       default:
         return new ResponseEntity<>(
             new Response(
-              null, Variables.MODEL_USER, HttpStatus.FORBIDDEN.value(), lang), HttpStatus.OK);
+                null, Variables.MODEL_USER, HttpStatus.FORBIDDEN.value(), lang),
+            HttpStatus.OK);
 
     }
   }

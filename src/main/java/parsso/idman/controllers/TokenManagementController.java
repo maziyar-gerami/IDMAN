@@ -25,14 +25,13 @@ public class TokenManagementController {
         return new ResponseEntity<>(tokenManagement.retrieve(userId), HttpStatus.OK);
     }
 
-
     @DeleteMapping()
-    ResponseEntity<HttpStatus> deleteAll(@RequestParam(value = "username") String userId, @RequestParam(name = "token", defaultValue = "") String token) {
+    ResponseEntity<HttpStatus> deleteAll(@RequestParam(value = "username") String userId,
+            @RequestParam(name = "token", defaultValue = "") String token) {
         if (token.equals(""))
             return new ResponseEntity<>(tokenManagement.delete(userId));
         return new ResponseEntity<>(tokenManagement.delete(userId, token));
     }
-
 
     @PostMapping
     ResponseEntity<HttpStatus> create(@RequestParam("username") String userId, @RequestParam("token") String token) {
@@ -40,7 +39,8 @@ public class TokenManagementController {
     }
 
     @GetMapping("/valid")
-    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token, @RequestParam(value = "lang", defaultValue = "fa") String lang) {
+    ResponseEntity<Response> retrieve(@RequestParam("username") String userId, @RequestParam("token") String token,
+            @RequestParam(value = "lang", defaultValue = "fa") String lang) {
         return new ResponseEntity<>(new Response(tokenManagement.valid(userId, token), lang), HttpStatus.OK);
     }
 

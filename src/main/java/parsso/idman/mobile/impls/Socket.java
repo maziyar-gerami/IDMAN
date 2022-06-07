@@ -38,7 +38,7 @@ public class Socket {
   }
 
   public void broadcast(String message) {
-    for (Socket current : connections){
+    for (Socket current : connections) {
       try {
         current.session.getBasicRemote().sendText(message);
 

@@ -149,8 +149,7 @@ public class Variables {
         "<img style=\"vertical-align:middle;\" src=\"" + logo + "\"" + "alt= \"Parsso\">";
   }
 
-  public static final String PARSSO_IDMAN = 
-        " ___ ____  __  __    _    _   _ \n"
+  public static final String PARSSO_IDMAN = " ___ ____  __  __    _    _   _ \n"
       + "|_ _|  _ \\|  \\/  |  / \\  | \\ | |\n"
       + " | || | | | |\\/| | / _ \\ |  \\| |\n"
       + " | || |_| | |  | |/ ___ \\| |\\  |\n"
@@ -162,9 +161,9 @@ public class Variables {
   public static final String ROLE_CORRECTION = "RoleFix";
   public static final String SIMPLESERVICE_FIX = "SimpleServiceFix";
   public static final List<String> EXT_METADATA = Arrays.asList("xml");
-  public static final List<String> EXT_PHOTO = Arrays.asList("png","jpg","jprg");
-  public static final List<String> EXT_USER_GROUP_UPDATE = Arrays.asList("xlsx","xls","csv");
-  public static final List<String> EXT_USER_IMPORT =  Arrays.asList("xlsx");
+  public static final List<String> EXT_PHOTO = Arrays.asList("png", "jpg", "jprg");
+  public static final List<String> EXT_USER_GROUP_UPDATE = Arrays.asList("xlsx", "xls", "csv");
+  public static final List<String> EXT_USER_IMPORT = Arrays.asList("xlsx");
   public static final String PREFS_BASE_URL = "BASE_URL";
   public static final String PREFS_BASE_DN = "BASE_DN";
 

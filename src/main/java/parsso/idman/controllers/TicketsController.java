@@ -69,14 +69,14 @@ public class TicketsController {
             ticket, Variables.MODEL_TICKETING, HttpStatus.OK.value(), lang), HttpStatus.OK);
       } else {
         return new ResponseEntity<>(new Response(
-              null, Variables.MODEL_TICKETING, HttpStatus.FORBIDDEN.value(), lang), HttpStatus.OK);
+            null, Variables.MODEL_TICKETING, HttpStatus.FORBIDDEN.value(), lang), HttpStatus.OK);
       }
     } else if (ticket != null) {
       return new ResponseEntity<>(new Response(
           ticket, Variables.MODEL_TICKETING, HttpStatus.OK.value(), lang), HttpStatus.OK);
     }
     return new ResponseEntity<>(new Response(
-      null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(), lang), HttpStatus.OK);
+        null, Variables.MODEL_TICKETING, HttpStatus.BAD_REQUEST.value(), lang), HttpStatus.OK);
   }
 
   @DeleteMapping("/api/user/tickets")

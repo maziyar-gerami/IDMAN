@@ -40,8 +40,8 @@ public class RetrieveController extends UsersOps {
     this.systemRefresh = systemRefresh;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
-            .addLimit(limit)
-            .build();
+        .addLimit(limit)
+        .build();
   }
 
   @GetMapping("/api/user")
@@ -51,27 +51,28 @@ public class RetrieveController extends UsersOps {
     User user = usersOpRetrieve.retrieveUsers(request.getUserPrincipal().getName());
     if (user == null) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
+          null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(
-        new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
   }
 
   @GetMapping("/api/users/u/{uid}")
-  public ResponseEntity<Response> retrieveUser( @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang,
+  public ResponseEntity<Response> retrieveUser(
+      @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang,
       @PathVariable("uid") String uid)
       throws NoSuchFieldException, IllegalAccessException {
     User user = usersOpRetrieve.retrieveUsers(uid);
     if (user == null) {
       return new ResponseEntity<>(new Response(
-        null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
+          null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(
-        new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
   }
@@ -87,8 +88,10 @@ public class RetrieveController extends UsersOps {
       @RequestParam(value = "displayName", defaultValue = "") String displayName)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(
-        new Response(usersOpRetrieve.mainAttributes(Integer.valueOf(page), Integer.valueOf(count),sort, role, userId, displayName),
-          Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+        new Response(
+            usersOpRetrieve.mainAttributes(Integer.valueOf(page), Integer.valueOf(count), sort, role, userId,
+                displayName),
+            Variables.MODEL_USER, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
 
@@ -103,11 +106,11 @@ public class RetrieveController extends UsersOps {
       @RequestParam(name = "searchDisplayName", defaultValue = "") String searchDisplayName,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
-        new Thread(() -> systemRefresh.refreshLockedUsers()).start();
+    new Thread(() -> systemRefresh.refreshLockedUsers()).start();
     return new ResponseEntity<>(
         new Response(usersOpRetrieve.mainAttributes(page, n, sortType, groupFilter, searchUid,
             searchDisplayName, mobile, userStatus),
-             Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+            Variables.MODEL_USER, HttpStatus.OK.value(), lang),
         HttpStatus.OK);
   }
 
@@ -119,7 +122,7 @@ public class RetrieveController extends UsersOps {
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(
-      usersOpRetrieve.retrieveUsersMainWithGroupId(groupId, page, recs),
+        usersOpRetrieve.retrieveUsersMainWithGroupId(groupId, page, recs),
         Variables.MODEL_USER, HttpStatus.OK.value(), lang), HttpStatus.OK);
   }
 
@@ -130,20 +133,20 @@ public class RetrieveController extends UsersOps {
     User user = usersOpRetrieve.retrieveUsersWithLicensed(userId);
     if (user == null) {
       return new ResponseEntity<>(
-        new Response(null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
+          new Response(null, Variables.MODEL_USER, HttpStatus.NOT_FOUND.value(), lang),
           HttpStatus.OK);
     } else {
       return new ResponseEntity<>(
-        new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
+          new Response(user, Variables.MODEL_USER, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }
   }
 
   @GetMapping("/api/users/export")
   public ModelAndView downloadExcel() {
-    if(bucket.tryConsume(1))
-    return new ModelAndView(new UsersExcelView(usersOpRetrieve), "listUsers", Object.class);
+    if (bucket.tryConsume(1))
+      return new ModelAndView(new UsersExcelView(usersOpRetrieve), "listUsers", Object.class);
     return null;
-    
+
   }
 }

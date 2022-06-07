@@ -27,7 +27,7 @@ public class RetrieveUser extends Parameters implements UsersRetrieveRepo {
 
   @Override
   public ListUsers mainAttributes(int page, int number, String sort, String role, String userId, String displayName) {
-    return new MainAttributes(mongoTemplate, ldapTemplate).get(page, number, sort, role,userId,displayName);
+    return new MainAttributes(mongoTemplate, ldapTemplate).get(page, number, sort, role, userId, displayName);
   }
 
   @Override
@@ -62,7 +62,7 @@ public class RetrieveUser extends Parameters implements UsersRetrieveRepo {
 
   @Override
   public User.ListUsers mainAttributes(int page, int number, String sortType, String groupFilter, String searchUid,
-      String searchDisplayName, String mobile, String userStatus) { 
+      String searchDisplayName, String mobile, String userStatus) {
     return new MainAttributes(mongoTemplate).get(page, number, sortType, groupFilter,
         searchUid, searchDisplayName, mobile, userStatus);
   }

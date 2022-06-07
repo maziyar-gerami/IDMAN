@@ -16,6 +16,7 @@ import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.stereotype.Service;
 
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.DashboardData;
@@ -32,8 +33,6 @@ public class UserRefresh {
   UniformLogger uniformLogger;
   UsersRetrieveRepo usersOpRetrieve;
   DashboardData dashboardData;
-  @Value("${spring.ldap.base.dn}")
-  protected String BASE_DN;
 
   @Autowired
   public UserRefresh(MongoTemplate mongoTemplate, LdapTemplate ldapTemplate, UniformLogger uniformLogger,
@@ -74,7 +73,8 @@ public class UserRefresh {
             userExtraInfo.setQrToken(UUID.randomUUID().toString());
 
           String photoName = ldapTemplate.search(
-              "ou=People," + BASE_DN, new EqualsFilter("uid", user.get_id().toString()).encode(),
+              "ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
+              new EqualsFilter("uid", user.get_id().toString()).encode(),
               searchControls,
               (AttributesMapper<String>) attrs -> {
                 if (attrs.get("photoName") != null)
@@ -148,7 +148,7 @@ public class UserRefresh {
     // 2. cleanUp mongo
     List<UsersExtraInfo> usersMongo = mongoTemplate.findAll(UsersExtraInfo.class, Variables.col_usersExtraInfo);
     for (UsersExtraInfo usersExtraInfo : usersMongo) {
-      List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + BASE_DN,
+      List<UsersExtraInfo> usersExtraInfoList = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
           new EqualsFilter("uid", usersExtraInfo.get_id().toString()).encode(), searchControls,
           new SimpleUserAttributeMapper());
       if (usersExtraInfoList.size() == 0) {

@@ -3,6 +3,8 @@ package parsso.idman.impls.services.create.sublcasses;
 import org.apache.commons.compress.utils.IOUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.multipart.MultipartFile;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.repos.FilesStorageService;
@@ -18,12 +20,12 @@ public class ServiceIcon {
   FilesStorageService storageService;
   String BASE_URL;
 
-  public ServiceIcon(FilesStorageService storageService, String BASE_URL,MongoTemplate mongoTemplate) {
+  public ServiceIcon(FilesStorageService storageService, MongoTemplate mongoTemplate) {
     this.storageService = storageService;
-    this.mongoTemplate =mongoTemplate;
-    this.BASE_URL = BASE_URL;
+    this.mongoTemplate = mongoTemplate;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
+    ;
   }
-
 
   public String show(HttpServletResponse response, String fileName) {
 

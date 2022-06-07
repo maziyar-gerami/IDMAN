@@ -39,7 +39,6 @@ import parsso.idman.repos.GroupRepo;
 import parsso.idman.repos.users.PasswordOpsRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 
-
 @RequestMapping("/api/groups")
 @RestController
 public class GroupsController {
@@ -50,15 +49,16 @@ public class GroupsController {
   private Bucket bucket;
 
   @Autowired
-  public GroupsController(UsersRetrieveRepo retrieveUsers, PasswordOpsRepo passwordOp, GroupRepo groupRepo, MongoTemplate mongoTemplate) {
+  public GroupsController(UsersRetrieveRepo retrieveUsers, PasswordOpsRepo passwordOp, GroupRepo groupRepo,
+      MongoTemplate mongoTemplate) {
     this.retrieveUsers = retrieveUsers;
     this.passwordOp = passwordOp;
     this.groupRepo = groupRepo;
     this.mongoTemplate = mongoTemplate;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket4j.builder()
-            .addLimit(limit)
-            .build();
+        .addLimit(limit)
+        .build();
   }
 
   @GetMapping("/user")
@@ -81,12 +81,13 @@ public class GroupsController {
   public ResponseEntity<Response> bindLdapGroup(HttpServletRequest request,
       @RequestParam(value = "lang", defaultValue = "fa") String lang, @RequestBody Group group)
       throws NoSuchFieldException, IllegalAccessException {
-        if (bucket.tryConsume(1))
-    return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
-        groupRepo.create(request.getUserPrincipal().getName(), group).value(), lang),
+    if (bucket.tryConsume(1))
+      return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
+          groupRepo.create(request.getUserPrincipal().getName(), group).value(), lang),
+          HttpStatus.OK);
+    return new ResponseEntity(new Response(null, Variables.MODEL_GROUP, HttpStatus.TOO_MANY_REQUESTS.value(), lang),
         HttpStatus.OK);
-        return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.OK);
-        
+
   }
 
   @GetMapping
@@ -118,7 +119,8 @@ public class GroupsController {
 
   @PutMapping("/{ouID}")
   public ResponseEntity<Response> rebind(HttpServletRequest request,
-      @RequestBody Group ou, @RequestParam(value = "lang", defaultValue = "fa") String lang,@PathVariable(value = "ouID") String ouID)
+      @RequestBody Group ou, @RequestParam(value = "lang", defaultValue = "fa") String lang,
+      @PathVariable(value = "ouID") String ouID)
       throws NoSuchFieldException, IllegalAccessException {
     return new ResponseEntity<>(new Response(null, Variables.MODEL_GROUP,
         groupRepo.update(request.getUserPrincipal().getName(), ouID, ou).value(), lang),
@@ -141,42 +143,44 @@ public class GroupsController {
   @GetMapping("/export")
   public ModelAndView downloadExcel() {
     if (bucket.tryConsume(1))
-    return new ModelAndView(new GroupsExcelView(
-      groupRepo, mongoTemplate), "listGroups", Object.class);
-          return null;
+      return new ModelAndView(new GroupsExcelView(
+          groupRepo, mongoTemplate), "listGroups", Object.class);
+    return null;
   }
 
   @PostMapping("/import")
   public ResponseEntity<Response> uploadFile(
-        HttpServletRequest request, @RequestParam("file") MultipartFile file,
+      HttpServletRequest request, @RequestParam("file") MultipartFile file,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws IOException, NoSuchFieldException, IllegalAccessException, java.io.IOException,
       ParseException {
-        if(!Extentsion.check(file.getOriginalFilename(),Variables.EXT_USER_IMPORT))
-          return new ResponseEntity(new Response(null,Variables.MODEL_GROUP,HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(),lang),HttpStatus.OK);
+    if (!Extentsion.check(file.getOriginalFilename(), Variables.EXT_USER_IMPORT))
+      return new ResponseEntity(
+          new Response(null, Variables.MODEL_GROUP, HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), lang), HttpStatus.OK);
 
-       if( bucket.tryConsume(1)){
+    if (bucket.tryConsume(1)) {
 
-    org.json.simple.JSONObject jsonObject = new ImportGroups(groupRepo)
-        .importFileGroups(request.getUserPrincipal().getName(), file, true);
-    if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) == 0) {
-      return new ResponseEntity<>(
-          new Response(jsonObject, Variables.MODEL_USER, HttpStatus.CREATED.value(),
-              lang),
-          HttpStatus.OK);
-    } else if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) > 0
-        && Integer.parseInt(jsonObject.get("nSuccessful").toString()) > 0) {
-      return new ResponseEntity<>(
-          new Response(jsonObject, Variables.MODEL_USER, HttpStatus.MULTI_STATUS.value(),
-              lang),
-          HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(
-          new Response(jsonObject, Variables.MODEL_USER, HttpStatus.BAD_REQUEST.value(),
-              lang),
-          HttpStatus.OK);
+      org.json.simple.JSONObject jsonObject = new ImportGroups(groupRepo)
+          .importFileGroups(request.getUserPrincipal().getName(), file, true);
+      if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) == 0) {
+        return new ResponseEntity<>(
+            new Response(jsonObject, Variables.MODEL_USER, HttpStatus.CREATED.value(),
+                lang),
+            HttpStatus.OK);
+      } else if (Integer.parseInt(jsonObject.get("nUnSuccessful").toString()) > 0
+          && Integer.parseInt(jsonObject.get("nSuccessful").toString()) > 0) {
+        return new ResponseEntity<>(
+            new Response(jsonObject, Variables.MODEL_USER, HttpStatus.MULTI_STATUS.value(),
+                lang),
+            HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(
+            new Response(jsonObject, Variables.MODEL_USER, HttpStatus.BAD_REQUEST.value(),
+                lang),
+            HttpStatus.OK);
+      }
     }
+    return new ResponseEntity(new Response(null, Variables.MODEL_GROUP, HttpStatus.TOO_MANY_REQUESTS.value(), lang),
+        HttpStatus.OK);
   }
-  return new ResponseEntity(new Response(null, Variables.MODEL_GROUP,HttpStatus.TOO_MANY_REQUESTS.value(),lang),HttpStatus.OK);
-}
 }

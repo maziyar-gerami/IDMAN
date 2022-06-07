@@ -34,7 +34,7 @@ public class ServiceRefresh {
       Query query = new Query(Criteria.where("_id").is(service.getId()));
       SimpleService serviceExtraInfo = mongoTemplate.findOne(query, SimpleService.class,
           Variables.col_servicesExtraInfo);
-          SimpleService newServiceExtraInfo = new SimpleService();
+      SimpleService newServiceExtraInfo = new SimpleService();
 
       String tempUrl;
 

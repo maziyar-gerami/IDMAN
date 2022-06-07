@@ -29,9 +29,6 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
 
-  @Value("${spring.ldap.base.dn}")
-  protected static String BASE_DN;
-
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
@@ -60,26 +57,27 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   public JSONObject mass(String doerID, List<User> users) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
         uniformLogger, userOpRetrieve,
-        buildAttributes, new ExcelAnalyzer( userOpRetrieve, this))
+        buildAttributes, new ExcelAnalyzer(userOpRetrieve, this))
         .massUpdate(doerID, users);
   }
 
   @Override
   public void usersWithSpecificOU(String doerID, String old_ou, String new_ou) {
     new UsersWithSpecificOU(uniformLogger, ldapTemplate, mongoTemplate, buildAttributes,
-        new UserAttributeMapper(mongoTemplate), BASE_DN).updateUsersWithSpecificOU(doerID, old_ou, new_ou);
+        new UserAttributeMapper(mongoTemplate)).updateUsersWithSpecificOU(doerID, old_ou, new_ou);
   }
 
   @Override
   public List<String> addGroupToUsers(String doer, MultipartFile file, String ou) throws IOException {
-    return new GroupUser(new ExcelAnalyzer(userOpRetrieve, this), BASE_DN)
+    return new GroupUser(new ExcelAnalyzer(userOpRetrieve, this))
         .addGroupToUsers(doer, file, ou);
   }
 
   @PostConstruct
-  public void postConstruct() throws InterruptedException{
-    new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this, BASE_DN, new UserAttributeMapper(mongoTemplate),retrieveService).postConstruct();
-    //new PreferenceSettings(mongoTemplate).run();
+  public void postConstruct() throws InterruptedException {
+    new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
+        new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
+    // new PreferenceSettings(mongoTemplate).run();
   }
 
 }

@@ -42,9 +42,9 @@ public class AuditsExcelView extends AbstractXlsxView {
     sheet.setDefaultColumnWidth(30);
 
     Query query = new Query(Criteria.where("actionPerformed")
-    .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal")
-    .ne("audit:unknown").and("resourceOperatedUpon").exists(true)).with(Sort.by(Sort.Direction.DESC, "_id")).limit(2000);
-
+        .is("SERVICE_ACCESS_ENFORCEMENT_TRIGGERED").and("principal")
+        .ne("audit:unknown").and("resourceOperatedUpon").exists(true)).with(Sort.by(Sort.Direction.DESC, "_id"))
+        .limit(2000);
 
     long count = mongoTemplate.count(query, Variables.col_audit);
 

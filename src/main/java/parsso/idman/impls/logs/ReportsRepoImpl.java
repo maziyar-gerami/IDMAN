@@ -26,7 +26,8 @@ public class ReportsRepoImpl implements LogsRepo.ReportRepo {
   }
 
   @Override
-  public Report.ListReports retrieve(String userId, String startDate, String endDate, int p, int n, List<String> services) {
+  public Report.ListReports retrieve(String userId, String startDate, String endDate, int p, int n,
+      List<String> services) {
     Query query = new Query();
     long[] range = new long[2];
 
