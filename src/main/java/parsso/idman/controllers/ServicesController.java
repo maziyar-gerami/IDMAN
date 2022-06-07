@@ -163,13 +163,10 @@ public class ServicesController {
   }
 
   @GetMapping("/api/serviceCheck/{id}")
-  public ResponseEntity<Response> serviceAccess(@PathVariable("id") long id,
+  public boolean serviceAccess(@PathVariable("id") long id,
       @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang)
       throws NoSuchFieldException, IllegalAccessException {
-    boolean result = new ServiceAccess(mongoTemplate).serviceAccess(id);
-    return new ResponseEntity<>(new Response(
-        result, Variables.MODEL_SERVICE, result ? HttpStatus.OK.value() : HttpStatus.BAD_REQUEST.value(), lang),
-        HttpStatus.OK);
+    return new ServiceAccess(mongoTemplate).serviceAccess(id);
   }
 
   @PostMapping("/api/services/metadata")
