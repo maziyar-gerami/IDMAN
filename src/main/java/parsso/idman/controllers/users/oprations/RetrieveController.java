@@ -17,7 +17,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.communicate.Token;
@@ -39,7 +38,7 @@ public class RetrieveController extends UsersOps {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.systemRefresh = systemRefresh;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
-    this.bucket = Bucket4j.builder()
+    this.bucket = Bucket.builder()
         .addLimit(limit)
         .build();
   }

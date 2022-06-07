@@ -13,6 +13,7 @@ import parsso.idman.utils.sms.kaveNegar.KavenegarApi;
 import parsso.idman.utils.sms.kaveNegar.excepctions.ApiException;
 import parsso.idman.utils.sms.kaveNegar.excepctions.HttpException;
 import parsso.idman.utils.sms.magfa.Texts;
+import parsso.idman.configs.Prefs;
 
 import java.util.Date;
 
@@ -26,10 +27,12 @@ public class Notification implements Comparable {
   private long timestamp;
   private Time time;
   private MongoTemplate mongoTemplate;
+  private String BASE_URL;
 
   @JsonIgnore
   public Notification(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
   }
 
   @Override
@@ -44,14 +47,14 @@ public class Notification implements Comparable {
     String SMS_sdk = new Settings(mongoTemplate).retrieve(Variables.SMS_SDK).getValue().toString();
 
     if (SMS_sdk.equalsIgnoreCase("KaveNegar")) {
-      return new Notification(mongoTemplate).sendMessagePasswordNotifyKaveNegar(mongoTemplate, user) > 0;
+      return sendMessagePasswordNotifyKaveNegar(user) > 0;
     } else if (SMS_sdk.equalsIgnoreCase("Magfa")) {
-      return sendMessagePasswordNotifyMagfa(mongoTemplate, user) > 0;
+      return sendMessagePasswordNotifyMagfa(user) > 0;
     }
     return false;
   }
 
-  private int sendMessagePasswordNotifyMagfa(MongoTemplate mongoTemplate, User user) {
+  private int sendMessagePasswordNotifyMagfa(User user) {
     try {
       Texts texts = new Texts();
       texts.passwordChangeNotification();
@@ -72,7 +75,7 @@ public class Notification implements Comparable {
 
   }
 
-  private int sendMessagePasswordNotifyKaveNegar(MongoTemplate mongoTemplate, User user) {
+  private int sendMessagePasswordNotifyKaveNegar(User user) {
     try {
       Texts texts = new Texts();
       texts.passwordChangeNotification();
@@ -83,7 +86,7 @@ public class Notification implements Comparable {
       String h = time.getHours() + ":" + time.getMinutes();
       String dh = d + " ساعت " + h;
       api.verifyLookup(user.getMobile(), user.getDisplayName().substring(0, user.getDisplayName().indexOf(' ')),
-          dh, Prefs.get(Variables.PREFS_BASE_URL);, "changePass");
+          dh, BASE_URL, "changePass");
       return Integer
           .parseInt(new Settings(mongoTemplate).retrieve(Variables.TOKEN_VALID_SMS).getValue().toString());
     } catch (HttpException ex) { // در صورتی که خروجی وب سرویس 200 نباشد این خطارخ می دهد.
@@ -97,5 +100,6 @@ public class Notification implements Comparable {
       return 0;
 
     }
+
   }
 }

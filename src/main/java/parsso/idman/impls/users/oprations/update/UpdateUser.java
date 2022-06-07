@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;

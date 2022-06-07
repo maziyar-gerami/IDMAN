@@ -3,7 +3,6 @@ package parsso.idman.mobile.controller;
 import com.google.zxing.WriterException;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

@@ -1,15 +1,27 @@
 package parsso.idman.helpers.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.UUID;
+
+import javax.naming.Name;
+import javax.naming.directory.BasicAttribute;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.ModificationItem;
+
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
@@ -17,16 +29,6 @@ import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.users.User;
 import parsso.idman.models.users.UsersExtraInfo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
-
-import javax.naming.Name;
-import javax.naming.directory.BasicAttribute;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.ModificationItem;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.UUID;
 
 @Service
 @SuppressWarnings({ "unchecked" })

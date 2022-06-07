@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 
-import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;

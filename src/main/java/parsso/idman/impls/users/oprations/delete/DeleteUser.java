@@ -3,7 +3,6 @@ package parsso.idman.impls.users.oprations.delete;
 import lombok.val;
 import net.minidev.json.JSONObject;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

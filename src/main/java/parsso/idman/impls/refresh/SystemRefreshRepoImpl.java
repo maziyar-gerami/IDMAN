@@ -1,10 +1,10 @@
 package parsso.idman.impls.refresh;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.impls.refresh.subclass.CaptchaRefresh;

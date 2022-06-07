@@ -3,13 +3,10 @@ package parsso.idman.helpers.onetime;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.RoleClass;
 import parsso.idman.models.other.OneTime;
-import parsso.idman.models.users.Role;
-import parsso.idman.models.users.UsersExtraInfo;
 
 import java.util.Date;
 import java.util.List;

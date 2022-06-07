@@ -1,12 +1,11 @@
 package parsso.idman.helpers.onetime;
 
-import lombok.val;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 
-import parsso.idman.configs.Prefs;
+import lombok.val;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;

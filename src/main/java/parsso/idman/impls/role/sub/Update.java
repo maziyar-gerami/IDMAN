@@ -3,8 +3,6 @@ package parsso.idman.impls.role.sub;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.gson.JsonObject;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

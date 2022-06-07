@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
 import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
@@ -43,7 +42,7 @@ public class CreateController extends UsersOps {
     super(tokenClass, ldapTemplate, mongoTemplate, usersOpRetrieve);
     this.userOpCreate = create;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
-    this.bucket = Bucket4j.builder()
+    this.bucket = Bucket.builder()
         .addLimit(limit)
         .build();
   }

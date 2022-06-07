@@ -1,9 +1,5 @@
 package parsso.idman;
 
-import java.util.prefs.Preferences;
-
-import javax.annotation.PostConstruct;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -25,6 +21,7 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+
 import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;

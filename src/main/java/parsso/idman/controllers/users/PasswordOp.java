@@ -1,9 +1,8 @@
 package parsso.idman.controllers.users;
 
 import javax.servlet.http.HttpServletRequest;
-import net.minidev.json.JSONObject;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.minidev.json.JSONObject;
 import parsso.idman.configs.Prefs;
 import parsso.idman.controllers.users.oprations.UsersOps;
 import parsso.idman.helpers.Settings;

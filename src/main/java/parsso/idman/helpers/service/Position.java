@@ -1,17 +1,17 @@
 package parsso.idman.helpers.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
-import parsso.idman.helpers.Variables;
-import parsso.idman.models.services.serviceType.MicroService;
-import parsso.idman.models.services.serviceType.SimpleService;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import parsso.idman.helpers.Variables;
+import parsso.idman.models.services.serviceType.SimpleService;
 
 @SuppressWarnings({ "SameReturnValue", "unchecked" })
 public class Position {

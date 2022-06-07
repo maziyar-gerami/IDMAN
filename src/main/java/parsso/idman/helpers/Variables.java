@@ -1,7 +1,6 @@
 package parsso.idman.helpers;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import parsso.idman.models.users.User;
