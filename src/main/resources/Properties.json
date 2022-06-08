@@ -187,7 +187,7 @@
     },
     {
         "_id": "password.change.limit",
-        "value": "on",
+        "value": "true",
         "descriptionEN": "Password change limit enable",
         "descriptionFA": "قابلیت حداکثر تعداد تغییر گذرواژه در یک روز",
         "groupFA": "گذر واژه",
@@ -213,7 +213,7 @@
     },
     {
         "_id": "password.change.notification",
-        "value": "on",
+        "value": "true",
         "descriptionEN": "Sending instant message after changing password",
         "descriptionFA": "ارسال پیامک پس از تغییر پسورد",
         "groupFA": "اعلان ها",
@@ -239,7 +239,7 @@
     },
     {
         "_id": "password.change.limit",
-        "value": "on",
+        "value": "true",
         "descriptionEN": "Password change limit enable",
         "descriptionFA": "قابلیت حداکثر تعداد گذرواژه",
         "groupFA": "گذر واژه",

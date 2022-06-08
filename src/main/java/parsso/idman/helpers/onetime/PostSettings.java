@@ -146,7 +146,7 @@ public class PostSettings {
           break;
 
         case ("password.change.notification"):
-          if (password_change_notification.equals("on"))
+          if (password_change_notification.equals("true"))
             password_change_notification = "true";
           else
             password_change_notification = "false";
