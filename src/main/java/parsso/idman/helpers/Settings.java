@@ -6,13 +6,18 @@ import org.json.simple.JSONObject;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+import parsso.idman.configs.Prefs;
+import parsso.idman.models.logs.ReportMessage;
 import parsso.idman.models.other.Setting;
 
 public class Settings {
   MongoTemplate mongoTemplate;
+  UniformLogger uniformLogger;
 
   public Settings(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
+    this.uniformLogger = new UniformLogger(mongoTemplate);
   }
 
   public Settings() {
@@ -22,12 +27,15 @@ public class Settings {
   public Setting retrieve(String settingName) {
     Setting s = null;
     try {
+          String value = Prefs.get(settingName);
+          s = new Setting(settingName , value);
+    } catch (Exception e) {
+      try{
       s = mongoTemplate.findOne(new Query(Criteria.where("_id").is(settingName)), Setting.class,
           Variables.col_properties);
-    } catch (Exception e) {
-      e.printStackTrace();
-      // uniformLogger.error("System", new ReportMessage(Variables.MODEL_SETTINGS,
-      // settingName, Variables.ACTION_GET, Variables.RESULT_FAILED));
+      }catch(NullPointerException ne){
+        uniformLogger.error("System", new ReportMessage(Variables.MODEL_SETTINGS, settingName, Variables.ACTION_GET, Variables.RESULT_FAILED));
+      }
     }
     return s;
   }

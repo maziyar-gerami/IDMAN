@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Property;
@@ -49,6 +50,7 @@ public class SettingsController {
       throws NoSuchFieldException, IllegalAccessException {
     int status = settingsRepo.update(request.getUserPrincipal().getName(), properties).value();
     if (status == 200) {
+      new Prefs(settingsRepo.retrieve());
       return new ResponseEntity<>(new Response(null, Variables.MODEL_SETTINGS, HttpStatus.OK.value(), lang),
           HttpStatus.OK);
     }

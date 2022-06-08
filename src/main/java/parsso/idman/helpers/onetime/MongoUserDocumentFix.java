@@ -25,14 +25,12 @@ public class MongoUserDocumentFix {
   final MongoTemplate mongoTemplate;
   final UsersRetrieveRepo usersOpRetrieve;
   final LdapTemplate ldapTemplate;
-  final String BASE_DN;
 
   MongoUserDocumentFix(MongoTemplate mongoTemplate, UsersRetrieveRepo usersOp, LdapTemplate ldapTemplate,
       UserAttributeMapper userAttributeMapper) {
     this.mongoTemplate = mongoTemplate;
     this.usersOpRetrieve = usersOp;
     this.ldapTemplate = ldapTemplate;
-    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void run() {
@@ -52,7 +50,7 @@ public class MongoUserDocumentFix {
         searchControls.setReturningAttributes(new String[] { "*", "+" });
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-        List<User> people = ldapTemplate.search("ou=People," + BASE_DN,
+        List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
             new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls,
             new UserAttributeMapper(mongoTemplate));
 

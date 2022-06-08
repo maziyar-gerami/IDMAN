@@ -14,8 +14,12 @@ import parsso.idman.models.logs.ReportMessage;
 
 @Service
 public class UniformLogger {
-  @Autowired
   MongoTemplate mongoTemplate;
+
+  @Autowired
+  UniformLogger (MongoTemplate mongoTemplate){
+    this.mongoTemplate = mongoTemplate;
+  }
 
   public void warn(String doerId, ReportMessage reportMessage) {
     Logger logger = LogManager.getLogger(doerId);

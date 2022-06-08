@@ -46,4 +46,9 @@ public class Setting {
     this.helpFA = setting.getHelpFA();
     this.type = setting.getType();
   }
+
+  public Setting(String settingName, String value) {
+    this._id = settingName;
+    this.value = value;
+  }
 }

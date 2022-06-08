@@ -26,7 +26,7 @@ public class UsersWithSpecificOU {
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
   final BuildAttributes buildAttributes;
-  final String BASE_DN;
+
 
   public UsersWithSpecificOU(UniformLogger uniformLogger, LdapTemplate ldapTemplate, MongoTemplate mongoTemplate,
       BuildAttributes buildAttributes, UserAttributeMapper userAttributeMapper) {
@@ -34,7 +34,6 @@ public class UsersWithSpecificOU {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.buildAttributes = buildAttributes;
-    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void updateUsersWithSpecificOU(String doerID, String old_ou, String new_ou) {
@@ -79,7 +78,7 @@ public class UsersWithSpecificOU {
     andFilter.and(new EqualsFilter("objectclass", "person"));
     andFilter.and(new EqualsFilter("ou", ou));
 
-    List<User> users = ldapTemplate.search("ou=People," + BASE_DN, andFilter.toString(), searchControls,
+    List<User> users = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), andFilter.toString(), searchControls,
         new UserAttributeMapper(mongoTemplate));
 
     for (User user : users)

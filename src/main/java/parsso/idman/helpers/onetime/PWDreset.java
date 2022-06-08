@@ -26,7 +26,6 @@ import java.util.List;
 public class PWDreset {
   final MongoTemplate mongoTemplate;
   final LdapTemplate ldapTemplate;
-  final String BASE_DN;
   final UniformLogger uniformLogger;
 
   public PWDreset(LdapTemplate ldapTemplate,
@@ -34,7 +33,6 @@ public class PWDreset {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
-    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public void run() {
@@ -58,7 +56,7 @@ public class PWDreset {
 
     EqualsFilter equalsFilter = new EqualsFilter("objectclass", "person");
 
-    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + BASE_DN, equalsFilter.encode(),
+    List<UserLoggedIn> usersLoggedIn = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), equalsFilter.encode(),
         searchControls, new SimpleUserAttributeMapper.LoggedInUserAttributeMapper());
 
     int c = 0;

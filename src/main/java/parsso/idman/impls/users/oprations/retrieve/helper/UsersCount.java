@@ -13,11 +13,9 @@ import javax.naming.directory.SearchControls;
 public class UsersCount {
   MongoTemplate mongoTemplate;
   LdapTemplate ldapTemplate;
-  String BASE_DN;
 
   public UsersCount(MongoTemplate mongoTemplate) {
     this.mongoTemplate = mongoTemplate;
-    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);
   }
 
   public UsersCount(LdapTemplate ldapTemplate) {
@@ -37,7 +35,7 @@ public class UsersCount {
     searchControls.setReturningAttributes(new String[] { "*", "+" });
     searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
-    return ldapTemplate.search("ou=People," + BASE_DN, new EqualsFilter("objectClass", "person").encode(),
+    return ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), new EqualsFilter("objectClass", "person").encode(),
         searchControls, new SimpleUserAttributeMapper()).size();
 
   }

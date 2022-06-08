@@ -26,6 +26,7 @@ import parsso.idman.configs.CasUserDetailService;
 import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;
 import parsso.idman.repos.FilesStorageService;
+import parsso.idman.repos.SettingsRepo;
 
 @SuppressWarnings("unchecked")
 @SpringBootApplication
@@ -37,6 +38,8 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   FilesStorageService storageService;
   @Autowired
   CasUserDetailService casUserDetailService;
+  @Autowired
+  SettingsRepo settingsRepo;
 
   @Value("${cas.url.logout.path}")
   private String casLogout;
@@ -66,6 +69,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   public void doSomethingAfterStartup() {
     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+    new Prefs(settingsRepo.retrieve());
   }
 
   @Override
