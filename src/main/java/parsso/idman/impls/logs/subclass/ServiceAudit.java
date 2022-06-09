@@ -29,6 +29,7 @@ public class ServiceAudit {
     List<JSONObject> result = new LinkedList<>();
     for (SimpleService microService : microServices) {
       query = new Query(Criteria.where("principal").is(userId));
+      try{
       query.addCriteria(Criteria.where("resourceOperatedUpon").regex(microService.getServiceId()));
       if (mongoTemplate.exists(query, Variables.col_audit)) {
         JSONObject temp = new JSONObject();
@@ -36,6 +37,7 @@ public class ServiceAudit {
         temp.put("name", microService.getName());
         result.add(temp);
       }
+    }catch(Exception ignored){}
 
     }
     return result;
