@@ -7,7 +7,7 @@ import parsso.idman.models.other.Time;
 @SuppressWarnings("rawtypes")
 @Getter
 @Setter
-public class SimpleTime implements Comparable {
+public class SimpleTime implements Comparable<SimpleTime> {
   int hour;
   int minute;
 
@@ -21,8 +21,8 @@ public class SimpleTime implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
-    if (this.hour > ((SimpleTime) o).getHour())
+  public int compareTo(SimpleTime o) {
+    if (this.hour > o.getHour())
       return 1;
 
     else if (this.hour == ((SimpleTime) o).getHour())

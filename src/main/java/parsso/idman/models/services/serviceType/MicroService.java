@@ -10,10 +10,9 @@ import parsso.idman.models.services.ServiceGist;
 
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
 @Setter
 @Getter
-public class MicroService implements Comparable {
+public class MicroService implements Comparable<MicroService> {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private String serviceId;
   @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -104,8 +103,7 @@ public class MicroService implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
-    MicroService second = (MicroService) o;
+  public int compareTo(MicroService second) {
     return Integer.compare(second.getPosition(), this.getPosition());
   }
 

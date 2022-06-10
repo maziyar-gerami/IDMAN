@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class SimpleService implements Comparable {
+public class SimpleService implements Comparable<SimpleService> {
   long _id;
   String url;
   int position;
@@ -14,8 +14,7 @@ public class SimpleService implements Comparable {
   String description;
 
   @Override
-  public int compareTo(Object o) {
-    SimpleService second = (SimpleService) o;
+  public int compareTo(SimpleService second) {
     return Integer.compare(second.getPosition(), this.getPosition());
   }
 }

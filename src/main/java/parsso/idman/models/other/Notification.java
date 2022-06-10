@@ -20,7 +20,7 @@ import java.util.Date;
 @SuppressWarnings("rawtypes")
 @Setter
 @Getter
-public class Notification implements Comparable {
+public class Notification implements Comparable<Notification> {
   private String title;
   private String url;
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -36,11 +36,10 @@ public class Notification implements Comparable {
   }
 
   @Override
-  public int compareTo(Object o) {
-    if (this.timestamp > ((Notification) o).getTimestamp())
+  public int compareTo(Notification o) {
+    if (this.timestamp > o.getTimestamp())
       return 1;
-    else
-      return -1;
+    return -1;
   }
 
   public boolean sendPasswordChangeNotify(User user) {
