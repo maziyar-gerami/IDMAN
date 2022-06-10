@@ -149,13 +149,15 @@ public class PasswordOp extends UsersOps {
     String currentPassword = jsonObject.getAsString("currentPassword");
     String newPassword = jsonObject.getAsString("newPassword");
     String userId = jsonObject.getAsString("userId");
-    HttpStatus httpStatus = passwordOp.changePublic(userId, currentPassword, newPassword);
+    
 
     if (!(new Password(mongoTemplate).check(newPassword))) {
       return new ResponseEntity<>(new Response(
           null, Variables.MODEL_PASSWORD, HttpStatus.EXPECTATION_FAILED.value(), lang),
           HttpStatus.OK);
     }
+
+    HttpStatus httpStatus = passwordOp.changePublic(userId, currentPassword, newPassword);
 
     if (Boolean
         .parseBoolean(new Settings(mongoTemplate)
