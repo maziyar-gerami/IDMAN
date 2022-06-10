@@ -57,7 +57,12 @@ public class RetrieveSettings {
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
     PWD pwd = passwordSettings.retrieve();
     for (Setting setting : settings) {
-      if (setting.getGroupEN().equalsIgnoreCase("Password") && setting.getValue() == null) {
+      if (setting.get_id().equals("pwdFailureCountInterval") ||
+      setting.get_id().equals("pwdInHistory") ||
+      setting.get_id().equals("pwdLockout") ||
+      setting.get_id().equals("pwdMaxFailure") ||
+      setting.get_id().equals("pwdMaxAge") ||
+      setting.get_id().equals("pwdLockoutDuration")) {
         switch (setting.get_id()) {
           case ("pwdFailureCountInterval"):
             setting.setValue(pwd.getPwdFailureCountInterval());
@@ -68,7 +73,7 @@ public class RetrieveSettings {
             break;
 
           case ("pwdLockout"):
-            setting.setValue(pwd.getPwdLockout());
+            setting.setValue(pwd.getPwdLockout().toLowerCase());
             break;
 
           case ("pwdLockoutDuration"):

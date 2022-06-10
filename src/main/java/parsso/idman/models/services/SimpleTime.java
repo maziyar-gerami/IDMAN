@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import parsso.idman.models.other.Time;
 
-@SuppressWarnings("rawtypes")
 @Getter
 @Setter
 public class SimpleTime implements Comparable<SimpleTime> {

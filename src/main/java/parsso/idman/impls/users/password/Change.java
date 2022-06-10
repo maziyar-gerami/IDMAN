@@ -49,10 +49,8 @@ public class Change {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.supplementary = supplementary;
-    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_URL);
-    ;
-    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);
-    ;
+    this.BASE_DN = Prefs.get(Variables.PREFS_BASE_DN);;
+    this.BASE_URL = Prefs.get(Variables.PREFS_BASE_URL);;
     this.tokenClass = tokenClass;
     this.uniformLogger = uniformLogger;
   }
