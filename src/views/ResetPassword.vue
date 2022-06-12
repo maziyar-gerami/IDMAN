@@ -57,7 +57,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="idBuffer.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="idBuffer.password" :class="idBufferErrors.password" v-model="idBuffer.password" :toggleMask="true" autocomplete="off" :feedback="false">
+                    <Password id="idBuffer.password" :class="idBufferErrors.password" v-model="idBuffer.password" :toggleMask="true" autocomplete="off">
                       <template #footer>
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
@@ -76,7 +76,7 @@
                   <div class="field p-fluid">
                     <label for="idBuffer.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
                     <Password id="idBuffer.passwordRepeat" :class="idBufferErrors.passwordRepeat" v-model="idBuffer.passwordRepeat"
-                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" :feedback="false" />
+                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" />
                   </div>
                 </div>
               </div>
@@ -152,7 +152,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="mobileBuffer.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="mobileBuffer.password" :class="mobileBufferErrors.password" v-model="mobileBuffer.password" :toggleMask="true" autocomplete="off" :feedback="false">
+                    <Password id="mobileBuffer.password" :class="mobileBufferErrors.password" v-model="mobileBuffer.password" :toggleMask="true" autocomplete="off">
                       <template #footer>
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
@@ -171,7 +171,7 @@
                   <div class="field p-fluid">
                     <label for="mobileBuffer.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
                     <Password id="mobileBuffer.passwordRepeat" :class="mobileBufferErrors.passwordRepeat" v-model="mobileBuffer.passwordRepeat"
-                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" :feedback="false" />
+                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" />
                   </div>
                 </div>
               </div>

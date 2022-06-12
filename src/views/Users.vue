@@ -196,7 +196,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="createUser.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="createUser.password" :class="createUserErrors.userPassword" v-model="createUserBuffer.userPassword" :toggleMask="true" autocomplete="off" :feedback="false">
+                    <Password id="createUser.password" :class="createUserErrors.userPassword" v-model="createUserBuffer.userPassword" :toggleMask="true" autocomplete="off">
                       <template #footer>
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
@@ -214,7 +214,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="createUser.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
-                    <Password id="createUser.passwordRepeat" :class="createUserErrors.userPasswordRepeat" v-model="createUserBuffer.userPasswordRepeat" :toggleMask="true" autocomplete="off" :feedback="false" />
+                    <Password id="createUser.passwordRepeat" :class="createUserErrors.userPasswordRepeat" v-model="createUserBuffer.userPasswordRepeat" :toggleMask="true" autocomplete="off" />
                   </div>
                 </div>
               </div>
@@ -331,7 +331,7 @@
                   <div class="field col">
                     <div class="field p-fluid">
                       <label for="editUser.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                      <Password id="editUser.password" :class="editUserErrors.userPassword" v-model="editUserBuffer.userPassword" :toggleMask="true" autocomplete="off" :feedback="false">
+                      <Password id="editUser.password" :class="editUserErrors.userPassword" v-model="editUserBuffer.userPassword" :toggleMask="true" autocomplete="off">
                         <template #footer>
                             <Divider />
                             <p class="mt-3">{{ $t("passwordRequirement") }}</p>
@@ -349,7 +349,7 @@
                   <div class="field col">
                     <div class="field p-fluid">
                       <label for="editUser.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
-                      <Password id="editUser.passwordRepeat" :class="editUserErrors.userPasswordRepeat" v-model="editUserBuffer.userPasswordRepeat" :toggleMask="true" autocomplete="off" :feedback="false" />
+                      <Password id="editUser.passwordRepeat" :class="editUserErrors.userPasswordRepeat" v-model="editUserBuffer.userPasswordRepeat" :toggleMask="true" autocomplete="off" />
                     </div>
                   </div>
                 </div>

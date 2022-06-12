@@ -37,7 +37,7 @@
               <div class="field col">
                 <div class="field p-fluid">
                   <label for="buffer.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                  <Password id="buffer.password" :class="bufferErrors.password" v-model="buffer.password" :toggleMask="true" autocomplete="off" @keydown.enter="checkup()" :feedback="false">
+                  <Password id="buffer.password" :class="bufferErrors.password" v-model="buffer.password" :toggleMask="true" autocomplete="off" @keydown.enter="checkup()">
                     <template #footer>
                         <Divider />
                         <p class="mt-3">{{ $t("passwordRequirement") }}</p>
@@ -56,7 +56,7 @@
                 <div class="field p-fluid">
                   <label for="buffer.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
                   <Password id="buffer.passwordRepeat" :class="bufferErrors.passwordRepeat" v-model="buffer.passwordRepeat"
-                  :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" @keydown.enter="checkup()" :feedback="false" />
+                  :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" @keydown.enter="checkup()" />
                 </div>
               </div>
             </div>
