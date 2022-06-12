@@ -57,18 +57,16 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="idBuffer.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="idBuffer.password" :class="idBufferErrors.password" v-model="idBuffer.password" :toggleMask="true" autocomplete="off">
-                      <template #header>
-                          <h6>{{ $t("passwordStrength") }}</h6>
-                      </template>
+                    <Password id="idBuffer.password" :class="idBufferErrors.password" v-model="idBuffer.password" :toggleMask="true" autocomplete="off" :feedback="false">
                       <template #footer>
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
                           <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                              <li>{{ $t("passwordRequirementText1") }}</li>
-                              <li>{{ $t("passwordRequirementText2") }}</li>
-                              <li>{{ $t("passwordRequirementText3") }}</li>
-                              <li>{{ $t("passwordRequirementText4") }}</li>
+                              <li v-if="passwordQualityCheck.smallalphabet">{{ $t("passwordRequirementText1") }}</li>
+                              <li v-if="passwordQualityCheck.capitalalphabet">{{ $t("passwordRequirementText2") }}</li>
+                              <li v-if="passwordQualityCheck.number">{{ $t("passwordRequirementText3") }}</li>
+                              <li v-if="passwordQualityCheck.specialchar">{{ $t("passwordRequirementText4") }}</li>
+                              <li>{{ $t("passwordRequirementText5") + passwordQualityCheck.length + $t("passwordRequirementText6") }}</li>
                           </ul>
                       </template>
                     </Password>
@@ -78,7 +76,7 @@
                   <div class="field p-fluid">
                     <label for="idBuffer.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
                     <Password id="idBuffer.passwordRepeat" :class="idBufferErrors.passwordRepeat" v-model="idBuffer.passwordRepeat"
-                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" />
+                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" :feedback="false" />
                   </div>
                 </div>
               </div>
@@ -154,18 +152,16 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="mobileBuffer.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="mobileBuffer.password" :class="mobileBufferErrors.password" v-model="mobileBuffer.password" :toggleMask="true" autocomplete="off">
-                      <template #header>
-                          <h6>{{ $t("passwordStrength") }}</h6>
-                      </template>
+                    <Password id="mobileBuffer.password" :class="mobileBufferErrors.password" v-model="mobileBuffer.password" :toggleMask="true" autocomplete="off" :feedback="false">
                       <template #footer>
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
                           <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                              <li>{{ $t("passwordRequirementText1") }}</li>
-                              <li>{{ $t("passwordRequirementText2") }}</li>
-                              <li>{{ $t("passwordRequirementText3") }}</li>
-                              <li>{{ $t("passwordRequirementText4") }}</li>
+                              <li v-if="passwordQualityCheck.smallalphabet">{{ $t("passwordRequirementText1") }}</li>
+                              <li v-if="passwordQualityCheck.capitalalphabet">{{ $t("passwordRequirementText2") }}</li>
+                              <li v-if="passwordQualityCheck.number">{{ $t("passwordRequirementText3") }}</li>
+                              <li v-if="passwordQualityCheck.specialchar">{{ $t("passwordRequirementText4") }}</li>
+                              <li>{{ $t("passwordRequirementText5") + passwordQualityCheck.length + $t("passwordRequirementText6") }}</li>
                           </ul>
                       </template>
                     </Password>
@@ -175,7 +171,7 @@
                   <div class="field p-fluid">
                     <label for="mobileBuffer.passwordRepeat">{{ $t("passwordRepeat") }}<span style="color: red;"> * </span></label>
                     <Password id="mobileBuffer.passwordRepeat" :class="mobileBufferErrors.passwordRepeat" v-model="mobileBuffer.passwordRepeat"
-                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" />
+                    :toggleMask="true" onpaste="return false;" ondrop="return false;" autocomplete="off" :feedback="false" />
                   </div>
                 </div>
               </div>
@@ -243,6 +239,14 @@ export default {
         password: "",
         passwordRepeat: ""
       },
+      passwordQualityCheck: {
+        smallalphabet: false,
+        capitalalphabet: false,
+        number: false,
+        specialchar: false,
+        length: "8",
+        regex: "^"
+      },
       tabActiveIndex: 0,
       idState: "getId",
       mobileState: "getMobile"
@@ -298,6 +302,7 @@ export default {
     }, 100)
     this.resetPasswordRequestMaster("idGetCaptcha")
     this.resetPasswordRequestMaster("mobileGetCaptcha")
+    this.resetPasswordRequestMaster("getPasswordQuality")
   },
   methods: {
     resetPasswordRequestMaster (command) {
@@ -613,6 +618,35 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.mobileState = "getPassword"
         })
+      } else if (command === "getPasswordQuality") {
+        this.axios({
+          url: "/api/public/properties/settings",
+          method: "GET"
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            for (const i in res.data.data) {
+              if (res.data.data[i]._id === "password.quality.capitalalphabet" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.capitalalphabet = true
+                vm.passwordQualityCheck.regex += "(?=.*[A-Z])"
+              } else if (res.data.data[i]._id === "password.quality.smallalphabet" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.smallalphabet = true
+                vm.passwordQualityCheck.regex += "(?=.*[a-z])"
+              } else if (res.data.data[i]._id === "password.quality.number" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.number = true
+                vm.passwordQualityCheck.regex += "(?=.*[0-9])"
+              } else if (res.data.data[i]._id === "password.quality.specialchar" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.specialchar = true
+                vm.passwordQualityCheck.regex += "(?=.*[@#$%^&*+=])"
+              } else if (res.data.data[i]._id === "password.quality.length") {
+                vm.passwordQualityCheck.length = res.data.data[i].value
+                vm.passwordQualityCheck.regex += "(?=.{" + res.data.data[i].value + ",})"
+              }
+            }
+            vm.passwordQualityCheck.regex += ".*$"
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+        })
       }
     },
     alertPromptMaster (title, message, icon, background) {
@@ -719,7 +753,7 @@ export default {
     },
     idResetPasswordCheckup () {
       let errorCount = 0
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+      const passwordRegex = new RegExp(this.passwordQualityCheck.regex)
       if (this.idBuffer.password === "") {
         this.idBufferErrors.password = "p-invalid"
         errorCount += 1
@@ -793,7 +827,7 @@ export default {
     },
     mobileResetPasswordCheckup () {
       let errorCount = 0
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+      const passwordRegex = new RegExp(this.passwordQualityCheck.regex)
       if (this.mobileBuffer.password === "") {
         this.mobileBufferErrors.password = "p-invalid"
         errorCount += 1
