@@ -163,8 +163,12 @@ public class PasswordOp extends UsersOps {
         .parseBoolean(new Settings(mongoTemplate)
             .retrieve(Variables.PASSWORD_CHANGE_NOTIFICATION).getValue())
         && httpStatus == HttpStatus.OK) {
+          try{
       new Notification(mongoTemplate)
           .sendPasswordChangeNotify(usersOpRetrieve.retrieveUsers(userId));
+          }catch(Exception e){
+            
+          }
     }
 
     if (httpStatus == HttpStatus.OK) {
