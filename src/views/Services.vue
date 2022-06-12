@@ -1359,8 +1359,7 @@ export default {
             vm.editServiceLoader = false
             vm.resetState("editService")
           }
-        }).catch((e) => {
-          console.log(e)
+        }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.editServiceLoader = false
           vm.resetState("editService")

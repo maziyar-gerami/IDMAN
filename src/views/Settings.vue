@@ -37,7 +37,7 @@
                     </label>
                     <InputText v-if="setting.type.class === 'string' || setting.type.class === 'path' || setting.type.class === 'url'" :id="setting._id" type="text" v-model="setting.value" />
                     <div v-else-if="setting.type.class === 'integer'" :dir="$store.state.reverseDirection"><InputNumber :id="setting._id" v-model="setting.value" showButtons mode="decimal" /></div>
-                    <InputSwitch v-else-if="setting.type.class === 'switch'" v-model="setting.value" :id="setting._id" />
+                    <ToggleButton v-else-if="setting.type.class === 'switch'" v-model="setting.value" :id="setting._id" onIcon="pi pi-check" offIcon="pi pi-times" />
                     <Dropdown v-else-if="setting._id === 'SMS.SDK'" v-model="setting.value" :id="setting._id" :options="setting.type.values" :placeholder="setting.value" @change="settingsRequestMaster('editSMSSetting')" />
                     <Dropdown v-else-if="setting.type.class === 'list'" v-model="setting.value" :id="setting._id" :options="setting.type.values" :placeholder="setting.value" />
                   </div>

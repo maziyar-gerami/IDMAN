@@ -103,7 +103,7 @@
                 <div class="field col">
                   <div class="field p-fluid">
                     <label for="user.password">{{ $t("password") }}<span style="color: red;"> * </span></label>
-                    <Password id="user.password" :class="userErrors.userPassword" v-model="user.userPassword" :toggleMask="true" autocomplete="off">
+                    <Password id="user.password" :class="userErrors.userPassword" v-model="user.userPassword" :toggleMask="true" autocomplete="off" :strongRegex="passwordQualityCheck.regex">
                       <template #header>
                           <h6>{{ $t("passwordStrength") }}</h6>
                       </template>
@@ -111,10 +111,11 @@
                           <Divider />
                           <p class="mt-3">{{ $t("passwordRequirement") }}</p>
                           <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                              <li>{{ $t("passwordRequirementText1") }}</li>
-                              <li>{{ $t("passwordRequirementText2") }}</li>
-                              <li>{{ $t("passwordRequirementText3") }}</li>
-                              <li>{{ $t("passwordRequirementText4") }}</li>
+                              <li v-if="passwordQualityCheck.smallalphabet">{{ $t("passwordRequirementText1") }}</li>
+                              <li v-if="passwordQualityCheck.capitalalphabet">{{ $t("passwordRequirementText2") }}</li>
+                              <li v-if="passwordQualityCheck.number">{{ $t("passwordRequirementText3") }}</li>
+                              <li v-if="passwordQualityCheck.specialchar">{{ $t("passwordRequirementText4") }}</li>
+                              <li>{{ $t("passwordRequirementText5") + passwordQualityCheck.length + $t("passwordRequirementText6") }}</li>
                           </ul>
                       </template>
                     </Password>
@@ -181,6 +182,14 @@ export default {
         userPasswordRepeat: "",
         verificationCode: ""
       },
+      passwordQualityCheck: {
+        smallalphabet: false,
+        capitalalphabet: false,
+        number: false,
+        specialchar: false,
+        length: "8",
+        regex: "^"
+      },
       userAvatar: "images/avatarPlaceholder.png",
       verificationCodeCountdown: "",
       tabActiveIndex: 0,
@@ -192,6 +201,7 @@ export default {
     this.persianRex = require("persian-rex/dist/persian-rex")
     this.profileRequestMaster("getUserAvatar")
     this.profileRequestMaster("getUser")
+    this.profileRequestMaster("getPasswordQuality")
   },
   methods: {
     profileRequestMaster (command) {
@@ -373,6 +383,38 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
         })
+      } else if (command === "getPasswordQuality") {
+        this.loading = true
+        this.axios({
+          url: "/api/public/properties/settings",
+          method: "GET"
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            for (const i in res.data.data) {
+              if (res.data.data[i]._id === "password.quality.capitalalphabet" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.capitalalphabet = true
+                vm.passwordQualityCheck.regex += "(?=.*[A-Z])"
+              } else if (res.data.data[i]._id === "password.quality.smallalphabet" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.smallalphabet = true
+                vm.passwordQualityCheck.regex += "(?=.*[a-z])"
+              } else if (res.data.data[i]._id === "password.quality.number" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.number = true
+                vm.passwordQualityCheck.regex += "(?=.*[0-9])"
+              } else if (res.data.data[i]._id === "password.quality.specialchar" && res.data.data[i].value === "true") {
+                vm.passwordQualityCheck.specialchar = true
+                vm.passwordQualityCheck.regex += "(?=.*[@#$%^&*+=])"
+              } else if (res.data.data[i]._id === "password.quality.length") {
+                vm.passwordQualityCheck.length = res.data.data[i].value
+                vm.passwordQualityCheck.regex += "(?=.{" + res.data.data[i].value + ",})"
+              }
+            }
+            vm.passwordQualityCheck.regex += ".*$"
+          }
+          vm.loading = false
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.loading = false
+        })
       }
     },
     alertPromptMaster (title, message, icon, background) {
@@ -498,7 +540,7 @@ export default {
     },
     editUserPasswordCheckup () {
       let errorCount = 0
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/
+      const passwordRegex = new RegExp(this.passwordQualityCheck.regex)
       if (this.user.verificationCode === "") {
         this.userErrors.verificationCode = "p-invalid"
         errorCount += 1
