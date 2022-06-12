@@ -1313,7 +1313,7 @@ export default {
               // eslint-disable-next-line new-cap
               const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
                 seTime.substring(11, 13), seTime.substring(14, 16), seTime.substring(17, 19), seTime.substring(20, 23)])
-              document.getElementById("createServiceBuffer.startDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
+              document.getElementById("editServiceBuffer.startDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
             }
             if (typeof res.data.data.accessStrategy.endingDateTime !== "undefined") {
               const seTime = res.data.data.accessStrategy.endingDateTime
@@ -1321,7 +1321,7 @@ export default {
               // eslint-disable-next-line new-cap
               const dayWrapper = new vm.persianDate([seTime.substring(0, 4), seTime.substring(5, 7), seTime.substring(8, 10),
                 seTime.substring(11, 13), seTime.substring(14, 16), seTime.substring(17, 19), seTime.substring(20, 23)])
-              document.getElementById("createServiceBuffer.endDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
+              document.getElementById("editServiceBuffer.endDate").value = dayWrapper.toCalendar("persian").format("dddd DD MMMM YYYY  HH:mm  a")
             }
 
             if (typeof res.data.data.multifactorPolicy !== "undefined") {
