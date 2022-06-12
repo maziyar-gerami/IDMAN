@@ -1288,18 +1288,14 @@ export default {
                 vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
                 if (res.data.data.extraInfo.dailyAccess.length > 0) {
                   for (const i in res.data.data.extraInfo.dailyAccess) {
-                    // document.getElementById("editSelect" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).checked = true
                     vm.editDailyAccessCheckbox[res.data.data.extraInfo.dailyAccess[i].weekDay] = true
-                    console.log(vm.editDailyAccessCheckbox)
                     document.getElementById("editServiceBuffer.dailyAccess.start" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
                     document.getElementById("editServiceBuffer.dailyAccess.end" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
                   }
                   if (res.data.data.extraInfo.dailyAccess.length === 7) {
-                    // document.getElementById("editSelectAll").checked = true
                     vm.editDailyAccessCheckAll = true
-                    console.log(vm.editDailyAccessCheckAll)
                   }
                 }
               } else if (typeof res.data.data.accessStrategy.endpointUrl !== "undefined") {
@@ -1586,8 +1582,8 @@ export default {
           dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
           dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
 
-          this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
-          this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
+          this.createServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
+          this.createServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
         }
         for (const i in this.createServiceBuffer.attributeList) {
           if (this.createServiceBuffer.attributeList[i].name !== "" && this.createServiceBuffer.attributeList[i].value !== "") {
@@ -1891,8 +1887,8 @@ export default {
           dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
           dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
 
-          this.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
-          this.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
+          this.editServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
+          this.editServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
         }
         for (const i in this.editServiceBuffer.attributeList) {
           if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
