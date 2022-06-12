@@ -342,7 +342,7 @@
                   <div v-if="createServiceBuffer.dailyAccessType.id === 'DAY'" class="formgrid grid">
                     <div class="field col">
                       <div class="field p-fluid">
-                        <AppDayTimeRange startDateId="createServiceBuffer.dailyAccess.start" endDateId="createServiceBuffer.dailyAccess.end" scope="create" />
+                        <AppDayTimeRange scope="create" :checkboxList="createDailyAccessCheckbox" :checkAll="createDailyAccessCheckAll" />
                       </div>
                     </div>
                   </div>
@@ -755,7 +755,7 @@
                   <div v-if="editServiceBuffer.dailyAccessType.id === 'DAY'" class="formgrid grid">
                     <div class="field col">
                       <div class="field p-fluid">
-                        <AppDayTimeRange startDateId="editServiceBuffer.dailyAccess.start" endDateId="editServiceBuffer.dailyAccess.end" scope="edit" />
+                        <AppDayTimeRange scope="edit" :checkboxList="editDailyAccessCheckbox" :checkAll="editDailyAccessCheckAll" />
                       </div>
                     </div>
                   </div>
@@ -1125,6 +1125,10 @@ export default {
           notificationApiKey: null
         }
       },
+      createDailyAccessCheckbox: [false, false, false, false, false, false, false],
+      editDailyAccessCheckbox: [false, false, false, false, false, false, false],
+      createDailyAccessCheckAll: false,
+      editDailyAccessCheckAll: false,
       tabActiveIndexList: 0,
       tabActiveIndexCreate: 0,
       tabActiveIndexEdit: 0,
@@ -1284,14 +1288,18 @@ export default {
                 vm.editServiceBuffer.dailyAccessType = { id: "DAY", name: vm.$t("dayBased") }
                 if (res.data.data.extraInfo.dailyAccess.length > 0) {
                   for (const i in res.data.data.extraInfo.dailyAccess) {
-                    document.getElementById("editSelect" + res.data.data.extraInfo.dailyAccess[i].weekDay).checked = true
-                    document.getElementById("editServiceBuffer.dailyAccess.start" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                    // document.getElementById("editSelect" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).checked = true
+                    vm.editDailyAccessCheckbox[res.data.data.extraInfo.dailyAccess[i].weekDay] = true
+                    console.log(vm.editDailyAccessCheckbox)
+                    document.getElementById("editServiceBuffer.dailyAccess.start" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.from.minute))
-                    document.getElementById("editServiceBuffer.dailyAccess.end" + res.data.data.extraInfo.dailyAccess[i].weekDay).value =
+                    document.getElementById("editServiceBuffer.dailyAccess.end" + String(res.data.data.extraInfo.dailyAccess[i].weekDay)).value =
                       vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.hour)) + ":" + vm.enNumToFaNum(String(res.data.data.extraInfo.dailyAccess[i].period.to.minute))
                   }
                   if (res.data.data.extraInfo.dailyAccess.length === 7) {
-                    document.getElementById("editSelectAll").checked = true
+                    // document.getElementById("editSelectAll").checked = true
+                    vm.editDailyAccessCheckAll = true
+                    console.log(vm.editDailyAccessCheckAll)
                   }
                 }
               } else if (typeof res.data.data.accessStrategy.endpointUrl !== "undefined") {
@@ -1473,7 +1481,7 @@ export default {
               console.log("Wrong Input for Month")
           }
 
-          const dateEndTemp = document.getElementsByName("dateEnd")[0].value.split("  ")
+          const dateEndTemp = document.getElementById("createServiceBuffer.endDate").value.split("  ")
           const dateEnd = dateEndTemp[0].split(" ")
           let dateEndFinal
           dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
@@ -1778,7 +1786,7 @@ export default {
               console.log("Wrong Input for Month")
           }
 
-          const dateEndTemp = document.getElementsByName("dateEnd")[0].value.split("  ")
+          const dateEndTemp = document.getElementById("editServiceBuffer.endDate").value.split("  ")
           const dateEnd = dateEndTemp[0].split(" ")
           let dateEndFinal
           dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])

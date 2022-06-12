@@ -171,7 +171,7 @@ export default {
                   label: this.$t("devices"), icon: "bx bx-fw bxs-devices", to: "/devices"
                 },
                 {
-                  label: this.$t("reports"),
+                  label: this.$t("logs"),
                   icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {
@@ -232,7 +232,7 @@ export default {
                   label: this.$t("devices"), icon: "bx bx-fw bxs-devices", to: "/devices"
                 },
                 {
-                  label: this.$t("reports"),
+                  label: this.$t("logs"),
                   icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {
@@ -275,7 +275,7 @@ export default {
                   label: this.$t("ticketing"), icon: "bx bx-fw bxs-envelope", to: "/ticketing"
                 },
                 {
-                  label: this.$t("reports"),
+                  label: this.$t("logs"),
                   icon: "bx bx-fw bxs-bar-chart-square",
                   items: [
                     {

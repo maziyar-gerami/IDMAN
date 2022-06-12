@@ -17,9 +17,9 @@
     <div class="field col-8">
       <div class="flex" :style="checkbox[i] ? '' : 'visibility: hidden;'">
         <label class="mx-2">{{ $t("fromTime") }}</label>
-        <InputText :id="startDateId + i" type="text" value="۰:۰۰" class="timePickerFa mx-1" />
+        <InputText :id="scope + 'ServiceBuffer.dailyAccess.start' + i" type="text" value="۰:۰۰" class="timePickerFa mx-1" />
         <label class="mx-2">{{ $t("toTime") }}</label>
-        <InputText :id="endDateId + i" type="text" value="۲۳:۵۹" class="timePickerFa mx-1" />
+        <InputText :id="scope + 'ServiceBuffer.dailyAccess.end' + i" type="text" value="۲۳:۵۹" class="timePickerFa mx-1" />
       </div>
     </div>
   </div>
@@ -31,15 +31,19 @@ import "persian-datepicker/dist/js/persian-datepicker"
 export default {
   name: "AppDayTimeRange",
   props: {
-    startDateId: String,
-    endDateId: String,
-    scope: String
+    scope: String,
+    checkboxList: Array,
+    checkAll: Boolean
   },
   data () {
     return {
       selectAll: false,
       checkbox: [false, false, false, false, false, false, false]
     }
+  },
+  created () {
+    this.selectAll = this.checkAll
+    this.checkbox = this.checkboxList
   },
   mounted () {
     // eslint-disable-next-line no-undef
