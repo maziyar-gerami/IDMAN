@@ -43,9 +43,9 @@ export default {
     this.$primevue.config.locale.matchAny = this.$t("matchAny")
     this.$primevue.config.locale.addRule = this.$t("addFilter")
     this.$primevue.config.locale.removeRule = this.$t("removeFilter")
-    this.$primevue.config.locale.weak = this.$t("weak")
-    this.$primevue.config.locale.medium = this.$t("medium")
-    this.$primevue.config.locale.strong = this.$t("strong")
+    this.$primevue.config.locale.weak = ""
+    this.$primevue.config.locale.medium = ""
+    this.$primevue.config.locale.strong = ""
     this.$primevue.config.locale.passwordPrompt = this.$t("passwordPrompt")
     this.$primevue.config.locale.emptyFilterMessage = this.$t("emptyFilterMessage")
     this.$primevue.config.locale.emptyMessage = this.$t("emptyMessage")
