@@ -48,7 +48,8 @@ public class Settings {
                 Criteria.where("_id").is(Variables.PASSWORD_CAPITAL_ALPHABET),
                 Criteria.where("_id").is(Variables.PASSWORD_SMALL_ALPHABET),
                 Criteria.where("_id").is(Variables.PASSWORD_NUMBER),
-                Criteria.where("_id").is(Variables.PASSWORD_SPECIAL)));
+                Criteria.where("_id").is(Variables.PASSWORD_SPECIAL),
+                Criteria.where("_id").is(Variables.PASSWORD_LENGTH)));
     return mongoTemplate.find(condition, JSONObject.class, Variables.col_properties);
   }
 }
