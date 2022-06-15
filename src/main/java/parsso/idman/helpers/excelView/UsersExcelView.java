@@ -2,30 +2,25 @@ package parsso.idman.helpers.excelView;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Map;
 
-public class UsersExcelView extends AbstractXlsView {
+public class UsersExcelView {
   final UsersRetrieveRepo usersOpRetrieve;
 
   public UsersExcelView(UsersRetrieveRepo usersOpRetrieve) {
     this.usersOpRetrieve = usersOpRetrieve;
   }
 
-  @Override
-  protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
-      HttpServletResponse response) {
+  public Workbook buildExcelDocument() {
 
+    Workbook workbook = new HSSFWorkbook();
     // get data model which is passed by the Spring container
     List<User> users = usersOpRetrieve.fullAttributes();
 
@@ -137,5 +132,6 @@ public class UsersExcelView extends AbstractXlsView {
       }
 
     }
+    return workbook;
   }
 }

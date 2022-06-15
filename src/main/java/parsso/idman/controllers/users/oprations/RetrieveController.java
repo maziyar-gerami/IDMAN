@@ -1,20 +1,25 @@
 package parsso.idman.controllers.users.oprations;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
@@ -142,10 +147,24 @@ public class RetrieveController extends UsersOps {
   }
 
   @GetMapping("/api/users/export")
-  public ModelAndView downloadExcel() {
-    if (bucket.tryConsume(1))
-      return new ModelAndView(new UsersExcelView(usersOpRetrieve), "listUsers", Object.class);
-    return null;
+  public ResponseEntity<ByteArrayResource> downloadExcel(HttpServletResponse response,
+  @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException, IOException {
+
+    //if (bucket.tryConsume(1))
+      try {
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();
+          Workbook workbook = new UsersExcelView(usersOpRetrieve).buildExcelDocument();; // creates the workbook
+          HttpHeaders header = new HttpHeaders();
+          header.setContentType(new MediaType("application", "force-download"));
+          header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ProductTemplate.xlsx");
+          workbook.write(stream);
+          workbook.close();
+          return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()),
+                  header, HttpStatus.CREATED);
+      } catch (Exception e) {
+        
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
 
   }
 }
