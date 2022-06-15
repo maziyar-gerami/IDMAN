@@ -1,6 +1,7 @@
 package parsso.idman.helpers.excelView;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
@@ -18,23 +19,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
-@Service
-public class AuditsExcelView extends AbstractXlsxView {
+public class AuditsExcelView {
 
   final LogsRepo.AuditRepo auditRepo;
   final MongoTemplate mongoTemplate;
 
-  @Autowired
   public AuditsExcelView(MongoTemplate mongoTemplate, LogsRepo.AuditRepo auditRepo) {
     this.auditRepo = auditRepo;
     this.mongoTemplate = mongoTemplate;
   }
 
-  @Override
-  @Cacheable("audits")
-  public void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
-      HttpServletResponse response) {
+  public Workbook buildExcelDocument() {
 
+    Workbook workbook = new XSSFWorkbook();
     // get data model which is passed by the Spring container
 
     // create a new Excel sheet
@@ -52,7 +49,9 @@ public class AuditsExcelView extends AbstractXlsxView {
     CellStyle style = workbook.createCellStyle();
     Font font = workbook.createFont();
     font.setFontName("Arial");
+    font.setBold(true);
     style.setFont(font);
+    style.setFillBackgroundColor(IndexedColors.LIGHT_BLUE.getIndex());
 
     // create header row
     Row header = sheet.createRow(0);
@@ -84,10 +83,10 @@ public class AuditsExcelView extends AbstractXlsxView {
     // create data rows
     int rowCount = 1;
 
+    try{
+
     for (int page = 0; page <= Math.ceil((float) count / Variables.PER_BATCH_COUNT); page++) {
 
-      if (page == 100)
-        return;
 
       int skip = (page == 0) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
@@ -106,5 +105,9 @@ public class AuditsExcelView extends AbstractXlsxView {
 
       }
     }
+  }catch(Exception e){
+
+  }
+    return workbook;
   }
 }

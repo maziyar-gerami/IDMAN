@@ -1,11 +1,10 @@
 package parsso.idman.helpers.excelView;
 
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.view.document.AbstractXlsxView;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.logs.Event;
 import parsso.idman.repos.LogsRepo;
@@ -15,21 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
-@Service
-public class EventsExcelView extends AbstractXlsxView {
+public class EventsExcelView {
   final LogsRepo.EventRepo eventRepo;
   final MongoTemplate mongoTemplate;
 
-  @Autowired
-  EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate) {
+  public EventsExcelView(LogsRepo.EventRepo eventRepo, MongoTemplate mongoTemplate) {
     this.eventRepo = eventRepo;
     this.mongoTemplate = mongoTemplate;
 
   }
 
-  @Override
-  protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
-      HttpServletResponse response) {
+  public Workbook buildExcelDocument() {
+
+    Workbook workbook = new XSSFWorkbook();
 
     long count = mongoTemplate.count(new Query(), Variables.col_casEvent);
     // get data model which is passed by the Spring container
@@ -42,7 +39,9 @@ public class EventsExcelView extends AbstractXlsxView {
     CellStyle style = workbook.createCellStyle();
     Font font = workbook.createFont();
     font.setFontName("Arial");
+    font.setBold(true);
     style.setFont(font);
+    style.setFillBackgroundColor(IndexedColors.LIGHT_BLUE.getIndex());
 
     // create header row
     Row header = sheet.createRow(0);
@@ -76,24 +75,29 @@ public class EventsExcelView extends AbstractXlsxView {
 
     for (int page = 0; page <= Math.ceil(Variables.PER_BATCH_COUNT / (float) count); page++) {
 
-      if (page == 100)
-        return;
       int skip = (page == 1) ? 0 : ((page - 1) * Variables.PER_BATCH_COUNT);
 
       List<Event> events = eventRepo.analyze(skip, Variables.PER_BATCH_COUNT, "");
 
-      for (Event event : events) {
-        Row aRow = sheet.createRow(rowCount++);
-        aRow.createCell(0).setCellValue(event.getType());
-        aRow.createCell(1).setCellValue(event.getPrincipalId());
-        aRow.createCell(2).setCellValue(event.getApplication());
-        aRow.createCell(3).setCellValue(event.getClientIP());
-        aRow.createCell(4).setCellValue(event.getDateString());
-        aRow.createCell(5).setCellValue(event.getTimeString());
-        aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
-        aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
+      try {
+        for (Event event : events) {
+          Row aRow = sheet.createRow(rowCount++);
+          aRow.createCell(0).setCellValue(event.getType());
+          aRow.createCell(1).setCellValue(event.getPrincipalId());
+          aRow.createCell(2).setCellValue(event.getApplication());
+          aRow.createCell(3).setCellValue(event.getClientIP());
+          aRow.createCell(4).setCellValue(event.getDateString());
+          aRow.createCell(5).setCellValue(event.getTimeString());
+          aRow.createCell(6).setCellValue(event.getAgentInfo().getOs());
+          aRow.createCell(7).setCellValue(event.getAgentInfo().getBrowser());
+
+        }
+
+      } catch (Exception e) {
 
       }
     }
+
+    return workbook;
   }
 }

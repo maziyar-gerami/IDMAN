@@ -1,10 +1,16 @@
 package parsso.idman.controllers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,24 +38,18 @@ public class LogsController {
   final LogsRepo.AuditRepo auditRepo;
   final LogsRepo.EventRepo eventRepo;
   final LogsRepo.ReportRepo reportsRepo;
-  final EventsExcelView eventsExcelView;
-  final AuditsExcelView auditsExcelView;
-  final LogsExcelView logsExcelView;
+
   final MongoTemplate mongoTemplate;
   final Bucket bucket;
 
   @Autowired
   public LogsController(
       LogsRepo.AuditRepo auditRepo, MongoTemplate mongoTemplate, LogsRepo.EventRepo eventRepo,
-      LogsRepo.ReportRepo reportsRepo, EventsExcelView eventsExcelView,
-      AuditsExcelView auditsExcelView,
-      LogsExcelView reportExcelView, LogsExcelView logsExcelView) {
+      LogsRepo.ReportRepo reportsRepo) {
     this.auditRepo = auditRepo;
     this.eventRepo = eventRepo;
     this.reportsRepo = reportsRepo;
-    this.eventsExcelView = eventsExcelView;
-    this.auditsExcelView = auditsExcelView;
-    this.logsExcelView = logsExcelView;
+
     this.mongoTemplate = mongoTemplate;
     Bandwidth limit = Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1)));
     this.bucket = Bucket.builder()
@@ -195,22 +195,32 @@ public class LogsController {
 
   @SuppressWarnings("ConstantConditions")
   @GetMapping("/export")
-  public ModelAndView downloadExcelAudit(@RequestParam("type") String type) {
+  public ResponseEntity<ByteArrayResource> downloadExcelAudit(@RequestParam("type") String type) throws IOException {
     // return a view which will be resolved by an excel view resolver
     if (bucket.tryConsume(1)) {
       Thread lt = new Thread(() -> new LogsTime(mongoTemplate).run());
       lt.start();
+      Workbook workbook = new XSSFWorkbook();
+
+      ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
       switch (type) {
         case "audits":
-          return new ModelAndView(auditsExcelView, "listAudits", null);
+          workbook = new AuditsExcelView(mongoTemplate, auditRepo).buildExcelDocument();
+          break;
         case "events":
-          return new ModelAndView(eventsExcelView, "listEvents", null);
+          workbook = new EventsExcelView(eventRepo, mongoTemplate).buildExcelDocument();
+          break;
         case "reports":
-          return new ModelAndView(logsExcelView, "listLogs", null);
-        default:
-          return null;
+          workbook = new LogsExcelView(mongoTemplate).buildExcelDocument();
+          break;
+
       }
+
+      workbook.write(stream);
+      workbook.close();
+      return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()), HttpStatus.OK);
+
     }
     return null;
   }
