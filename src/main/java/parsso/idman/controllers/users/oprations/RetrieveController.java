@@ -150,7 +150,7 @@ public class RetrieveController extends UsersOps {
   public ResponseEntity<ByteArrayResource> downloadExcel(HttpServletResponse response,
   @RequestParam(value = "lang", defaultValue = Variables.DEFAULT_LANG) String lang) throws NoSuchFieldException, IllegalAccessException, IOException {
 
-    //if (bucket.tryConsume(1))
+    if (bucket.tryConsume(1))
       try {
           ByteArrayOutputStream stream = new ByteArrayOutputStream();
           Workbook workbook = new UsersExcelView(usersOpRetrieve).buildExcelDocument();; // creates the workbook
@@ -161,6 +161,8 @@ public class RetrieveController extends UsersOps {
         
           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
       }
+
+      return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
 
   }
 }

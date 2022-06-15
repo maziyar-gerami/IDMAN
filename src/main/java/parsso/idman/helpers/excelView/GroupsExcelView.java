@@ -2,26 +2,22 @@ package parsso.idman.helpers.excelView;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.servlet.view.document.AbstractXlsView;
-
 import parsso.idman.impls.services.ServicesGroup;
 import parsso.idman.models.groups.Group;
 import parsso.idman.models.services.serviceType.MicroService;
 import parsso.idman.repos.GroupRepo;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class GroupsExcelView extends AbstractXlsView {
+public class GroupsExcelView {
   final GroupRepo groupRepo;
   final MongoTemplate mongoTemplate;
 
@@ -30,12 +26,12 @@ public class GroupsExcelView extends AbstractXlsView {
     this.mongoTemplate = mongoTemplate;
   }
 
-  @Override
-  protected void buildExcelDocument(Map<String, Object> model, Workbook workbook, HttpServletRequest request,
-      HttpServletResponse response) {
+  public Workbook buildExcelDocument() {
 
     // get data model which is passed by the Spring container
     List<Group> groups = groupRepo.retrieve();
+
+    Workbook workbook = new HSSFWorkbook();
 
     for (Group group : groups)
       group.setService(new ServicesGroup(mongoTemplate).servicesOfGroup(group.getId()));
@@ -117,5 +113,7 @@ public class GroupsExcelView extends AbstractXlsView {
         aRow.createCell(4).setCellValue("");
       }
     }
+  return workbook;
   }
+
 }

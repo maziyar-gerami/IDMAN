@@ -5,13 +5,17 @@ import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
 import io.jsonwebtoken.io.IOException;
 
+import java.io.ByteArrayOutputStream;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import net.minidev.json.JSONObject;
+
+import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import parsso.idman.helpers.Extentsion;
 import parsso.idman.helpers.Variables;
@@ -140,11 +143,22 @@ public class GroupsController {
   }
 
   @GetMapping("/export")
-  public ModelAndView downloadExcel() {
+  public ResponseEntity<ByteArrayResource> downloadExcel() {
     if (bucket.tryConsume(1))
-      return new ModelAndView(new GroupsExcelView(
-          groupRepo, mongoTemplate), "listGroups", Object.class);
-    return null;
+     if (bucket.tryConsume(1))
+      try {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Workbook workbook = new GroupsExcelView(groupRepo, mongoTemplate).buildExcelDocument();
+        ; // creates the workbook
+        workbook.write(stream);
+        workbook.close();
+        return new ResponseEntity<>(new ByteArrayResource(stream.toByteArray()), HttpStatus.OK);
+      } catch (Exception e) {
+
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @PostMapping("/import")
