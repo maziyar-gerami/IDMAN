@@ -69,14 +69,14 @@
               <Column bodyStyle="display: flex;" bodyClass="flex justify-content-evenly flex-wrap card-container text-center w-full" style="flex: 0 0 13rem">
                 <template #body="{data}">
                   <div class="flex align-items-center justify-content-center">
-                    <Button icon="pi pi-pencil" class="p-button-rounded p-button-warning p-button-outlined mx-1" @click="editGroup(data.id)" v-tooltip.top="$t('edit')" />
+                    <Button icon="bx bxs-edit bx-sm" class="p-button-rounded p-button-warning p-button-outlined mx-1" @click="editGroup(data.id)" v-tooltip.top="$t('edit')" />
                   </div>
                   <!-- <div class="flex align-items-center justify-content-center">
                     <Button icon="pi pi-calendar-times" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="expireGroupPassword(data.id)" v-tooltip.top="$t('expirePassword')" />
                   </div> -->
                   <div class="flex align-items-center justify-content-center">
-                    <Button icon="bx bx-fw bxs-pie-chart-alt-2" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="toggleExportAccessReports($event)" v-tooltip.top="$t('groupsAccessReports')" />
-                    <OverlayPanel ref="exportAccessReports">
+                    <Button icon="bx bx-fw bxs-pie-chart-alt-2" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="toggleExportAccessReports($event, data.id)" v-tooltip.top="$t('groupAccessReport')" />
+                    <OverlayPanel :ref="'exportAccessReports' + data.id">
                       <div class="p-inputgroup mx-1">
                         <Button label="PDF" @click="exportAccessReports(data.id, 'pdf')" />
                         <Button label="XLSX" @click="exportAccessReports(data.id, 'xlsx')" />
@@ -345,8 +345,8 @@ export default {
       this.$refs.importGroup.toggle(event)
       this.importSelectedGroup = null
     },
-    toggleExportAccessReports (event) {
-      this.$refs.exportAccessReports.toggle(event)
+    toggleExportAccessReports (event, id) {
+      this.$refs["exportAccessReports" + id].toggle(event)
     },
     getSampleFile () {
       if (this.selectedSampleFile === "CSV") {
@@ -1021,7 +1021,7 @@ export default {
             doc.addFont("IRANSansWeb.ttf", "IRANSansWeb", "normal")
             doc.setFont("IRANSansWeb")
             const width = doc.internal.pageSize.getWidth()
-            doc.text(this.$t("groupsAccessReports"), width - 10, 10, "right")
+            doc.text(this.$t("groupAccessReport"), width - 10, 10, "right")
             autoTable(doc, {
               startY: 20,
               body: [[this.reportedGroup.id, this.$t("id")], [this.reportedGroup.name, this.$t("persianName")]],
