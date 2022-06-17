@@ -75,7 +75,7 @@
                     <Button icon="pi pi-calendar-times" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="expireGroupPassword(data.id)" v-tooltip.top="$t('expirePassword')" />
                   </div> -->
                   <div class="flex align-items-center justify-content-center">
-                    <Button icon="bx bx-fw bxs-pie-chart-alt-2" class="mx-1" @click="toggleExportAccessReports($event)" v-tooltip.top="$t('groupsAccessReports')" />
+                    <Button icon="bx bx-fw bxs-pie-chart-alt-2" class="p-button-rounded p-button-info p-button-outlined mx-1" @click="toggleExportAccessReports($event)" v-tooltip.top="$t('groupsAccessReports')" />
                     <OverlayPanel ref="exportAccessReports">
                       <div class="p-inputgroup mx-1">
                         <Button label="PDF" @click="exportAccessReports(data.id, 'pdf')" />
@@ -1130,7 +1130,8 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
         }
-      }).catch(() => {
+      }).catch((e) => {
+        console.log(e)
         vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
         vm.loading = false
       })
