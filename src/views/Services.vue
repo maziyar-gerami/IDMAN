@@ -1670,310 +1670,315 @@ export default {
           vm.createServiceLoader = false
         })
       } else if (command === "editService") {
-        let serviceData = {}
-        this.editServiceLoader = true
-        const ouTemp = []
-        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
-          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
-            ouTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1][i].id)
-          }
-          this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] = ouTemp
-        }
-        const userAddTemp = []
-        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] !== "undefined") {
-          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1]) {
-            userAddTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1][i]._id)
-          }
-          this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = userAddTemp
-        }
-        const userBanTemp = []
-        if (typeof this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] !== "undefined") {
-          for (const i in this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]) {
-            userBanTemp.push(this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1][i]._id)
-          }
-          this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
-        }
-        const dailyAccessTemp = []
-        for (let i = 0; i < 7; ++i) {
-          if (document.getElementById("editSelect" + i).checked) {
-            const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
-            const tempDailyAccessEnd = document.getElementById("editServiceBuffer.dailyAccess.end" + i).value.split(":")
-            if (tempDailyAccessStart[0] === "") {
-              tempDailyAccessStart[0] = "0"
-              tempDailyAccessStart.push("00")
-            } else if (typeof tempDailyAccessStart[1] === "undefined") {
-              tempDailyAccessStart.push("00")
+        console.log("edit initiated")
+        try {
+          let serviceData = {}
+          this.editServiceLoader = true
+          const ouTemp = []
+          if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
+            for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
+              ouTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1][i].id)
             }
-            if (tempDailyAccessEnd[0] === "") {
-              tempDailyAccessEnd[0] = "23"
-              tempDailyAccessEnd.push("59")
-            } else if (typeof tempDailyAccessEnd[1] === "undefined") {
-              tempDailyAccessEnd.push("00")
+            this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] = ouTemp
+          }
+          const userAddTemp = []
+          if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] !== "undefined") {
+            for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1]) {
+              userAddTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1][i]._id)
             }
-            tempDailyAccessStart[0] = this.faNumToEnNum(tempDailyAccessStart[0])
-            tempDailyAccessStart[1] = this.faNumToEnNum(tempDailyAccessStart[1])
-            tempDailyAccessEnd[0] = this.faNumToEnNum(tempDailyAccessEnd[0])
-            tempDailyAccessEnd[1] = this.faNumToEnNum(tempDailyAccessEnd[1])
-            const tempDailyAccessDay = {
-              weekDay: i,
-              period: {
-                from: {
-                  hour: tempDailyAccessStart[0],
-                  minute: tempDailyAccessStart[1]
-                },
-                to: {
-                  hour: tempDailyAccessEnd[0],
-                  minute: tempDailyAccessEnd[1]
+            this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = userAddTemp
+          }
+          const userBanTemp = []
+          if (typeof this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] !== "undefined") {
+            for (const i in this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]) {
+              userBanTemp.push(this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1][i]._id)
+            }
+            this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
+          }
+          const dailyAccessTemp = []
+          for (let i = 0; i < 7; ++i) {
+            if (document.getElementById("editSelect" + i).checked) {
+              const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
+              const tempDailyAccessEnd = document.getElementById("editServiceBuffer.dailyAccess.end" + i).value.split(":")
+              if (tempDailyAccessStart[0] === "") {
+                tempDailyAccessStart[0] = "0"
+                tempDailyAccessStart.push("00")
+              } else if (typeof tempDailyAccessStart[1] === "undefined") {
+                tempDailyAccessStart.push("00")
+              }
+              if (tempDailyAccessEnd[0] === "") {
+                tempDailyAccessEnd[0] = "23"
+                tempDailyAccessEnd.push("59")
+              } else if (typeof tempDailyAccessEnd[1] === "undefined") {
+                tempDailyAccessEnd.push("00")
+              }
+              tempDailyAccessStart[0] = this.faNumToEnNum(tempDailyAccessStart[0])
+              tempDailyAccessStart[1] = this.faNumToEnNum(tempDailyAccessStart[1])
+              tempDailyAccessEnd[0] = this.faNumToEnNum(tempDailyAccessEnd[0])
+              tempDailyAccessEnd[1] = this.faNumToEnNum(tempDailyAccessEnd[1])
+              const tempDailyAccessDay = {
+                weekDay: i,
+                period: {
+                  from: {
+                    hour: tempDailyAccessStart[0],
+                    minute: tempDailyAccessStart[1]
+                  },
+                  to: {
+                    hour: tempDailyAccessEnd[0],
+                    minute: tempDailyAccessEnd[1]
+                  }
                 }
               }
+              dailyAccessTemp.push(tempDailyAccessDay)
             }
-            dailyAccessTemp.push(tempDailyAccessDay)
           }
-        }
-        if (dailyAccessTemp.length > 0) {
-          this.editServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
-        }
-        if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
-          const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
-          const dateStart = dateStartTemp[0].split(" ")
-          let dateStartFinal
-          dateStart[dateStart.length - 1] = this.faNumToEnNum(dateStart[dateStart.length - 1])
-          dateStart[dateStart.length - 3] = this.faNumToEnNum(dateStart[dateStart.length - 3])
-
-          switch (dateStart[dateStart.length - 2]) {
-            case "فروردین":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3]
-              break
-            case "اردیبهشت":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3]
-              break
-            case "خرداد":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3]
-              break
-            case "تیر":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3]
-              break
-            case "مرداد":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3]
-              break
-            case "شهریور":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3]
-              break
-            case "مهر":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3]
-              break
-            case "آبان":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3]
-              break
-            case "آذر":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3]
-              break
-            case "دی":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3]
-              break
-            case "بهمن":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3]
-              break
-            case "اسفند":
-              dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3]
-              break
-            default:
-              console.log("Wrong Input for Month")
+          if (dailyAccessTemp.length > 0) {
+            this.editServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
           }
+          if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
+            const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
+            const dateStart = dateStartTemp[0].split(" ")
+            let dateStartFinal
+            dateStart[dateStart.length - 1] = this.faNumToEnNum(dateStart[dateStart.length - 1])
+            dateStart[dateStart.length - 3] = this.faNumToEnNum(dateStart[dateStart.length - 3])
 
-          const dateEndTemp = document.getElementById("editServiceBuffer.endDate").value.split("  ")
-          const dateEnd = dateEndTemp[0].split(" ")
-          let dateEndFinal
-          dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
-          dateEnd[dateEnd.length - 3] = this.faNumToEnNum(dateEnd[dateEnd.length - 3])
-
-          switch (dateEnd[dateEnd.length - 2]) {
-            case "فروردین":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3]
-              break
-            case "اردیبهشت":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3]
-              break
-            case "خرداد":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3]
-              break
-            case "تیر":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3]
-              break
-            case "مرداد":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3]
-              break
-            case "شهریور":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3]
-              break
-            case "مهر":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3]
-              break
-            case "آبان":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3]
-              break
-            case "آذر":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3]
-              break
-            case "دی":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3]
-              break
-            case "بهمن":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3]
-              break
-            case "اسفند":
-              dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3]
-              break
-            default:
-              console.log("Wrong Input for Month")
-          }
-
-          let timeStart = dateStartTemp[1].split(":")
-          let timeEnd = dateEndTemp[1].split(":")
-
-          timeStart = this.faNumToEnNum(timeStart[0]) + ":" + this.faNumToEnNum(timeStart[1])
-          timeEnd = this.faNumToEnNum(timeEnd[0]) + ":" + this.faNumToEnNum(timeEnd[1])
-
-          const dateS = dateStartFinal.split("-")
-          const dateE = dateEndFinal.split("-")
-
-          if (parseInt(dateS[1]) < 7) {
-            timeStart = timeStart + ":00.000+04:30"
-          } else {
-            timeStart = timeStart + ":00.000+03:30"
-          }
-
-          if (parseInt(dateE[1]) < 7) {
-            timeEnd = timeEnd + ":00.000+04:30"
-          } else {
-            timeEnd = timeEnd + ":00.000+03:30"
-          }
-
-          let TempS = timeStart.split(":")
-          let TempE = timeEnd.split(":")
-          if (TempS[0].length === 1) {
-            TempS[0] = "0" + TempS[0]
-            timeStart = ""
-            for (let i = 0; i < TempS.length; ++i) {
-              timeStart = timeStart + TempS[i] + ":"
+            switch (dateStart[dateStart.length - 2]) {
+              case "فروردین":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3]
+                break
+              case "اردیبهشت":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3]
+                break
+              case "خرداد":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3]
+                break
+              case "تیر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3]
+                break
+              case "مرداد":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3]
+                break
+              case "شهریور":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3]
+                break
+              case "مهر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3]
+                break
+              case "آبان":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3]
+                break
+              case "آذر":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3]
+                break
+              case "دی":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3]
+                break
+              case "بهمن":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3]
+                break
+              case "اسفند":
+                dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3]
+                break
+              default:
+                console.log("Wrong Input for Month")
             }
-            timeStart = timeStart.substring(0, timeStart.length - 1)
-          }
-          if (TempE[0].length === 1) {
-            TempE[0] = "0" + TempE[0]
-            timeEnd = ""
-            for (let i = 0; i < TempE.length; ++i) {
-              timeEnd = timeEnd + TempE[i] + ":"
+
+            const dateEndTemp = document.getElementById("editServiceBuffer.endDate").value.split("  ")
+            const dateEnd = dateEndTemp[0].split(" ")
+            let dateEndFinal
+            dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
+            dateEnd[dateEnd.length - 3] = this.faNumToEnNum(dateEnd[dateEnd.length - 3])
+
+            switch (dateEnd[dateEnd.length - 2]) {
+              case "فروردین":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3]
+                break
+              case "اردیبهشت":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3]
+                break
+              case "خرداد":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3]
+                break
+              case "تیر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3]
+                break
+              case "مرداد":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3]
+                break
+              case "شهریور":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3]
+                break
+              case "مهر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3]
+                break
+              case "آبان":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3]
+                break
+              case "آذر":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3]
+                break
+              case "دی":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3]
+                break
+              case "بهمن":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3]
+                break
+              case "اسفند":
+                dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3]
+                break
+              default:
+                console.log("Wrong Input for Month")
             }
-            timeEnd = timeEnd.substring(0, timeEnd.length - 1)
-          }
 
-          TempS = dateStartFinal.split("-")
-          TempE = dateEndFinal.split("-")
-          if (TempS[1].length === 1) {
-            TempS[1] = "0" + TempS[1]
-          }
-          if (TempS[2].length === 1) {
-            TempS[2] = "0" + TempS[2]
-          }
-          if (TempE[1].length === 1) {
-            TempE[1] = "0" + TempE[1]
-          }
-          if (TempE[2].length === 1) {
-            TempE[2] = "0" + TempE[2]
-          }
+            let timeStart = dateStartTemp[1].split(":")
+            let timeEnd = dateEndTemp[1].split(":")
 
-          dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
-          dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
+            timeStart = this.faNumToEnNum(timeStart[0]) + ":" + this.faNumToEnNum(timeStart[1])
+            timeEnd = this.faNumToEnNum(timeEnd[0]) + ":" + this.faNumToEnNum(timeEnd[1])
 
-          this.editServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
-          this.editServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
-        }
-        for (const i in this.editServiceBuffer.attributeList) {
-          if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
-            this.editServiceBuffer.accessStrategy.requiredAttributes[this.editServiceBuffer.attributeList[i].name] =
-            ["java.util.HashSet", this.editServiceBuffer.attributeList[i].value.split(",")]
+            const dateS = dateStartFinal.split("-")
+            const dateE = dateEndFinal.split("-")
+
+            if (parseInt(dateS[1]) < 7) {
+              timeStart = timeStart + ":00.000+04:30"
+            } else {
+              timeStart = timeStart + ":00.000+03:30"
+            }
+
+            if (parseInt(dateE[1]) < 7) {
+              timeEnd = timeEnd + ":00.000+04:30"
+            } else {
+              timeEnd = timeEnd + ":00.000+03:30"
+            }
+
+            let TempS = timeStart.split(":")
+            let TempE = timeEnd.split(":")
+            if (TempS[0].length === 1) {
+              TempS[0] = "0" + TempS[0]
+              timeStart = ""
+              for (let i = 0; i < TempS.length; ++i) {
+                timeStart = timeStart + TempS[i] + ":"
+              }
+              timeStart = timeStart.substring(0, timeStart.length - 1)
+            }
+            if (TempE[0].length === 1) {
+              TempE[0] = "0" + TempE[0]
+              timeEnd = ""
+              for (let i = 0; i < TempE.length; ++i) {
+                timeEnd = timeEnd + TempE[i] + ":"
+              }
+              timeEnd = timeEnd.substring(0, timeEnd.length - 1)
+            }
+
+            TempS = dateStartFinal.split("-")
+            TempE = dateEndFinal.split("-")
+            if (TempS[1].length === 1) {
+              TempS[1] = "0" + TempS[1]
+            }
+            if (TempS[2].length === 1) {
+              TempS[2] = "0" + TempS[2]
+            }
+            if (TempE[1].length === 1) {
+              TempE[1] = "0" + TempE[1]
+            }
+            if (TempE[2].length === 1) {
+              TempE[2] = "0" + TempE[2]
+            }
+
+            dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
+            dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
+
+            this.editServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
+            this.editServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
           }
-        }
-        this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
+          for (const i in this.editServiceBuffer.attributeList) {
+            if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
+              this.editServiceBuffer.accessStrategy.requiredAttributes[this.editServiceBuffer.attributeList[i].name] =
+              ["java.util.HashSet", this.editServiceBuffer.attributeList[i].value.split(",")]
+            }
+          }
+          this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
 
-        let serviceType = ""
-        if (this.editServiceBuffer.serviceType === "CAS") {
-          serviceType = "cas"
-          serviceData = JSON.stringify({
-            name: this.editServiceBuffer.name,
-            serviceId: this.editServiceBuffer.serviceId,
-            extraInfo: this.editServiceBuffer.extraInfo,
-            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-            description: this.editServiceBuffer.description,
-            logo: this.editServiceBuffer.logo,
-            informationUrl: this.editServiceBuffer.informationUrl,
-            privacyUrl: this.editServiceBuffer.privacyUrl,
-            logoutType: this.editServiceBuffer.logoutType,
-            logoutUrl: this.editServiceBuffer.logoutUrl,
-            accessStrategy: this.editServiceBuffer.accessStrategy,
-            contacts: this.editServiceBuffer.contacts
-          }).replace(/\\\\/g, "\\")
-        } else if (this.editServiceBuffer.serviceType === "SAML") {
-          serviceType = "saml"
-          serviceData = JSON.stringify({
-            name: this.editServiceBuffer.name,
-            serviceId: this.editServiceBuffer.serviceId,
-            extraInfo: this.editServiceBuffer.extraInfo,
-            metadataLocation: this.editServiceBuffer.metadataLocation,
-            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-            description: this.editServiceBuffer.description,
-            logo: this.editServiceBuffer.logo,
-            informationUrl: this.editServiceBuffer.informationUrl,
-            privacyUrl: this.editServiceBuffer.privacyUrl,
-            logoutType: this.editServiceBuffer.logoutType,
-            logoutUrl: this.editServiceBuffer.logoutUrl,
-            accessStrategy: this.editServiceBuffer.accessStrategy,
-            contacts: this.editServiceBuffer.contacts
-          }).replace(/\\\\/g, "\\")
-        } else if (this.editServiceBuffer.serviceType === "Oauth2") {
-          serviceType = "oauth"
-          serviceData = JSON.stringify({
-            name: this.editServiceBuffer.name,
-            serviceId: this.editServiceBuffer.serviceId,
-            clientId: this.editServiceBuffer.clientId,
-            clientSecret: this.editServiceBuffer.clientSecret,
-            supportedGrantTypes: this.editServiceBuffer.supportedGrantTypes,
-            supportedResponseTypes: this.editServiceBuffer.supportedResponseTypes,
-            extraInfo: this.editServiceBuffer.extraInfo,
-            metadataLocation: this.editServiceBuffer.metadataLocation,
-            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-            description: this.editServiceBuffer.description,
-            logo: this.editServiceBuffer.logo,
-            informationUrl: this.editServiceBuffer.informationUrl,
-            privacyUrl: this.editServiceBuffer.privacyUrl,
-            logoutType: this.editServiceBuffer.logoutType,
-            logoutUrl: this.editServiceBuffer.logoutUrl,
-            accessStrategy: this.editServiceBuffer.accessStrategy,
-            contacts: this.editServiceBuffer.contacts
-          }).replace(/\\\\/g, "\\")
-        }
-        this.axios({
-          url: "/api/service/" + vm.editServiceBuffer.id + "/" + serviceType,
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          params: {
-            lang: langCode
-          },
-          data: serviceData
-        }).then((res) => {
-          if (res.data.status.code === 200) {
-            vm.editServiceLoader = false
-            vm.resetState("editService")
-            vm.servicesRequestMaster("getServices")
-          } else {
+          let serviceType = ""
+          if (this.editServiceBuffer.serviceType === "CAS") {
+            serviceType = "cas"
+            serviceData = JSON.stringify({
+              name: this.editServiceBuffer.name,
+              serviceId: this.editServiceBuffer.serviceId,
+              extraInfo: this.editServiceBuffer.extraInfo,
+              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+              description: this.editServiceBuffer.description,
+              logo: this.editServiceBuffer.logo,
+              informationUrl: this.editServiceBuffer.informationUrl,
+              privacyUrl: this.editServiceBuffer.privacyUrl,
+              logoutType: this.editServiceBuffer.logoutType,
+              logoutUrl: this.editServiceBuffer.logoutUrl,
+              accessStrategy: this.editServiceBuffer.accessStrategy,
+              contacts: this.editServiceBuffer.contacts
+            }).replace(/\\\\/g, "\\")
+          } else if (this.editServiceBuffer.serviceType === "SAML") {
+            serviceType = "saml"
+            serviceData = JSON.stringify({
+              name: this.editServiceBuffer.name,
+              serviceId: this.editServiceBuffer.serviceId,
+              extraInfo: this.editServiceBuffer.extraInfo,
+              metadataLocation: this.editServiceBuffer.metadataLocation,
+              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+              description: this.editServiceBuffer.description,
+              logo: this.editServiceBuffer.logo,
+              informationUrl: this.editServiceBuffer.informationUrl,
+              privacyUrl: this.editServiceBuffer.privacyUrl,
+              logoutType: this.editServiceBuffer.logoutType,
+              logoutUrl: this.editServiceBuffer.logoutUrl,
+              accessStrategy: this.editServiceBuffer.accessStrategy,
+              contacts: this.editServiceBuffer.contacts
+            }).replace(/\\\\/g, "\\")
+          } else if (this.editServiceBuffer.serviceType === "Oauth2") {
+            serviceType = "oauth"
+            serviceData = JSON.stringify({
+              name: this.editServiceBuffer.name,
+              serviceId: this.editServiceBuffer.serviceId,
+              clientId: this.editServiceBuffer.clientId,
+              clientSecret: this.editServiceBuffer.clientSecret,
+              supportedGrantTypes: this.editServiceBuffer.supportedGrantTypes,
+              supportedResponseTypes: this.editServiceBuffer.supportedResponseTypes,
+              extraInfo: this.editServiceBuffer.extraInfo,
+              metadataLocation: this.editServiceBuffer.metadataLocation,
+              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+              description: this.editServiceBuffer.description,
+              logo: this.editServiceBuffer.logo,
+              informationUrl: this.editServiceBuffer.informationUrl,
+              privacyUrl: this.editServiceBuffer.privacyUrl,
+              logoutType: this.editServiceBuffer.logoutType,
+              logoutUrl: this.editServiceBuffer.logoutUrl,
+              accessStrategy: this.editServiceBuffer.accessStrategy,
+              contacts: this.editServiceBuffer.contacts
+            }).replace(/\\\\/g, "\\")
+          }
+          this.axios({
+            url: "/api/service/" + vm.editServiceBuffer.id + "/" + serviceType,
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            params: {
+              lang: langCode
+            },
+            data: serviceData
+          }).then((res) => {
+            if (res.data.status.code === 200) {
+              vm.editServiceLoader = false
+              vm.resetState("editService")
+              vm.servicesRequestMaster("getServices")
+            } else {
+              vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              vm.editServiceLoader = false
+            }
+          }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
-          }
-        }).catch(() => {
-          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          vm.editServiceLoader = false
-        })
+          })
+        } catch (err) {
+          console.log(err.message)
+        }
       } else if (command === "deleteService") {
         const selectedServiceList = [parseInt(this.serviceToolbarBuffer)]
         this.loading = true

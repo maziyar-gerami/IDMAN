@@ -907,7 +907,7 @@ export default {
                 vm.passwordQualityCheck.regex += "(?=.*[0-9])"
               } else if (res.data.data[i]._id === "password.quality.specialchar" && res.data.data[i].value === "true") {
                 vm.passwordQualityCheck.specialchar = true
-                vm.passwordQualityCheck.regex += "(?=.*[@#$%^&*+=])"
+                vm.passwordQualityCheck.regex += "(?=.*[!@#$%^&*+=])"
               } else if (res.data.data[i]._id === "password.quality.length") {
                 vm.passwordQualityCheck.length = res.data.data[i].value
                 vm.passwordQualityCheck.regex += "(?=.{" + res.data.data[i].value + ",})"
