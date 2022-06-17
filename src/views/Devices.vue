@@ -3,17 +3,19 @@
     <div class="col-12">
       <div class="card">
         <h3>{{ $t("devices") }}</h3>
-        <Toolbar>
+        <!-- <Toolbar>
           <template #end>
             <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
           </template>
-        </Toolbar>
+        </Toolbar> -->
         <DataTable :value="devices" filterDisplay="menu" dataKey="_id" :rows="rowsPerPage" v-model:filters="filters" :loading="loading"
         v-model:selection="selectedDevices" :filters="filters" class="p-datatable-gridlines" :rowHover="true"
         responsiveLayout="scroll" :scrollable="false" scrollHeight="50vh" scrollDirection="vertical">
           <template #header>
-            <div class="flex justify-content-center flex-column sm:flex-row">
+            <div class="flex justify-content-between flex-column sm:flex-row">
+              <div />
               <Paginator v-model:rows="rowsPerPage" v-model:totalRecords="totalRecordsCount" @page="onPaginatorEvent($event)" :rowsPerPageOptions="[10,20,50,100,500]"></Paginator>
+              <Button icon="pi pi-filter-slash" v-tooltip.top="$t('removeFilters')" class="p-button-danger mb-2 mx-1" @click="removeFilters('all')" />
             </div>
           </template>
           <template #empty>

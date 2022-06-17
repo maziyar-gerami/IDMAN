@@ -60,10 +60,14 @@ import Editor from "primevue/editor"
 import FileUpload from "primevue/fileupload"
 import RadioButton from "primevue/radiobutton"
 import SelectButton from "primevue/selectbutton"
+import * as XLSX from "xlsx"
+import { jsPDF } from "jspdf"
 
 window.$ = jQuery
 window.jQuery = jQuery
 window.persianDate = persianDate
+window.XLSX = XLSX
+window.jsPDF = jsPDF
 
 const i18n = createI18n({
   locale: "Fa",
