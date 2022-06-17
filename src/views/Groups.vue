@@ -21,6 +21,7 @@
                     <Dropdown v-model="importSelectedGroup" :options="groups" optionLabel="id" :placeholder="$t('groups')" />
                   </div>
                 </OverlayPanel>
+                <Button icon="pi pi-upload" class="mx-1" @click="exportGroups()" v-tooltip.top="'Export'" />
                 <Button icon="pi pi-info" class="p-button-secondary mx-1" @click="toggleSampleFile($event)" v-tooltip.top="$t('sample')" />
                 <OverlayPanel ref="sampleFile">
                   <Listbox v-model="selectedSampleFile" :options="sampleFiles" @change="getSampleFile" />
@@ -780,6 +781,26 @@ export default {
     },
     importGroupsHelper () {
       document.getElementById("importGroupsInput").click()
+    },
+    exportGroups () {
+      const vm = this
+      this.loading = true
+      this.axios({
+        url: "/api/groups/export",
+        method: "GET",
+        responseType: "blob"
+      }).then((res) => {
+        const url = window.URL.createObjectURL(new Blob([res.data]))
+        const link = document.createElement("a")
+        link.href = url
+        link.setAttribute("download", "groups.xls")
+        document.body.appendChild(link)
+        link.click()
+        vm.loading = false
+      }).catch(() => {
+        vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+        vm.loading = false
+      })
     },
     createGroup () {
       this.createGroupFlag = true
