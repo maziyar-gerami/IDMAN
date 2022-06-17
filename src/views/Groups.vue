@@ -221,6 +221,7 @@
 <script>
 import iziToast from "@/assets/scripts/iziToast.min.js"
 import JSPDF from "jspdf/dist/jspdf.umd.min.js"
+import "jspdf-autotable/dist/jspdf.plugin.autotable.min.js"
 
 export default {
   name: "Groups",
