@@ -221,7 +221,7 @@
 <script>
 import iziToast from "@/assets/scripts/iziToast.min.js"
 import JSPDF from "jspdf/dist/jspdf.umd.min.js"
-import "jspdf-autotable/dist/jspdf.plugin.autotable.min.js"
+import autoTable from "jspdf-autotable/dist/jspdf.plugin.autotable.min.js"
 
 export default {
   name: "Groups",
@@ -1022,7 +1022,7 @@ export default {
             doc.setFont("IRANSansWeb")
             const width = doc.internal.pageSize.getWidth()
             doc.text(this.$t("groupsAccessReports"), width - 10, 10, "right")
-            doc.autoTable({
+            autoTable(doc, {
               startY: 20,
               body: [[this.reportedGroup.id, this.$t("id")], [this.reportedGroup.name, this.$t("persianName")]],
               styles: {
@@ -1042,7 +1042,7 @@ export default {
             }
             let finalY = doc.lastAutoTable.finalY
             doc.text(this.$t("allowedServices"), width - 10, finalY + 10, "right")
-            doc.autoTable({
+            autoTable(doc, {
               startY: finalY + 20,
               head: [[this.$t("name"), this.$t("id"), "#"]],
               body: tempArray,
@@ -1067,7 +1067,7 @@ export default {
             }
             finalY = doc.lastAutoTable.finalY
             doc.text(this.$t("bannedServices"), width - 10, finalY + 10, "right")
-            doc.autoTable({
+            autoTable(doc, {
               startY: finalY + 20,
               head: [[this.$t("name"), this.$t("id"), "#"]],
               body: tempArray,
