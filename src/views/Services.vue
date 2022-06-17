@@ -1670,315 +1670,310 @@ export default {
           vm.createServiceLoader = false
         })
       } else if (command === "editService") {
-        console.log("edit initiated")
-        try {
-          let serviceData = {}
-          this.editServiceLoader = true
-          const ouTemp = []
-          if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
-            for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
-              ouTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1][i].id)
-            }
-            this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] = ouTemp
+        let serviceData = {}
+        this.editServiceLoader = true
+        const ouTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1]) {
+            ouTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1][i].id)
           }
-          const userAddTemp = []
-          if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] !== "undefined") {
-            for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1]) {
-              userAddTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1][i]._id)
-            }
-            this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = userAddTemp
+          this.editServiceBuffer.accessStrategy.requiredAttributes.ou[1] = ouTemp
+        }
+        const userAddTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1]) {
+            userAddTemp.push(this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1][i]._id)
           }
-          const userBanTemp = []
-          if (typeof this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] !== "undefined") {
-            for (const i in this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]) {
-              userBanTemp.push(this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1][i]._id)
-            }
-            this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
+          this.editServiceBuffer.accessStrategy.requiredAttributes.uid[1] = userAddTemp
+        }
+        const userBanTemp = []
+        if (typeof this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] !== "undefined") {
+          for (const i in this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1]) {
+            userBanTemp.push(this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1][i]._id)
           }
-          const dailyAccessTemp = []
-          for (let i = 0; i < 7; ++i) {
-            if (document.getElementById("editSelect" + i).checked) {
-              const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
-              const tempDailyAccessEnd = document.getElementById("editServiceBuffer.dailyAccess.end" + i).value.split(":")
-              if (tempDailyAccessStart[0] === "") {
-                tempDailyAccessStart[0] = "0"
-                tempDailyAccessStart.push("00")
-              } else if (typeof tempDailyAccessStart[1] === "undefined") {
-                tempDailyAccessStart.push("00")
-              }
-              if (tempDailyAccessEnd[0] === "") {
-                tempDailyAccessEnd[0] = "23"
-                tempDailyAccessEnd.push("59")
-              } else if (typeof tempDailyAccessEnd[1] === "undefined") {
-                tempDailyAccessEnd.push("00")
-              }
-              tempDailyAccessStart[0] = this.faNumToEnNum(tempDailyAccessStart[0])
-              tempDailyAccessStart[1] = this.faNumToEnNum(tempDailyAccessStart[1])
-              tempDailyAccessEnd[0] = this.faNumToEnNum(tempDailyAccessEnd[0])
-              tempDailyAccessEnd[1] = this.faNumToEnNum(tempDailyAccessEnd[1])
-              const tempDailyAccessDay = {
-                weekDay: i,
-                period: {
-                  from: {
-                    hour: tempDailyAccessStart[0],
-                    minute: tempDailyAccessStart[1]
-                  },
-                  to: {
-                    hour: tempDailyAccessEnd[0],
-                    minute: tempDailyAccessEnd[1]
-                  }
+          this.editServiceBuffer.accessStrategy.rejectedAttributes.uid[1] = userBanTemp
+        }
+        const dailyAccessTemp = []
+        for (let i = 0; i < 7; ++i) {
+          if (document.getElementById("editSelect" + i).checked) {
+            const tempDailyAccessStart = document.getElementById("editServiceBuffer.dailyAccess.start" + i).value.split(":")
+            const tempDailyAccessEnd = document.getElementById("editServiceBuffer.dailyAccess.end" + i).value.split(":")
+            if (tempDailyAccessStart[0] === "") {
+              tempDailyAccessStart[0] = "0"
+              tempDailyAccessStart.push("00")
+            } else if (typeof tempDailyAccessStart[1] === "undefined") {
+              tempDailyAccessStart.push("00")
+            }
+            if (tempDailyAccessEnd[0] === "") {
+              tempDailyAccessEnd[0] = "23"
+              tempDailyAccessEnd.push("59")
+            } else if (typeof tempDailyAccessEnd[1] === "undefined") {
+              tempDailyAccessEnd.push("00")
+            }
+            tempDailyAccessStart[0] = this.faNumToEnNum(tempDailyAccessStart[0])
+            tempDailyAccessStart[1] = this.faNumToEnNum(tempDailyAccessStart[1])
+            tempDailyAccessEnd[0] = this.faNumToEnNum(tempDailyAccessEnd[0])
+            tempDailyAccessEnd[1] = this.faNumToEnNum(tempDailyAccessEnd[1])
+            const tempDailyAccessDay = {
+              weekDay: i,
+              period: {
+                from: {
+                  hour: tempDailyAccessStart[0],
+                  minute: tempDailyAccessStart[1]
+                },
+                to: {
+                  hour: tempDailyAccessEnd[0],
+                  minute: tempDailyAccessEnd[1]
                 }
               }
-              dailyAccessTemp.push(tempDailyAccessDay)
             }
+            dailyAccessTemp.push(tempDailyAccessDay)
           }
-          if (dailyAccessTemp.length > 0) {
-            this.editServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
+        }
+        if (dailyAccessTemp.length > 0) {
+          this.editServiceBuffer.extraInfo.dailyAccess = dailyAccessTemp
+        }
+        if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
+          const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
+          const dateStart = dateStartTemp[0].split(" ")
+          let dateStartFinal
+          dateStart[dateStart.length - 1] = this.faNumToEnNum(dateStart[dateStart.length - 1])
+          dateStart[dateStart.length - 3] = this.faNumToEnNum(dateStart[dateStart.length - 3])
+
+          switch (dateStart[dateStart.length - 2]) {
+            case "فروردین":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3]
+              break
+            case "اردیبهشت":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3]
+              break
+            case "خرداد":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3]
+              break
+            case "تیر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3]
+              break
+            case "مرداد":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3]
+              break
+            case "شهریور":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3]
+              break
+            case "مهر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3]
+              break
+            case "آبان":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3]
+              break
+            case "آذر":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3]
+              break
+            case "دی":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3]
+              break
+            case "بهمن":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3]
+              break
+            case "اسفند":
+              dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3]
+              break
+            default:
+              console.log("Wrong Input for Month")
           }
-          if (document.getElementById("editServiceBuffer.startDate").value !== "" && document.getElementById("editServiceBuffer.endDate").value !== "") {
-            const dateStartTemp = document.getElementById("editServiceBuffer.startDate").value.split("  ")
-            const dateStart = dateStartTemp[0].split(" ")
-            let dateStartFinal
-            dateStart[dateStart.length - 1] = this.faNumToEnNum(dateStart[dateStart.length - 1])
-            dateStart[dateStart.length - 3] = this.faNumToEnNum(dateStart[dateStart.length - 3])
 
-            switch (dateStart[dateStart.length - 2]) {
-              case "فروردین":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-01-" + dateStart[dateStart.length - 3]
-                break
-              case "اردیبهشت":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-02-" + dateStart[dateStart.length - 3]
-                break
-              case "خرداد":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-03-" + dateStart[dateStart.length - 3]
-                break
-              case "تیر":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-04-" + dateStart[dateStart.length - 3]
-                break
-              case "مرداد":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-05-" + dateStart[dateStart.length - 3]
-                break
-              case "شهریور":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-06-" + dateStart[dateStart.length - 3]
-                break
-              case "مهر":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-07-" + dateStart[dateStart.length - 3]
-                break
-              case "آبان":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-08-" + dateStart[dateStart.length - 3]
-                break
-              case "آذر":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-09-" + dateStart[dateStart.length - 3]
-                break
-              case "دی":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-10-" + dateStart[dateStart.length - 3]
-                break
-              case "بهمن":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-11-" + dateStart[dateStart.length - 3]
-                break
-              case "اسفند":
-                dateStartFinal = dateStart[dateStart.length - 1] + "-12-" + dateStart[dateStart.length - 3]
-                break
-              default:
-                console.log("Wrong Input for Month")
-            }
+          const dateEndTemp = document.getElementById("editServiceBuffer.endDate").value.split("  ")
+          const dateEnd = dateEndTemp[0].split(" ")
+          let dateEndFinal
+          dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
+          dateEnd[dateEnd.length - 3] = this.faNumToEnNum(dateEnd[dateEnd.length - 3])
 
-            const dateEndTemp = document.getElementById("editServiceBuffer.endDate").value.split("  ")
-            const dateEnd = dateEndTemp[0].split(" ")
-            let dateEndFinal
-            dateEnd[dateEnd.length - 1] = this.faNumToEnNum(dateEnd[dateEnd.length - 1])
-            dateEnd[dateEnd.length - 3] = this.faNumToEnNum(dateEnd[dateEnd.length - 3])
-
-            switch (dateEnd[dateEnd.length - 2]) {
-              case "فروردین":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3]
-                break
-              case "اردیبهشت":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3]
-                break
-              case "خرداد":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3]
-                break
-              case "تیر":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3]
-                break
-              case "مرداد":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3]
-                break
-              case "شهریور":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3]
-                break
-              case "مهر":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3]
-                break
-              case "آبان":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3]
-                break
-              case "آذر":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3]
-                break
-              case "دی":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3]
-                break
-              case "بهمن":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3]
-                break
-              case "اسفند":
-                dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3]
-                break
-              default:
-                console.log("Wrong Input for Month")
-            }
-
-            let timeStart = dateStartTemp[1].split(":")
-            let timeEnd = dateEndTemp[1].split(":")
-
-            timeStart = this.faNumToEnNum(timeStart[0]) + ":" + this.faNumToEnNum(timeStart[1])
-            timeEnd = this.faNumToEnNum(timeEnd[0]) + ":" + this.faNumToEnNum(timeEnd[1])
-
-            const dateS = dateStartFinal.split("-")
-            const dateE = dateEndFinal.split("-")
-
-            if (parseInt(dateS[1]) < 7) {
-              timeStart = timeStart + ":00.000+04:30"
-            } else {
-              timeStart = timeStart + ":00.000+03:30"
-            }
-
-            if (parseInt(dateE[1]) < 7) {
-              timeEnd = timeEnd + ":00.000+04:30"
-            } else {
-              timeEnd = timeEnd + ":00.000+03:30"
-            }
-
-            let TempS = timeStart.split(":")
-            let TempE = timeEnd.split(":")
-            if (TempS[0].length === 1) {
-              TempS[0] = "0" + TempS[0]
-              timeStart = ""
-              for (let i = 0; i < TempS.length; ++i) {
-                timeStart = timeStart + TempS[i] + ":"
-              }
-              timeStart = timeStart.substring(0, timeStart.length - 1)
-            }
-            if (TempE[0].length === 1) {
-              TempE[0] = "0" + TempE[0]
-              timeEnd = ""
-              for (let i = 0; i < TempE.length; ++i) {
-                timeEnd = timeEnd + TempE[i] + ":"
-              }
-              timeEnd = timeEnd.substring(0, timeEnd.length - 1)
-            }
-
-            TempS = dateStartFinal.split("-")
-            TempE = dateEndFinal.split("-")
-            if (TempS[1].length === 1) {
-              TempS[1] = "0" + TempS[1]
-            }
-            if (TempS[2].length === 1) {
-              TempS[2] = "0" + TempS[2]
-            }
-            if (TempE[1].length === 1) {
-              TempE[1] = "0" + TempE[1]
-            }
-            if (TempE[2].length === 1) {
-              TempE[2] = "0" + TempE[2]
-            }
-
-            dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
-            dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
-
-            this.editServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
-            this.editServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
+          switch (dateEnd[dateEnd.length - 2]) {
+            case "فروردین":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-01-" + dateEnd[dateEnd.length - 3]
+              break
+            case "اردیبهشت":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-02-" + dateEnd[dateEnd.length - 3]
+              break
+            case "خرداد":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-03-" + dateEnd[dateEnd.length - 3]
+              break
+            case "تیر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-04-" + dateEnd[dateEnd.length - 3]
+              break
+            case "مرداد":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-05-" + dateEnd[dateEnd.length - 3]
+              break
+            case "شهریور":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-06-" + dateEnd[dateEnd.length - 3]
+              break
+            case "مهر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-07-" + dateEnd[dateEnd.length - 3]
+              break
+            case "آبان":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-08-" + dateEnd[dateEnd.length - 3]
+              break
+            case "آذر":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-09-" + dateEnd[dateEnd.length - 3]
+              break
+            case "دی":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-10-" + dateEnd[dateEnd.length - 3]
+              break
+            case "بهمن":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-11-" + dateEnd[dateEnd.length - 3]
+              break
+            case "اسفند":
+              dateEndFinal = dateEnd[dateEnd.length - 1] + "-12-" + dateEnd[dateEnd.length - 3]
+              break
+            default:
+              console.log("Wrong Input for Month")
           }
-          for (const i in this.editServiceBuffer.attributeList) {
-            if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
-              this.editServiceBuffer.accessStrategy.requiredAttributes[this.editServiceBuffer.attributeList[i].name] =
-              ["java.util.HashSet", this.editServiceBuffer.attributeList[i].value.split(",")]
-            }
-          }
-          this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
 
-          let serviceType = ""
-          if (this.editServiceBuffer.serviceType === "CAS") {
-            serviceType = "cas"
-            serviceData = JSON.stringify({
-              name: this.editServiceBuffer.name,
-              serviceId: this.editServiceBuffer.serviceId,
-              extraInfo: this.editServiceBuffer.extraInfo,
-              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-              description: this.editServiceBuffer.description,
-              logo: this.editServiceBuffer.logo,
-              informationUrl: this.editServiceBuffer.informationUrl,
-              privacyUrl: this.editServiceBuffer.privacyUrl,
-              logoutType: this.editServiceBuffer.logoutType,
-              logoutUrl: this.editServiceBuffer.logoutUrl,
-              accessStrategy: this.editServiceBuffer.accessStrategy,
-              contacts: this.editServiceBuffer.contacts
-            }).replace(/\\\\/g, "\\")
-          } else if (this.editServiceBuffer.serviceType === "SAML") {
-            serviceType = "saml"
-            serviceData = JSON.stringify({
-              name: this.editServiceBuffer.name,
-              serviceId: this.editServiceBuffer.serviceId,
-              extraInfo: this.editServiceBuffer.extraInfo,
-              metadataLocation: this.editServiceBuffer.metadataLocation,
-              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-              description: this.editServiceBuffer.description,
-              logo: this.editServiceBuffer.logo,
-              informationUrl: this.editServiceBuffer.informationUrl,
-              privacyUrl: this.editServiceBuffer.privacyUrl,
-              logoutType: this.editServiceBuffer.logoutType,
-              logoutUrl: this.editServiceBuffer.logoutUrl,
-              accessStrategy: this.editServiceBuffer.accessStrategy,
-              contacts: this.editServiceBuffer.contacts
-            }).replace(/\\\\/g, "\\")
-          } else if (this.editServiceBuffer.serviceType === "Oauth2") {
-            serviceType = "oauth"
-            serviceData = JSON.stringify({
-              name: this.editServiceBuffer.name,
-              serviceId: this.editServiceBuffer.serviceId,
-              clientId: this.editServiceBuffer.clientId,
-              clientSecret: this.editServiceBuffer.clientSecret,
-              supportedGrantTypes: this.editServiceBuffer.supportedGrantTypes,
-              supportedResponseTypes: this.editServiceBuffer.supportedResponseTypes,
-              extraInfo: this.editServiceBuffer.extraInfo,
-              metadataLocation: this.editServiceBuffer.metadataLocation,
-              multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
-              description: this.editServiceBuffer.description,
-              logo: this.editServiceBuffer.logo,
-              informationUrl: this.editServiceBuffer.informationUrl,
-              privacyUrl: this.editServiceBuffer.privacyUrl,
-              logoutType: this.editServiceBuffer.logoutType,
-              logoutUrl: this.editServiceBuffer.logoutUrl,
-              accessStrategy: this.editServiceBuffer.accessStrategy,
-              contacts: this.editServiceBuffer.contacts
-            }).replace(/\\\\/g, "\\")
+          let timeStart = dateStartTemp[1].split(":")
+          let timeEnd = dateEndTemp[1].split(":")
+
+          timeStart = this.faNumToEnNum(timeStart[0]) + ":" + this.faNumToEnNum(timeStart[1])
+          timeEnd = this.faNumToEnNum(timeEnd[0]) + ":" + this.faNumToEnNum(timeEnd[1])
+
+          const dateS = dateStartFinal.split("-")
+          const dateE = dateEndFinal.split("-")
+
+          if (parseInt(dateS[1]) < 7) {
+            timeStart = timeStart + ":00.000+04:30"
+          } else {
+            timeStart = timeStart + ":00.000+03:30"
           }
-          this.axios({
-            url: "/api/service/" + vm.editServiceBuffer.id + "/" + serviceType,
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            params: {
-              lang: langCode
-            },
-            data: serviceData
-          }).then((res) => {
-            if (res.data.status.code === 200) {
-              vm.editServiceLoader = false
-              vm.resetState("editService")
-              vm.servicesRequestMaster("getServices")
-            } else {
-              vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-              vm.editServiceLoader = false
+
+          if (parseInt(dateE[1]) < 7) {
+            timeEnd = timeEnd + ":00.000+04:30"
+          } else {
+            timeEnd = timeEnd + ":00.000+03:30"
+          }
+
+          let TempS = timeStart.split(":")
+          let TempE = timeEnd.split(":")
+          if (TempS[0].length === 1) {
+            TempS[0] = "0" + TempS[0]
+            timeStart = ""
+            for (let i = 0; i < TempS.length; ++i) {
+              timeStart = timeStart + TempS[i] + ":"
             }
-          }).catch(() => {
+            timeStart = timeStart.substring(0, timeStart.length - 1)
+          }
+          if (TempE[0].length === 1) {
+            TempE[0] = "0" + TempE[0]
+            timeEnd = ""
+            for (let i = 0; i < TempE.length; ++i) {
+              timeEnd = timeEnd + TempE[i] + ":"
+            }
+            timeEnd = timeEnd.substring(0, timeEnd.length - 1)
+          }
+
+          TempS = dateStartFinal.split("-")
+          TempE = dateEndFinal.split("-")
+          if (TempS[1].length === 1) {
+            TempS[1] = "0" + TempS[1]
+          }
+          if (TempS[2].length === 1) {
+            TempS[2] = "0" + TempS[2]
+          }
+          if (TempE[1].length === 1) {
+            TempE[1] = "0" + TempE[1]
+          }
+          if (TempE[2].length === 1) {
+            TempE[2] = "0" + TempE[2]
+          }
+
+          dateStartFinal = TempS[0] + "-" + TempS[1] + "-" + TempS[2]
+          dateEndFinal = TempE[0] + "-" + TempE[1] + "-" + TempE[2]
+
+          this.editServiceBuffer.accessStrategy.startingDateTime = dateStartFinal + "T" + timeStart
+          this.editServiceBuffer.accessStrategy.endingDateTime = dateEndFinal + "T" + timeEnd
+        }
+        for (const i in this.editServiceBuffer.attributeList) {
+          if (this.editServiceBuffer.attributeList[i].name !== "" && this.editServiceBuffer.attributeList[i].value !== "") {
+            this.editServiceBuffer.accessStrategy.requiredAttributes[this.editServiceBuffer.attributeList[i].name] =
+            ["java.util.HashSet", this.editServiceBuffer.attributeList[i].value.split(",")]
+          }
+        }
+        this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders = this.editServiceBuffer.multifactorPolicy.multifactorAuthenticationProviders.value
+
+        let serviceType = ""
+        if (this.editServiceBuffer.serviceType === "CAS") {
+          serviceType = "cas"
+          serviceData = JSON.stringify({
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        } else if (this.editServiceBuffer.serviceType === "SAML") {
+          serviceType = "saml"
+          serviceData = JSON.stringify({
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            metadataLocation: this.editServiceBuffer.metadataLocation,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        } else if (this.editServiceBuffer.serviceType === "Oauth2") {
+          serviceType = "oauth"
+          serviceData = JSON.stringify({
+            name: this.editServiceBuffer.name,
+            serviceId: this.editServiceBuffer.serviceId,
+            clientId: this.editServiceBuffer.clientId,
+            clientSecret: this.editServiceBuffer.clientSecret,
+            supportedGrantTypes: this.editServiceBuffer.supportedGrantTypes,
+            supportedResponseTypes: this.editServiceBuffer.supportedResponseTypes,
+            extraInfo: this.editServiceBuffer.extraInfo,
+            metadataLocation: this.editServiceBuffer.metadataLocation,
+            multifactorPolicy: this.editServiceBuffer.multifactorPolicy,
+            description: this.editServiceBuffer.description,
+            logo: this.editServiceBuffer.logo,
+            informationUrl: this.editServiceBuffer.informationUrl,
+            privacyUrl: this.editServiceBuffer.privacyUrl,
+            logoutType: this.editServiceBuffer.logoutType,
+            logoutUrl: this.editServiceBuffer.logoutUrl,
+            accessStrategy: this.editServiceBuffer.accessStrategy,
+            contacts: this.editServiceBuffer.contacts
+          }).replace(/\\\\/g, "\\")
+        }
+        this.axios({
+          url: "/api/service/" + vm.editServiceBuffer.id + "/" + serviceType,
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          params: {
+            lang: langCode
+          },
+          data: serviceData
+        }).then((res) => {
+          if (res.data.status.code === 200) {
+            vm.editServiceLoader = false
+            vm.resetState("editService")
+            vm.servicesRequestMaster("getServices")
+          } else {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
-          })
-        } catch (err) {
-          console.log(err.message)
-        }
+          }
+        }).catch(() => {
+          vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+          vm.editServiceLoader = false
+        })
       } else if (command === "deleteService") {
         const selectedServiceList = [parseInt(this.serviceToolbarBuffer)]
         this.loading = true
@@ -2270,102 +2265,15 @@ export default {
         }
       }
 
-      if (this.createServiceBuffer.serviceType === "SAML") {
-        if (this.createServiceBuffer.metadataLocationOption === "address") {
-          if (this.createServiceBuffer.metadataLocation === "") {
-            this.createServiceErrors.metadataLocation = "p-invalid"
-            errorCount += 1
-          } else {
-            this.createServiceErrors.metadataLocation = ""
-          }
-        } else if (this.createServiceBuffer.metadataLocationOption === "file") {
-          const metadataFileBodyFormData = new FormData()
-          metadataFileBodyFormData.append("file", this.createServiceBuffer.metadataFile)
-          const vm = this
-          this.createServiceLoader = true
-          this.axios({
-            url: "/api/services/metadata",
-            method: "POST",
-            headers: { "Content-Type": "multipart/form-data" },
-            data: metadataFileBodyFormData
-          }).then((res) => {
-            if (res.data.status.code === 200) {
-              vm.createServiceErrors.metadataLocation = ""
-              vm.createServiceBuffer.metadataLocation = res.data.data
-              if (vm.createServiceBuffer.logoFile !== null) {
-                const logoFileBodyFormData = new FormData()
-                logoFileBodyFormData.append("file", vm.createServiceBuffer.logoFile)
-                vm.createServiceLoader = true
-                vm.axios({
-                  url: "/api/services/icon",
-                  method: "POST",
-                  headers: { "Content-Type": "multipart/form-data" },
-                  data: logoFileBodyFormData
-                }).then((res) => {
-                  if (res.data.status.code === 200) {
-                    vm.createServiceBuffer.logo = res.data.data
-                    if (errorCount > 0) {
-                      vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                    } else {
-                      vm.servicesRequestMaster("createService")
-                    }
-                  }
-                  vm.createServiceLoader = false
-                }).catch(() => {
-                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                  vm.createServiceLoader = false
-                })
-              } else {
-                if (errorCount > 0) {
-                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                } else {
-                  vm.servicesRequestMaster("createService")
-                }
-              }
-            } else {
-              vm.createServiceErrors.metadataLocation = "p-invalid"
-              errorCount += 1
-            }
-            vm.createServiceLoader = false
-          }).catch(() => {
-            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-            vm.createServiceErrors.metadataLocation = "p-invalid"
-            errorCount += 1
-            vm.createServiceLoader = false
-          })
-        }
-      } else if (this.createServiceBuffer.serviceType === "Oauth2") {
-        if (this.createServiceBuffer.clientId === "") {
-          this.createServiceErrors.clientId = "p-invalid"
-          errorCount += 1
-        } else {
-          this.createServiceErrors.clientId = ""
-        }
-        if (this.createServiceBuffer.clientSecret === "") {
-          this.createServiceErrors.clientSecret = "p-invalid"
-          errorCount += 1
-        } else {
-          this.createServiceErrors.clientSecret = ""
-        }
-        if (this.createServiceBuffer.supportedGrantTypes[1].length === 0) {
-          this.createServiceErrors.supportedGrantTypes = "p-invalid"
-          errorCount += 1
-        } else {
-          this.createServiceErrors.supportedGrantTypes = ""
-        }
-        if (this.createServiceBuffer.supportedResponseTypes[1].length === 0) {
-          this.createServiceErrors.supportedResponseTypes = "p-invalid"
-          errorCount += 1
-        } else {
-          this.createServiceErrors.supportedResponseTypes = ""
-        }
+      if (errorCount > 0) {
+        this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
         if (this.createServiceBuffer.logoFile !== null) {
-          const logoFileBodyFormData = new FormData()
-          logoFileBodyFormData.append("file", this.createServiceBuffer.logoFile)
           const vm = this
-          this.createServiceLoader = true
-          this.axios({
+          const logoFileBodyFormData = new FormData()
+          logoFileBodyFormData.append("file", vm.createServiceBuffer.logoFile)
+          vm.createServiceLoader = true
+          vm.axios({
             url: "/api/services/icon",
             method: "POST",
             headers: { "Content-Type": "multipart/form-data" },
@@ -2373,22 +2281,166 @@ export default {
           }).then((res) => {
             if (res.data.status.code === 200) {
               vm.createServiceBuffer.logo = res.data.data
+            }
+            vm.createServiceLoader = false
+
+            if (vm.createServiceBuffer.serviceType === "SAML") {
+              if (vm.createServiceBuffer.metadataLocationOption === "address") {
+                if (vm.createServiceBuffer.metadataLocation === "") {
+                  vm.createServiceErrors.metadataLocation = "p-invalid"
+                  errorCount += 1
+                } else {
+                  vm.createServiceErrors.metadataLocation = ""
+                }
+
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("createService")
+                }
+              } else if (vm.createServiceBuffer.metadataLocationOption === "file") {
+                const metadataFileBodyFormData = new FormData()
+                metadataFileBodyFormData.append("file", vm.createServiceBuffer.metadataFile)
+                vm.createServiceLoader = true
+                vm.axios({
+                  url: "/api/services/metadata",
+                  method: "POST",
+                  headers: { "Content-Type": "multipart/form-data" },
+                  data: metadataFileBodyFormData
+                }).then((res) => {
+                  if (res.data.status.code === 200) {
+                    vm.createServiceErrors.metadataLocation = ""
+                    vm.createServiceBuffer.metadataLocation = res.data.data
+                  } else {
+                    vm.createServiceErrors.metadataLocation = "p-invalid"
+                    errorCount += 1
+                  }
+                  vm.createServiceLoader = false
+
+                  if (errorCount > 0) {
+                    vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  } else {
+                    vm.servicesRequestMaster("createService")
+                  }
+                }).catch(() => {
+                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  vm.createServiceErrors.metadataLocation = "p-invalid"
+                  vm.createServiceLoader = false
+                })
+              }
+            } else if (vm.createServiceBuffer.serviceType === "Oauth2") {
+              if (vm.createServiceBuffer.clientId === "") {
+                vm.createServiceErrors.clientId = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.createServiceErrors.clientId = ""
+              }
+              if (vm.createServiceBuffer.clientSecret === "") {
+                vm.createServiceErrors.clientSecret = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.createServiceErrors.clientSecret = ""
+              }
+              if (vm.createServiceBuffer.supportedGrantTypes[1].length === 0) {
+                vm.createServiceErrors.supportedGrantTypes = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.createServiceErrors.supportedGrantTypes = ""
+              }
+              if (vm.createServiceBuffer.supportedResponseTypes[1].length === 0) {
+                vm.createServiceErrors.supportedResponseTypes = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.createServiceErrors.supportedResponseTypes = ""
+              }
+
               if (errorCount > 0) {
                 vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
               } else {
                 vm.servicesRequestMaster("createService")
               }
             }
-            vm.createServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.createServiceLoader = false
           })
         } else {
-          if (errorCount > 0) {
-            this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          } else {
-            this.servicesRequestMaster("createService")
+          if (this.createServiceBuffer.serviceType === "SAML") {
+            if (this.createServiceBuffer.metadataLocationOption === "address") {
+              if (this.createServiceBuffer.metadataLocation === "") {
+                this.createServiceErrors.metadataLocation = "p-invalid"
+                errorCount += 1
+              } else {
+                this.createServiceErrors.metadataLocation = ""
+              }
+
+              if (errorCount > 0) {
+                this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              } else {
+                this.servicesRequestMaster("createService")
+              }
+            } else if (this.createServiceBuffer.metadataLocationOption === "file") {
+              const vm = this
+              const metadataFileBodyFormData = new FormData()
+              metadataFileBodyFormData.append("file", this.createServiceBuffer.metadataFile)
+              this.createServiceLoader = true
+              this.axios({
+                url: "/api/services/metadata",
+                method: "POST",
+                headers: { "Content-Type": "multipart/form-data" },
+                data: metadataFileBodyFormData
+              }).then((res) => {
+                if (res.data.status.code === 200) {
+                  vm.createServiceErrors.metadataLocation = ""
+                  vm.createServiceBuffer.metadataLocation = res.data.data
+                } else {
+                  vm.createServiceErrors.metadataLocation = "p-invalid"
+                  errorCount += 1
+                }
+                vm.createServiceLoader = false
+
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("createService")
+                }
+              }).catch(() => {
+                vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                vm.createServiceErrors.metadataLocation = "p-invalid"
+                vm.createServiceLoader = false
+              })
+            }
+          } else if (this.createServiceBuffer.serviceType === "Oauth2") {
+            if (this.createServiceBuffer.clientId === "") {
+              this.createServiceErrors.clientId = "p-invalid"
+              errorCount += 1
+            } else {
+              this.createServiceErrors.clientId = ""
+            }
+            if (this.createServiceBuffer.clientSecret === "") {
+              this.createServiceErrors.clientSecret = "p-invalid"
+              errorCount += 1
+            } else {
+              this.createServiceErrors.clientSecret = ""
+            }
+            if (this.createServiceBuffer.supportedGrantTypes[1].length === 0) {
+              this.createServiceErrors.supportedGrantTypes = "p-invalid"
+              errorCount += 1
+            } else {
+              this.createServiceErrors.supportedGrantTypes = ""
+            }
+            if (this.createServiceBuffer.supportedResponseTypes[1].length === 0) {
+              this.createServiceErrors.supportedResponseTypes = "p-invalid"
+              errorCount += 1
+            } else {
+              this.createServiceErrors.supportedResponseTypes = ""
+            }
+
+            if (errorCount > 0) {
+              this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            } else {
+              this.servicesRequestMaster("createService")
+            }
           }
         }
       }
@@ -2478,102 +2530,15 @@ export default {
         }
       }
 
-      if (this.editServiceBuffer.serviceType === "SAML") {
-        if (this.editServiceBuffer.metadataLocationOption === "address") {
-          if (this.editServiceBuffer.metadataLocation === "") {
-            this.editServiceErrors.metadataLocation = "p-invalid"
-            errorCount += 1
-          } else {
-            this.editServiceErrors.metadataLocation = ""
-          }
-        } else if (this.editServiceBuffer.metadataLocationOption === "file") {
-          const metadataFileBodyFormData = new FormData()
-          metadataFileBodyFormData.append("file", this.editServiceBuffer.metadataFile)
-          const vm = this
-          this.editServiceLoader = true
-          this.axios({
-            url: "/api/services/metadata",
-            method: "POST",
-            headers: { "Content-Type": "multipart/form-data" },
-            data: metadataFileBodyFormData
-          }).then((res) => {
-            if (res.data.status.code === 200) {
-              vm.editServiceErrors.metadataLocation = ""
-              vm.editServiceBuffer.metadataLocation = res.data.data
-              if (vm.editServiceBuffer.logoFile !== null) {
-                const logoFileBodyFormData = new FormData()
-                logoFileBodyFormData.append("file", vm.editServiceBuffer.logoFile)
-                vm.editServiceLoader = true
-                vm.axios({
-                  url: "/api/services/icon",
-                  method: "POST",
-                  headers: { "Content-Type": "multipart/form-data" },
-                  data: logoFileBodyFormData
-                }).then((res) => {
-                  if (res.data.status.code === 200) {
-                    vm.editServiceBuffer.logo = res.data.data
-                    if (errorCount > 0) {
-                      vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                    } else {
-                      vm.servicesRequestMaster("editService")
-                    }
-                  }
-                  vm.editServiceLoader = false
-                }).catch(() => {
-                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                  vm.editServiceLoader = false
-                })
-              } else {
-                if (errorCount > 0) {
-                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-                } else {
-                  vm.servicesRequestMaster("editService")
-                }
-              }
-            } else {
-              vm.editServiceErrors.metadataLocation = "p-invalid"
-              errorCount += 1
-            }
-            vm.editServiceLoader = false
-          }).catch(() => {
-            vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
-            vm.editServiceErrors.metadataLocation = "p-invalid"
-            errorCount += 1
-            vm.editServiceLoader = false
-          })
-        }
-      } else if (this.editServiceBuffer.serviceType === "Oauth2") {
-        if (this.editServiceBuffer.clientId === "") {
-          this.editServiceErrors.clientId = "p-invalid"
-          errorCount += 1
-        } else {
-          this.editServiceErrors.clientId = ""
-        }
-        if (this.editServiceBuffer.clientSecret === "") {
-          this.editServiceErrors.clientSecret = "p-invalid"
-          errorCount += 1
-        } else {
-          this.editServiceErrors.clientSecret = ""
-        }
-        if (this.editServiceBuffer.supportedGrantTypes[1].length === 0) {
-          this.editServiceErrors.supportedGrantTypes = "p-invalid"
-          errorCount += 1
-        } else {
-          this.editServiceErrors.supportedGrantTypes = ""
-        }
-        if (this.editServiceBuffer.supportedResponseTypes[1].length === 0) {
-          this.editServiceErrors.supportedResponseTypes = "p-invalid"
-          errorCount += 1
-        } else {
-          this.editServiceErrors.supportedResponseTypes = ""
-        }
+      if (errorCount > 0) {
+        this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
       } else {
         if (this.editServiceBuffer.logoFile !== null) {
-          const logoFileBodyFormData = new FormData()
-          logoFileBodyFormData.append("file", this.editServiceBuffer.logoFile)
           const vm = this
-          this.editServiceLoader = true
-          this.axios({
+          const logoFileBodyFormData = new FormData()
+          logoFileBodyFormData.append("file", vm.editServiceBuffer.logoFile)
+          vm.editServiceLoader = true
+          vm.axios({
             url: "/api/services/icon",
             method: "POST",
             headers: { "Content-Type": "multipart/form-data" },
@@ -2581,22 +2546,166 @@ export default {
           }).then((res) => {
             if (res.data.status.code === 200) {
               vm.editServiceBuffer.logo = res.data.data
+            }
+            vm.editServiceLoader = false
+
+            if (vm.editServiceBuffer.serviceType === "SAML") {
+              if (vm.editServiceBuffer.metadataLocationOption === "address") {
+                if (vm.editServiceBuffer.metadataLocation === "") {
+                  vm.editServiceErrors.metadataLocation = "p-invalid"
+                  errorCount += 1
+                } else {
+                  vm.editServiceErrors.metadataLocation = ""
+                }
+
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("editService")
+                }
+              } else if (vm.editServiceBuffer.metadataLocationOption === "file") {
+                const metadataFileBodyFormData = new FormData()
+                metadataFileBodyFormData.append("file", vm.editServiceBuffer.metadataFile)
+                vm.editServiceLoader = true
+                vm.axios({
+                  url: "/api/services/metadata",
+                  method: "POST",
+                  headers: { "Content-Type": "multipart/form-data" },
+                  data: metadataFileBodyFormData
+                }).then((res) => {
+                  if (res.data.status.code === 200) {
+                    vm.editServiceErrors.metadataLocation = ""
+                    vm.editServiceBuffer.metadataLocation = res.data.data
+                  } else {
+                    vm.editServiceErrors.metadataLocation = "p-invalid"
+                    errorCount += 1
+                  }
+                  vm.editServiceLoader = false
+
+                  if (errorCount > 0) {
+                    vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  } else {
+                    vm.servicesRequestMaster("editService")
+                  }
+                }).catch(() => {
+                  vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                  vm.editServiceErrors.metadataLocation = "p-invalid"
+                  vm.editServiceLoader = false
+                })
+              }
+            } else if (vm.editServiceBuffer.serviceType === "Oauth2") {
+              if (vm.editServiceBuffer.clientId === "") {
+                vm.editServiceErrors.clientId = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.editServiceErrors.clientId = ""
+              }
+              if (vm.editServiceBuffer.clientSecret === "") {
+                vm.editServiceErrors.clientSecret = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.editServiceErrors.clientSecret = ""
+              }
+              if (vm.editServiceBuffer.supportedGrantTypes[1].length === 0) {
+                vm.editServiceErrors.supportedGrantTypes = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.editServiceErrors.supportedGrantTypes = ""
+              }
+              if (vm.editServiceBuffer.supportedResponseTypes[1].length === 0) {
+                vm.editServiceErrors.supportedResponseTypes = "p-invalid"
+                errorCount += 1
+              } else {
+                vm.editServiceErrors.supportedResponseTypes = ""
+              }
+
               if (errorCount > 0) {
                 vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
               } else {
                 vm.servicesRequestMaster("editService")
               }
             }
-            vm.editServiceLoader = false
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
             vm.editServiceLoader = false
           })
         } else {
-          if (errorCount > 0) {
-            this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
-          } else {
-            this.servicesRequestMaster("editService")
+          if (this.editServiceBuffer.serviceType === "SAML") {
+            if (this.editServiceBuffer.metadataLocationOption === "address") {
+              if (this.editServiceBuffer.metadataLocation === "") {
+                this.editServiceErrors.metadataLocation = "p-invalid"
+                errorCount += 1
+              } else {
+                this.editServiceErrors.metadataLocation = ""
+              }
+
+              if (errorCount > 0) {
+                this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+              } else {
+                this.servicesRequestMaster("editService")
+              }
+            } else if (this.editServiceBuffer.metadataLocationOption === "file") {
+              const vm = this
+              const metadataFileBodyFormData = new FormData()
+              metadataFileBodyFormData.append("file", this.editServiceBuffer.metadataFile)
+              this.editServiceLoader = true
+              this.axios({
+                url: "/api/services/metadata",
+                method: "POST",
+                headers: { "Content-Type": "multipart/form-data" },
+                data: metadataFileBodyFormData
+              }).then((res) => {
+                if (res.data.status.code === 200) {
+                  vm.editServiceErrors.metadataLocation = ""
+                  vm.editServiceBuffer.metadataLocation = res.data.data
+                } else {
+                  vm.editServiceErrors.metadataLocation = "p-invalid"
+                  errorCount += 1
+                }
+                vm.editServiceLoader = false
+
+                if (errorCount > 0) {
+                  vm.alertPromptMaster(vm.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                } else {
+                  vm.servicesRequestMaster("editService")
+                }
+              }).catch(() => {
+                vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
+                vm.editServiceErrors.metadataLocation = "p-invalid"
+                vm.editServiceLoader = false
+              })
+            }
+          } else if (this.editServiceBuffer.serviceType === "Oauth2") {
+            if (this.editServiceBuffer.clientId === "") {
+              this.editServiceErrors.clientId = "p-invalid"
+              errorCount += 1
+            } else {
+              this.editServiceErrors.clientId = ""
+            }
+            if (this.editServiceBuffer.clientSecret === "") {
+              this.editServiceErrors.clientSecret = "p-invalid"
+              errorCount += 1
+            } else {
+              this.editServiceErrors.clientSecret = ""
+            }
+            if (this.editServiceBuffer.supportedGrantTypes[1].length === 0) {
+              this.editServiceErrors.supportedGrantTypes = "p-invalid"
+              errorCount += 1
+            } else {
+              this.editServiceErrors.supportedGrantTypes = ""
+            }
+            if (this.editServiceBuffer.supportedResponseTypes[1].length === 0) {
+              this.editServiceErrors.supportedResponseTypes = "p-invalid"
+              errorCount += 1
+            } else {
+              this.editServiceErrors.supportedResponseTypes = ""
+            }
+
+            if (errorCount > 0) {
+              this.alertPromptMaster(this.$t("invalidInputsError"), "", "pi-exclamation-triangle", "#FDB5BA")
+            } else {
+              this.servicesRequestMaster("editService")
+            }
           }
         }
       }
