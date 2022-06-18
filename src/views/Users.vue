@@ -1552,8 +1552,7 @@ export default {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
           vm.loading = false
         }
-      }).catch((e) => {
-        console.log(e)
+      }).catch(() => {
         vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
         vm.loading = false
       })
