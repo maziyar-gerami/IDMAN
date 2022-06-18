@@ -3207,9 +3207,9 @@ export default {
                     doc.text(this.$t("serviceAccessReport"), width - 10, 10, "right")
                     autoTable(doc, {
                       startY: 20,
-                      body: [[this.reportedService._id, this.$t("id")],
+                      body: [[this.reportedService.id, this.$t("id")],
                         [this.reportedService.name, this.$t("name")],
-                        [this.reportedService.url, this.$t("url")],
+                        [this.reportedService.extraInfo.url, this.$t("url")],
                         [this.reportedService.description, this.$t("persianName")]],
                       styles: {
                         font: "IRANSansWeb",
@@ -3332,10 +3332,10 @@ export default {
                         textColor: "ffffff"
                       }
                     })
-                    doc.save("Parsso-ServiceReport-" + this.reportedService._id + ".pdf")
+                    doc.save("Parsso-ServiceReport-" + this.reportedService.name + ".pdf")
                   } else if (format === "xlsx") {
-                    const fileName = "Parsso-ServiceReport-" + this.reportedService._id
-                    const fileData = [[this.$t("id"), this.reportedService._id, "", this.$t("persianName"), this.reportedService.displayName, "", this.$t("mobile"), this.reportedService.mobile, "", this.$t("mail"), this.reportedService.mail],
+                    const fileName = "Parsso-ServiceReport-" + this.reportedService.name
+                    const fileData = [[this.$t("id"), this.reportedService.id, "", this.$t("persianName"), this.reportedService.displayName, "", this.$t("mobile"), this.reportedService.mobile, "", this.$t("mail"), this.reportedService.mail],
                       [""],
                       ["", this.$t("authorizedUsers"), "", "", "", this.$t("bannedUsers"), "", "", "", "", this.$t("authorizedGroups"), "", "", "", "", "", this.$t("bannedGroups")],
                       ["#", this.$t("id"), this.$t("persianName"), "", "#", this.$t("id"), this.$t("persianName"), "", "#", this.$t("id"), this.$t("persianName"), this.$t("idInGroup"),
