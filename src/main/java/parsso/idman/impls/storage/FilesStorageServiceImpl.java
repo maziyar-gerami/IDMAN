@@ -4,16 +4,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import io.jsonwebtoken.io.IOException;
 import parsso.idman.helpers.Settings;
 import parsso.idman.helpers.Variables;
+import parsso.idman.models.other.Setting;
 import parsso.idman.repos.FilesStorageService;
 
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
@@ -28,35 +36,29 @@ public class FilesStorageServiceImpl implements FilesStorageService {
   }
 
   @Override
-  public void init() {
-    /*
-     * String path = new
-     * Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
-     * photoPathRoot = Paths.get(path);
-     * 
-     * try {
-     * if (Files.notExists(photoPathRoot))
-     * Files.createDirectory(photoPathRoot);
-     * } catch (IOException e) {
-     * throw new RuntimeException("Could not initialize folder for upload photo!");
-     * }
-     * 
-     * path = new
-     * Settings(mongoTemplate).retrieve(Variables.SERVICE_FOLDER_PATH).getValue();
-     * servicesPathRoot = Paths.get(path);
-     * 
-     * try {
-     * if (Files.notExists(servicesPathRoot))
-     * Files.createDirectory(servicesPathRoot);
-     * } catch (IOException e) {
-     * throw new RuntimeException("Could not initialize folder for services!");
-     * }
-     */
+  @PostConstruct
+  public void init() throws java.io.IOException {
+    Query query = new Query(Criteria.where("groupEN").is("Storage"));
+    List<Setting> storageSetting = mongoTemplate.find(query, Setting.class, Variables.col_properties);
+    for (Setting setting : storageSetting) {
+      Path path = Paths.get(setting.getValue());
+      try {
+        if (Files.notExists(path))
+          Files.createDirectories(path);
+      } catch (IOException io) {
+        throw new RuntimeException("Could not initialize folder for " + setting.getValue());
+      }
+    }
 
   }
 
   @Override
   public void saveMetadata(MultipartFile file, String name) {
+    try {
+      init();
+    } catch (java.io.IOException e1) {
+      e1.printStackTrace();
+    }
     String path = new Settings(mongoTemplate).retrieve(Variables.METADATA_PATH).getValue();
     Path metadataPath = Paths.get(String.valueOf(path));
 
@@ -69,6 +71,12 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public void saveProfilePhoto(MultipartFile file, String name) {
+
+    try {
+      init();
+    } catch (java.io.IOException e1) {
+      e1.printStackTrace();
+    }
 
     String photoPathRoot = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
     Path path = Paths.get(photoPathRoot);
@@ -84,6 +92,13 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public Resource load(String filename) {
+
+    try {
+      init();
+    } catch (java.io.IOException e1) {
+      e1.printStackTrace();
+    }
+
     String photoPathRoot = new Settings(mongoTemplate).retrieve(Variables.PROFILE_PHOTO_PATH).getValue();
     Path path = Paths.get(photoPathRoot);
 
@@ -103,6 +118,13 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
   @Override
   public void saveIcon(MultipartFile file, String fileName) {
+
+    try {
+      init();
+    } catch (java.io.IOException e1) {
+      e1.printStackTrace();
+    }
+    
     serviceIcon = new Settings(mongoTemplate).retrieve(Variables.SERVICES_ICON_PATH).getValue();
     try {
       Path pathServices = Paths.get(serviceIcon.toString());

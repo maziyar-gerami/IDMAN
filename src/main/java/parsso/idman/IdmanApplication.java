@@ -1,5 +1,7 @@
 package parsso.idman;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jasig.cas.client.session.SingleSignOutFilter;
@@ -73,8 +75,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   }
 
   @Override
-  public void run(String... arg) {
-    // storageService.deleteAll();
+  public void run(String... arg) throws IOException {
     storageService.init();
   }
 
