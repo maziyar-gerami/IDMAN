@@ -41,12 +41,12 @@ public class CasUserDetailService implements AuthenticationUserDetailsService {
     }
 
     if (usersExtraInfo.getRole() == null) {
-      collection.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
+      collection.add(new SimpleGrantedAuthority(new StringBuilder("ROLE_").append("USER").toString()));
     } else if (usersExtraInfo.getRole().equals("SUPERUSER")
         || usersExtraInfo.get_id().toString().equalsIgnoreCase("su")) {
-      collection.add(new SimpleGrantedAuthority("ROLE_" + "SUPERUSER"));
+      collection.add(new SimpleGrantedAuthority(new StringBuilder("ROLE_").append("SUPERUSER").toString()));
     } else if (usersExtraInfo.getRole() != null) {
-      collection.add(new SimpleGrantedAuthority("ROLE_" + usersExtraInfo.getRole()));
+      collection.add(new SimpleGrantedAuthority(new StringBuilder("ROLE_").append(usersExtraInfo.getRole()).toString()));
     }
 
     return new User(principal.getName(), "", collection);

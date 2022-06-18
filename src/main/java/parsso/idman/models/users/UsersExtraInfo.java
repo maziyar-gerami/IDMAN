@@ -49,6 +49,7 @@ public class UsersExtraInfo {
   @JsonIgnore
   private int nPassChanged;
   private ChangePassword changePassword;
+  @JsonIgnore
   Role roleClass;
   int roleID;
 

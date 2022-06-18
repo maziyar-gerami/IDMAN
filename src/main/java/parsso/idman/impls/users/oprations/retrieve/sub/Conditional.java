@@ -86,6 +86,7 @@ public class Conditional {
     List<UsersExtraInfo> relativeUsers = new LinkedList<>();
 
     for (int i = start; i < n; i++)
+    if(users.get(i) .getMemberOf().contains(groupId))
       relativeUsers.add(users.get(i));
 
     CollectionUtils.filter(relativeUsers, PredicateUtils.notNullPredicate());

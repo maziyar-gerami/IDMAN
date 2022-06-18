@@ -27,13 +27,6 @@ public class GroupRepoImp {
   private GroupRepo groupRepo;
 
   @Test
-  public void run() {
-    create();
-    retrieve();
-    update();
-    delete();
-  }
-
   public void create() {
 
     // Bad Request
@@ -68,6 +61,7 @@ public class GroupRepoImp {
 
   }
 
+  @Test
   public void retrieve() {
     assertTrue((groupRepo.retrieve()).size() > 0, "Retrieve failed");
     assertEquals("Group Retrieve Failed", new Group("test_001", "test", ""), groupRepo.retrieve(true, "test_001"));
@@ -86,6 +80,7 @@ public class GroupRepoImp {
     assertNotNull(groupRepo.retrieve(false, "test_001"), "reatrieve created group with full attributes failed");
   }
 
+  @Test
   public void update() {
     Group ou = new Group("jfdf", "name", "description");
 
@@ -101,6 +96,7 @@ public class GroupRepoImp {
     assertEquals("Update group failed", HttpStatus.OK, groupRepo.update("tester", "test_001", ou));
   }
 
+  @Test
   public void delete() {
     JSONObject json1 = new JSONObject();
     ArrayList<String> names = new ArrayList<String>();

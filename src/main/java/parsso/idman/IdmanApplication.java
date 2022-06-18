@@ -92,7 +92,7 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   @Bean
   public ServiceProperties serviceProperties() {
     ServiceProperties serviceProperties = new ServiceProperties();
-    serviceProperties.setService(BASE_URL + "/login/cas");
+    serviceProperties.setService(new StringBuilder(BASE_URL).append("/login/cas").toString());
     serviceProperties.setSendRenew(false);
     return serviceProperties;
   }
