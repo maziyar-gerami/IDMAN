@@ -3,10 +3,23 @@
     <AppTopBar @menu-toggle="onMenuToggle" />
     <div class="layout-sidebar" @click="onSidebarClick" :dir="$store.state.direction">
       <AppUserInfo v-if="$store.state.accessLevel > 0" />
+      <Button v-if="skyroomAccess" @click="openSkyroomPanel()">{{ $t("skyroom") }}</Button>
       <AppMenu :model="menuObject.menu" @menuitem-click="onMenuItemClick" />
       <p :style="'font-family: ' + this.$store.state.persianFont" class="varsion">{{ $store.state.version }}</p>
     </div>
-
+    <Dialog :header="$t('skyroom')" v-model:visible="skyroomPanel" :breakpoints="{'960px': '75vw'}" :style="{width: '50vw'}" :modal="true">
+      <div class="row mt-3 mx-1">
+        <Button :label="$t('enterMeeting')" @click="openMeeting()" class="col-12" />
+      </div><br>
+      <p>{{ $t("inviteToMeeting") }}</p>
+      <div class="row mt-3 mx-1 p-inputgroup">
+        <InputText id="copyMeetingLink" type="text" v-model="studentLink" class="col-10" readonly />
+        <Button id="copyMeetingLinkBtn" :label="$t('copy')" @click="copyMeetingLink()" class="col-2" />
+      </div>
+      <template #footer>
+        <Button :label="$t('back')" @click="closeSkyroomPanel()" class="p-button-danger"/>
+      </template>
+    </Dialog>
     <div class="layout-main-container" :dir="$store.state.direction">
         <div class="layout-main" :dir="$store.state.direction">
             <router-view />
@@ -24,6 +37,10 @@ export default {
   data () {
     return {
       layoutMode: "static",
+      presenterLink: "",
+      studentLink: "",
+      skyroomAccess: false,
+      skyroomPanel: false,
       staticMenuInactive: false,
       overlayMenuActive: false,
       mobileMenuActive: false
@@ -58,7 +75,45 @@ export default {
       this.removeClass(document.body, "body-overflow-hidden")
     }
   },
+  mounted () {
+    this.checkSkyroomAccess()
+  },
   methods: {
+    checkSkyroomAccess () {
+      const vm = this
+      this.axios({
+        url: "/api/skyroom",
+        method: "GET"
+      }).then((res) => {
+        if (res.data.status.code === 200) {
+          if (res.data.data.enable) {
+            vm.skyroomAccess = true
+            if (typeof res.data.data.students !== "undefined") {
+              vm.studentLink = res.data.data.students
+            }
+            if (typeof res.data.data.presenter !== "undefined") {
+              vm.presenterLink = res.data.data.presenter
+            }
+          }
+        }
+      })
+    },
+    openSkyroomPanel () {
+      this.skyroomPanel = true
+    },
+    closeSkyroomPanel () {
+      this.skyroomPanel = false
+    },
+    openMeeting () {
+      window.open(this.presenterLink, "_blank").focus()
+    },
+    copyMeetingLink () {
+      const copyText = document.getElementById("copyMeetingLink")
+      copyText.select()
+      document.execCommand("copy")
+      document.getElementById("copyMeetingLinkBtn").disabled = true
+      setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false }, 3000)
+    },
     onWrapperClick () {
       if (!this.menuClick) {
         this.overlayMenuActive = false
