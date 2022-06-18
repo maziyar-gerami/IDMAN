@@ -1412,6 +1412,9 @@ export default {
       return buf
     },
     exportAccessReports (id, format) {
+      this.reportedUser = {}
+      this.allowedServicesReportList = []
+      this.bannedServicesReportList = []
       const vm = this
       this.loading = true
       this.axios({
