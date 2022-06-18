@@ -3,7 +3,7 @@
     <AppTopBar @menu-toggle="onMenuToggle" />
     <div class="layout-sidebar" @click="onSidebarClick" :dir="$store.state.direction">
       <AppUserInfo v-if="$store.state.accessLevel > 0" />
-      <Button v-if="skyroomAccess" @click="openSkyroomPanel()">{{ $t("skyroom") }}</Button>
+      <Button v-if="skyroomAccess" :label="$t('skyroom')" @click="openSkyroomPanel()" class="w-full" />
       <AppMenu :model="menuObject.menu" @menuitem-click="onMenuItemClick" />
       <p :style="'font-family: ' + this.$store.state.persianFont" class="varsion">{{ $store.state.version }}</p>
     </div>
@@ -13,11 +13,11 @@
       </div><br>
       <p>{{ $t("inviteToMeeting") }}</p>
       <div class="row mt-3 mx-1 p-inputgroup">
-        <InputText id="copyMeetingLink" type="text" v-model="studentLink" class="col-10" readonly />
+        <InputText type="text" v-model="studentLink" class="col-10" readonly />
         <Button id="copyMeetingLinkBtn" :label="$t('copy')" @click="copyMeetingLink()" class="col-2" />
       </div>
       <template #footer>
-        <Button :label="$t('back')" @click="closeSkyroomPanel()" class="p-button-danger"/>
+        <Button :label="$t('back')" @click="closeSkyroomPanel()" class="p-button-danger" />
       </template>
     </Dialog>
     <div class="layout-main-container" :dir="$store.state.direction">
@@ -39,7 +39,7 @@ export default {
       layoutMode: "static",
       presenterLink: "",
       studentLink: "",
-      skyroomAccess: false,
+      skyroomAccess: true,
       skyroomPanel: false,
       staticMenuInactive: false,
       overlayMenuActive: false,
@@ -108,9 +108,7 @@ export default {
       window.open(this.presenterLink, "_blank").focus()
     },
     copyMeetingLink () {
-      const copyText = document.getElementById("copyMeetingLink")
-      copyText.select()
-      document.execCommand("copy")
+      this.$copyText(this.studentLink)
       document.getElementById("copyMeetingLinkBtn").disabled = true
       setTimeout(function () { document.getElementById("copyMeetingLinkBtn").disabled = false }, 3000)
     },

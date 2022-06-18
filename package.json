@@ -13,6 +13,7 @@
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "@meforma/vue-copy-to-clipboard": "^0.0.1",
     "@popperjs/core": "^2.11.0",
     "axios": "^0.24.0",
     "bootstrap": "^5.1.3",

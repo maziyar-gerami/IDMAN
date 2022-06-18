@@ -62,6 +62,7 @@ import RadioButton from "primevue/radiobutton"
 import SelectButton from "primevue/selectbutton"
 import * as XLSX from "xlsx"
 import { jsPDF } from "jspdf"
+import copyText from "@meforma/vue-copy-to-clipboard"
 
 window.$ = jQuery
 window.jQuery = jQuery
@@ -177,6 +178,7 @@ function runApp () {
   app.use(i18n)
   app.use(PrimeVue, { ripple: true, inputStyle: "outlined" })
   app.use(VueAxios, axios)
+  app.use(copyText)
 
   app.directive("ripple", Ripple)
   app.directive("styleclass", StyleClass)
