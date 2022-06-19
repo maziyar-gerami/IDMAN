@@ -39,7 +39,7 @@ export default {
       layoutMode: "static",
       presenterLink: "",
       studentLink: "",
-      skyroomAccess: true,
+      skyroomAccess: false,
       skyroomPanel: false,
       staticMenuInactive: false,
       overlayMenuActive: false,
