@@ -2382,6 +2382,8 @@ export default {
               } else {
                 vm.servicesRequestMaster("createService")
               }
+            } else {
+              this.servicesRequestMaster("createService")
             }
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -2464,6 +2466,8 @@ export default {
             } else {
               this.servicesRequestMaster("createService")
             }
+          } else {
+            this.servicesRequestMaster("createService")
           }
         }
       }
@@ -2647,6 +2651,8 @@ export default {
               } else {
                 vm.servicesRequestMaster("editService")
               }
+            } else {
+              this.servicesRequestMaster("editService")
             }
           }).catch(() => {
             vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
@@ -2729,6 +2735,8 @@ export default {
             } else {
               this.servicesRequestMaster("editService")
             }
+          } else {
+            this.servicesRequestMaster("editService")
           }
         }
       }
