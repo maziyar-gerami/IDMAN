@@ -1202,7 +1202,6 @@ export default {
           vm.loading = false
         })
       } else if (command === "getService") {
-        this.editServiceLoader = true
         this.axios({
           url: "/api/services/" + vm.editServiceBuffer.id,
           method: "GET",
@@ -2112,7 +2111,6 @@ export default {
           }
         }).then((res) => {
           vm.groups = res.data.data
-          vm.editServiceLoader = false
           vm.servicesRequestMaster("initiateUsersEdit")
         }).catch(() => {
           vm.alertPromptMaster(vm.$t("requestError"), "", "pi-exclamation-triangle", "#FDB5BA")
