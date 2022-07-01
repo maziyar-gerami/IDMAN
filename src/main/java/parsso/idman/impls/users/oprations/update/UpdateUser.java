@@ -17,6 +17,7 @@ import parsso.idman.helpers.user.ExcelAnalyzer;
 import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.impls.Parameters;
 import parsso.idman.impls.services.RetrieveService;
+import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
@@ -76,7 +77,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   public void postConstruct() throws InterruptedException {
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
         new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
-    // new PreferenceSettings(mongoTemplate).run();
+    new PreferenceSettings(mongoTemplate).run();
   }
 
 }

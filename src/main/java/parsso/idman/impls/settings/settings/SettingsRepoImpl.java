@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.configs.PasswordSettings;
+import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.impls.settings.settings.subclasses.BackupSettings;
 import parsso.idman.impls.settings.settings.subclasses.BackupSettings.Backup;
 import parsso.idman.impls.settings.settings.subclasses.ResetSettings;
@@ -43,7 +44,7 @@ public class SettingsRepoImpl implements SettingsRepo {
 
   @PostConstruct
   public void setPreference() {
-    // new PreferenceSettings(mongoTemplate).run();
+    new PreferenceSettings(mongoTemplate).run();
   }
 
   @Override
