@@ -67,12 +67,11 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
   }
 
-  @EventListener(ApplicationReadyEvent.class)
-  public void doSomethingAfterStartup() {
-    new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
-    new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
-    new Prefs(settingsRepo.retrieve());
-  }
+  // public void doSomethingAfterStartup() {
+  //   new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
+  //   new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+  //   new Prefs(settingsRepo.retrieve());
+  // }
 
   @Override
   public void run(String... arg) throws IOException {
