@@ -9,12 +9,13 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.configs.PasswordSettings;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.models.other.PWD;
 import parsso.idman.models.other.Setting;
-import parsso.idman.repos.SettingsRepo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,8 +24,13 @@ import java.util.List;
 @ComponentScan
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class PostSettings {
+  private final MongoTemplate mongoTemplate;
+
   @Autowired
-  SettingsRepo settingsRepo;
+  public PostSettings(MongoTemplate mongoTemplate) {
+    this.mongoTemplate = mongoTemplate;
+  }
+
   @Value("${captcha.length}")
   private String captcha_length;
   @Value("${user.profile.access}")
@@ -63,11 +69,7 @@ public class PostSettings {
   @Autowired
   PasswordSettings passwordSettings;
 
-  public PostSettings() {
-
-  }
-
-  public void run(MongoTemplate mongoTemplate) throws IOException {
+  public void run() throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     InputStream is = this.getClass().getResourceAsStream("/Properties.json");
     List<Setting> settings = (List<Setting>) mapper.readValue(is, List.class);
@@ -242,6 +244,6 @@ public class PostSettings {
     jsonObject.put("type", new JSONObject().put("class", "integer"));
     s2.setType(jsonObject);
 
-    mongoTemplate.insert(s2, Variables.col_properties);
+    mongoTemplate.save(new OneTime(Variables.SETTING_TRANSFER, true, new Date().getTime()), Variables.col_OneTime);
   }
 }

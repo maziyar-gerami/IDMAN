@@ -165,5 +165,6 @@ public class Variables {
   public static final List<String> EXT_USER_IMPORT = Arrays.asList("xlsx");
   public static final String PREFS_BASE_URL = "BASE_URL";
   public static final String PREFS_BASE_DN = "BASE_DN";
+  public static final String SETTING_TRANSFER = "SettingTranfer";
 
 }

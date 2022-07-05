@@ -81,8 +81,7 @@ public class PWDlockout {
       System.out.print("Processing: " + i + "% " + animationChars[i % 4] + "\r");
     }
 
-    OneTime oneTime1 = new OneTime(Variables.PWD_LOCKOUT, true, new Date().getTime());
-    mongoTemplate.save(oneTime1, Variables.col_OneTime);
+    mongoTemplate.save(new OneTime(Variables.PWD_LOCKOUT, true, new Date().getTime()), Variables.col_OneTime);
 
     System.out.println("Processing: Done!");
   }

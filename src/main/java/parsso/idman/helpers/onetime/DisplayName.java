@@ -48,8 +48,8 @@ public class DisplayName {
       System.out.print("Processing displayName: " + i + "% " + animationChars[i % 4] + "\r");
     }
 
-    OneTime oneTime1 = new OneTime(Variables.DISPLAY_NAME_CORRECTION, true, new Date().getTime());
-    mongoTemplate.save(oneTime1, Variables.col_OneTime);
+    mongoTemplate.save(new OneTime(Variables.DISPLAY_NAME_CORRECTION, true, new Date().getTime()),
+        Variables.col_OneTime);
 
     System.out.println("Processing displayName: Done!");
 

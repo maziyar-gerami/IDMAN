@@ -31,8 +31,7 @@ public class RemoveDuplicateExtraInfo {
       System.out.print("Processing duplicate users: " + i + "% " + animationChars[i % 4] + "\r");
     }
 
-    OneTime oneTime1 = new OneTime(Variables.DUPLICATE_USER, true, new Date().getTime());
-    mongoTemplate.save(oneTime1, Variables.col_OneTime);
+    mongoTemplate.save(new OneTime(Variables.DUPLICATE_USER, true, new Date().getTime()), Variables.col_OneTime);
 
     System.out.println("Processing duplicate users: Done!");
   }
