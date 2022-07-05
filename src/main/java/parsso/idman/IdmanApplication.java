@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
@@ -67,11 +66,11 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
 
   }
 
-  // public void doSomethingAfterStartup() {
-  //   new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
-  //   new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
-  //   new Prefs(settingsRepo.retrieve());
-  // }
+  public void doSomethingAfterStartup() {
+     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
+     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+     new Prefs(settingsRepo.retrieve());
+   }
 
   @Override
   public void run(String... arg) throws IOException {
