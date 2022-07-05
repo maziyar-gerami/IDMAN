@@ -49,8 +49,7 @@ public class UserID {
 
     }
 
-    OneTime oneTime1 = new OneTime(Variables.USERID_TO_ID, true, new Date().getTime());
-    mongoTemplate.save(oneTime1, Variables.col_OneTime);
+    mongoTemplate.save(new OneTime(Variables.USERID_TO_ID, true, new Date().getTime()), Variables.col_OneTime);
 
     System.out.println("Processing userIDs: Done!");
 

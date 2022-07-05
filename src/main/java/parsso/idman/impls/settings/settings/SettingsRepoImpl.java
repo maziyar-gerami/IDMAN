@@ -42,10 +42,6 @@ public class SettingsRepoImpl implements SettingsRepo {
     this.uniformLogger = uniformLogger;
   }
 
-  @PostConstruct
-  public void setPreference() {
-    new PreferenceSettings(mongoTemplate).run();
-  }
 
   @Override
   public List<Setting> retrieve() {

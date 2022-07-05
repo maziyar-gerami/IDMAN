@@ -6,11 +6,15 @@ import javax.annotation.PostConstruct;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import parsso.idman.helpers.UniformLogger;
+import parsso.idman.helpers.Variables;
+import parsso.idman.helpers.onetime.PostSettings;
 import parsso.idman.helpers.onetime.RunOneTime;
 import parsso.idman.helpers.user.BuildAttributes;
 import parsso.idman.helpers.user.ExcelAnalyzer;
@@ -19,6 +23,7 @@ import parsso.idman.impls.Parameters;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.impls.users.oprations.update.helper.*;
+import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.User;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
@@ -28,13 +33,15 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
+  private final PostSettings postSettings;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService,PostSettings postSettings) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
     this.retrieveService = retrieveService;
+    this.postSettings = postSettings;
   }
 
   public HttpStatus update(String doerID, String usid, User p) {
@@ -74,7 +81,12 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   }
 
   @PostConstruct
-  public void postConstruct() throws InterruptedException {
+  public void postConstruct() throws InterruptedException, IOException {
+    if (!(mongoTemplate.findOne(
+      new Query(Criteria.where("_id").is(Variables.SETTING_TRANSFER)), OneTime.class,
+      Variables.col_OneTime).isRun()))
+     postSettings.run();
+    
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
         new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
     new PreferenceSettings(mongoTemplate).run();
