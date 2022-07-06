@@ -33,16 +33,17 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
-  private final PostSettings postSettings;
+  @Autowired
+  private  PostSettings postSettings;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService,PostSettings postSettings) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
     this.retrieveService = retrieveService;
-    this.postSettings = postSettings;
   }
+
 
   public HttpStatus update(String doerID, String usid, User p) {
     return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
