@@ -95,7 +95,6 @@ public class SettingsController {
   @RestController
   @RequestMapping(("/api/public/properties/settings"))
   public class PublicSettingsController {
-
     @GetMapping
     public ResponseEntity<Response> password(@RequestParam(value = "lang", defaultValue = "fa") String lang)
         throws NoSuchFieldException, IllegalAccessException {

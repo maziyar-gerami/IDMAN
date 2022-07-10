@@ -418,5 +418,6 @@
             "class": "path"
         },
         "_class": "parsso.idman.models.other.Setting"
-    }
+    }   
+
 ]

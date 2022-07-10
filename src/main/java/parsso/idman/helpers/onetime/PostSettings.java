@@ -170,41 +170,65 @@ public class PostSettings {
           break;
 
         case ("pwdFailureCountInterval"):
-          setting.setValue(pwd.getPwdFailureCountInterval());
           mongoSettings.add(setting);
           break;
 
         case ("pwdInHistory"):
-          setting.setValue(pwd.getPwdInHistory());
           mongoSettings.add(setting);
           break;
 
         case ("pwdLockout"):
-          setting.setValue(pwd.getPwdLockout());
           mongoSettings.add(setting);
           break;
 
         case ("pwdMaxFailure"):
-          setting.setValue(pwd.getPwdMaxFailure());
           mongoSettings.add(setting);
           break;
 
         case ("pwdMaxAge"):
-          setting.setValue(pwd.getPwdMaxAge());
           mongoSettings.add(setting);
           break;
 
-        case ("pwdLockoutDuration"):
-          setting.setValue(pwd.getPwdLockoutDuration());
+        case ("pwdCheckQuality"):
+          mongoSettings.add(setting);
+          break;
+        case ("password.quality.smallalphabet"):
+          mongoSettings.add(setting);
+          break;
+        case ("password.quality.number"):
+          mongoSettings.add(setting);
+          break;
+        case ("password.quality.length"):
+          mongoSettings.add(setting);
+          break;
+        case ("password.quality.specialchar"):
+          mongoSettings.add(setting);
+          break;
+        case ("password.quality.capitalalphabet"):
+          mongoSettings.add(setting);
+          break;
+
+        case ("password.change.limit"):
+          mongoSettings.add(setting);
+          break;
+
+        case ("password.change.limit.number"):
+          mongoSettings.add(setting);
+          break;
+
+          case ("qr.devices.path"):
           mongoSettings.add(setting);
           break;
 
       }
     }
     if (!mongoTemplate.collectionExists(Variables.col_properties)) {
-      for (Object setting : mongoSettings) {
-        mongoTemplate.save(setting, Variables.col_properties);
-      }
+      mongoTemplate.createCollection(Variables.col_properties);
+    }
+
+    for (Object setting : mongoSettings) {
+      mongoTemplate.save(setting, Variables.col_properties);
+
     }
 
     if (!mongoTemplate.collectionExists(Variables.col_propertiesBackup)) {
@@ -214,35 +238,6 @@ public class PostSettings {
       jsonObject.put("data", mongoSettings);
       mongoTemplate.save(jsonObject, Variables.col_propertiesBackup);
     }
-
-    Setting s1 = new Setting();
-    Setting s2 = new Setting();
-
-    s1.set_id("password.change.limit");
-    s1.setValue("true");
-    s1.setDescriptionEN("Password change limit enable");
-    s1.setDescriptionFA("قابلیت حداکثر تعداد تغییر گذرواژه در یک روز");
-    s1.setGroupEN("Password");
-    s1.setGroupFA("گذر واژه");
-    s1.setHelpEN("Password change limit in each day status. Enable it if you want define this limitation");
-    s1.setHelpFA(
-        "محدود سازی تغییر گذرواژه در یک روز. در صورتی که چنین محدودیتی نیاز است، این سوییچ را فعال و تعداد را مشخص فرمایید.\",");
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("type", new JSONObject().put("class", "switch"));
-    s1.setType(jsonObject);
-
-    mongoTemplate.insert(s1, Variables.col_properties);
-
-    s2.set_id("password.change.limit.number");
-    s2.setValue("3");
-    s2.setDescriptionEN("Password change limit in each day");
-    s2.setDescriptionFA("حدکثر تعداد تغییر گذرواژه در یک روز");
-    s2.setGroupEN("Password");
-    s2.setGroupFA("گذر واژه");
-    s2.setHelpEN("Password change limit in each day");
-    s2.setHelpFA("حدکثر تعداد تغییر گذرواژه در یک روز");
-    jsonObject.put("type", new JSONObject().put("class", "integer"));
-    s2.setType(jsonObject);
 
     mongoTemplate.save(new OneTime(Variables.SETTING_TRANSFER, true, new Date().getTime()), Variables.col_OneTime);
   }
