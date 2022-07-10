@@ -33,15 +33,15 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
-  @Autowired
-  private  PostSettings postSettings;
+  private final PostSettings postSettings;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService, PostSettings postSettings) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
     this.buildAttributes = buildAttributes;
     this.retrieveService = retrieveService;
+    this.postSettings = postSettings;
   }
 
 
@@ -83,10 +83,10 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   @PostConstruct
   public void postConstruct() throws InterruptedException, IOException {
-    if (!(mongoTemplate.findOne(
-      new Query(Criteria.where("_id").is(Variables.SETTING_TRANSFER)), OneTime.class,
-      Variables.col_OneTime).isRun()))
-     postSettings.run();
+    //if (!(mongoTemplate.findOne(
+      //new Query(Criteria.where("_id").is(Variables.SETTING_TRANSFER)), OneTime.class,
+      //Variables.col_OneTime).isRun()))
+     //postSettings.run();
     
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
         new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
