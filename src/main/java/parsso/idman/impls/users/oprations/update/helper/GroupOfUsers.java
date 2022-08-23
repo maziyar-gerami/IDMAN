@@ -10,10 +10,10 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class GroupOfUsers {
   UsersRetrieveRepo retrieveOp;
-  UpdateUser updateUser;
+  UpdateUserHelper updateUser;
 
   public GroupOfUsers(UsersRetrieveRepo userOpRetrieve,
-      parsso.idman.impls.users.oprations.update.helper.UpdateUser updateUser2) {
+      parsso.idman.impls.users.oprations.update.helper.UpdateUserHelper updateUser2) {
     this.retrieveOp = userOpRetrieve;
     this.updateUser = updateUser2;
   }

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Objects;
 
 @SuppressWarnings("unchecked")
-public class UpdateUser {
+public class UpdateUserHelper {
 
   final LdapTemplate ldapTemplate;
   final MongoTemplate mongoTemplate;
@@ -41,7 +41,7 @@ public class UpdateUser {
   final ExcelAnalyzer excelAnalyzer;
   final String BASE_DN;
 
-  public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
+  public UpdateUserHelper(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
       UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, ExcelAnalyzer excelAnalyzer) {
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;

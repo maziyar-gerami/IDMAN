@@ -46,7 +46,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
 
   public HttpStatus update(String doerID, String usid, User p) {
-    return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
+    return new parsso.idman.impls.users.oprations.update.helper.UpdateUserHelper(ldapTemplate, mongoTemplate,
         uniformLogger,
         userOpRetrieve, buildAttributes, new ExcelAnalyzer(userOpRetrieve, this))
         .update(doerID, usid, p);
@@ -55,7 +55,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   @Override
   public JSONObject groupOfUsers(String doerID, String groupId, JSONObject gu) {
     return new GroupOfUsers(userOpRetrieve,
-        new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
+        new parsso.idman.impls.users.oprations.update.helper.UpdateUserHelper(ldapTemplate, mongoTemplate,
             uniformLogger, userOpRetrieve,
             buildAttributes, new ExcelAnalyzer(userOpRetrieve, this)))
         .massUsersGroupUpdate(doerID, groupId, gu);
@@ -63,7 +63,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   @Override
   public JSONObject mass(String doerID, List<User> users) {
-    return new parsso.idman.impls.users.oprations.update.helper.UpdateUser(ldapTemplate, mongoTemplate,
+    return new parsso.idman.impls.users.oprations.update.helper.UpdateUserHelper(ldapTemplate, mongoTemplate,
         uniformLogger, userOpRetrieve,
         buildAttributes, new ExcelAnalyzer(userOpRetrieve, this))
         .massUpdate(doerID, users);
