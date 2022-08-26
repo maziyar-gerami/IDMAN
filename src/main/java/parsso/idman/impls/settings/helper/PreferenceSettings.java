@@ -18,7 +18,7 @@ public class PreferenceSettings {
 
   public void run() {
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
-    for (Setting setting : settings) {
+  for (Setting setting : settings) {
       systemPreferences.put(setting.get_id(), setting.getValue());
     }
   }

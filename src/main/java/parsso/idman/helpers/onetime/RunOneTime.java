@@ -36,9 +36,8 @@ public class RunOneTime {
   }
 
   public void postConstruct() throws InterruptedException {
-
+    
     new PreferenceSettings(mongoTemplate).run();
-
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.USERID_TO_ID)), OneTime.class,
