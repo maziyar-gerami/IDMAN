@@ -10,7 +10,7 @@ public class Prefs {
 
   public static String get(String name) {
     Preferences myPrefs = Preferences.userRoot().node("System");
-    return myPrefs.get(name, null);
+    return myPrefs.get(name, name);
   }
 
   public Prefs(String key, String value) {
