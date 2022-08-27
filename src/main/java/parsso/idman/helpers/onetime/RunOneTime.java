@@ -47,14 +47,14 @@ public class RunOneTime {
       new UserID(mongoTemplate).run();
     }
 
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.SA_TO_SU)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new SAtoSU(mongoTemplate, uniformLogger).run();
-    // } catch (NullPointerException e) {
-    //   new SAtoSU(mongoTemplate, uniformLogger).run();
-    // }
+     try {
+       if (!(mongoTemplate.findOne(
+           new Query(Criteria.where("_id").is(Variables.SA_TO_SU)), OneTime.class,
+           Variables.col_OneTime).isRun()))
+         new SAtoSU(mongoTemplate, uniformLogger).run();
+     } catch (NullPointerException e) {
+       new SAtoSU(mongoTemplate, uniformLogger).run();
+     }
 
     // try {
     //   if (!(mongoTemplate.findOne(
