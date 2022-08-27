@@ -101,7 +101,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
     
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
-        new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
+        new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct(BASE_URL,BASE_DN);
     new PreferenceSettings(mongoTemplate).run(BASE_URL,BASE_DN);
   }
 

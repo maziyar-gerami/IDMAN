@@ -35,9 +35,9 @@ public class RunOneTime {
     this.retrieveService = retrieveService;
   }
 
-  public void postConstruct() throws InterruptedException {
+  public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
     
-    //new PreferenceSettings(mongoTemplate).run();
+    new PreferenceSettings(mongoTemplate).run(BASE_URL,BASE_DN);
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.USERID_TO_ID)), OneTime.class,
