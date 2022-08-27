@@ -101,23 +101,23 @@ public class RunOneTime {
           new UserAttributeMapper(mongoTemplate)).run();
     }
 
-    try {
-      if (!(mongoTemplate.findOne(
-          new Query(Criteria.where("_id").is(Variables.ROLE_CORRECTION)), OneTime.class,
-          Variables.col_OneTime).isRun()))
-        new RoleFix(mongoTemplate).run();
-    } catch (NullPointerException e) {
-      new RoleFix(mongoTemplate).run();
-    }
+    // try {
+    //   if (!(mongoTemplate.findOne(
+    //       new Query(Criteria.where("_id").is(Variables.ROLE_CORRECTION)), OneTime.class,
+    //       Variables.col_OneTime).isRun()))
+    //     new RoleFix(mongoTemplate).run();
+    // } catch (NullPointerException e) {
+    //   new RoleFix(mongoTemplate).run();
+    // }
 
-    try {
-      if (!(mongoTemplate.findOne(
-          new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)), OneTime.class,
-          Variables.col_OneTime).isRun()))
-        new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
-    } catch (NullPointerException e) {
-      new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
-    }
+    // try {
+    //   if (!(mongoTemplate.findOne(
+    //       new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)), OneTime.class,
+    //       Variables.col_OneTime).isRun()))
+    //     new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
+    // } catch (NullPointerException e) {
+    //   new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
+    // }
     System.out.println(Variables.PARSSO_IDMAN);
   }
 }
