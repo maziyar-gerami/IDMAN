@@ -72,14 +72,14 @@ public class RunOneTime {
     } catch (NullPointerException e) {
       new PWDreset(ldapTemplate, mongoTemplate, uniformLogger).run();
     }
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.DUPLICATE_USER)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new RemoveDuplicateExtraInfo(mongoTemplate).run();
-    // } catch (NullPointerException e) {
-    //   new RemoveDuplicateExtraInfo(mongoTemplate).run();
-    // }
+    try {
+      if (!(mongoTemplate.findOne(
+          new Query(Criteria.where("_id").is(Variables.DUPLICATE_USER)), OneTime.class,
+          Variables.col_OneTime).isRun()))
+        new RemoveDuplicateExtraInfo(mongoTemplate).run();
+    } catch (NullPointerException e) {
+      new RemoveDuplicateExtraInfo(mongoTemplate).run();
+    }
 
     // try {
     //   if (!(mongoTemplate.findOne(
