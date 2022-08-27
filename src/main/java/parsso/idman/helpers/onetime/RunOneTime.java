@@ -81,14 +81,14 @@ public class RunOneTime {
       new RemoveDuplicateExtraInfo(mongoTemplate).run();
     }
 
-    try {
-      if (!(mongoTemplate.findOne(
-          new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
-          Variables.col_OneTime).isRun()))
-        new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    } catch (NullPointerException e) {
-      new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    }
+    // try {
+    //   if (!(mongoTemplate.findOne(
+    //       new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
+    //       Variables.col_OneTime).isRun()))
+    //     new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
+    // } catch (NullPointerException e) {
+    //   new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
+    // }
 
     // try {
     //   if (!(mongoTemplate.findOne(
