@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -34,6 +35,11 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
   private final PostSettings postSettings;
+
+  @Value("${base.url}")
+  private String BASE_URL;
+  @Value("${spring.ldap.base.dn}")
+  private String BASE_DN;
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
@@ -96,7 +102,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
     
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
         new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct();
-    //new PreferenceSettings(mongoTemplate).run();
+    new PreferenceSettings(mongoTemplate).run(BASE_URL,BASE_DN);
   }
 
 }

@@ -16,11 +16,13 @@ public class PreferenceSettings {
     this.mongoTemplate = mongoTemplate;
   }
 
-  public void run() {
+  public void run(String BASE_URL,String BASE_DN) {
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
   for (Setting setting : settings) {
       systemPreferences.put(setting.get_id(), setting.getValue());
     }
+    systemPreferences.put(Variables.PREFS_BASE_URL, BASE_URL);
+    systemPreferences.put(Variables.PREFS_BASE_DN, BASE_DN);
   }
 
 }
