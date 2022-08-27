@@ -90,16 +90,16 @@ public class RunOneTime {
       new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
     }
 
-    try {
-      if (!(mongoTemplate.findOne(
-          new Query(Criteria.where("_id").is(Variables.MOBILE_TO_MONGO)), OneTime.class,
-          Variables.col_OneTime).isRun()))
-        new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
-            new UserAttributeMapper(mongoTemplate)).run();
-    } catch (NullPointerException e) {
-      new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
-          new UserAttributeMapper(mongoTemplate)).run();
-    }
+    // try {
+    //   if (!(mongoTemplate.findOne(
+    //       new Query(Criteria.where("_id").is(Variables.MOBILE_TO_MONGO)), OneTime.class,
+    //       Variables.col_OneTime).isRun()))
+    //     new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
+    //         new UserAttributeMapper(mongoTemplate)).run();
+    // } catch (NullPointerException e) {
+    //   new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
+    //       new UserAttributeMapper(mongoTemplate)).run();
+    // }
 
     // try {
     //   if (!(mongoTemplate.findOne(
