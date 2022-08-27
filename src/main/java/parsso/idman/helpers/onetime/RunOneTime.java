@@ -56,14 +56,14 @@ public class RunOneTime {
        new SAtoSU(mongoTemplate, uniformLogger).run();
      }
 
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new SimpleServiceFix(mongoTemplate, retrieveService).run();
-    // } catch (NullPointerException e) {
-    //   new SimpleServiceFix(mongoTemplate, retrieveService).run();
-    // }
+     try {
+       if (!(mongoTemplate.findOne(
+           new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)), OneTime.class,
+           Variables.col_OneTime).isRun()))
+         new SimpleServiceFix(mongoTemplate, retrieveService).run();
+     } catch (NullPointerException e) {
+       new SimpleServiceFix(mongoTemplate, retrieveService).run();
+     }
     // try {
     //   if (!(mongoTemplate.findOne(
     //       new Query(Criteria.where("_id").is(Variables.PWD_RESET)), OneTime.class,
