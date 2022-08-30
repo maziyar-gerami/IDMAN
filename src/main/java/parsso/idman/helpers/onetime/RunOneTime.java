@@ -50,6 +50,8 @@ public class RunOneTime {
       new UserID(mongoTemplate).run();
     }
 
+    System.out.println("111111111111111111111111111111111");
+
      try {
        if (!(mongoTemplate.findOne(
            new Query(Criteria.where("_id").is(Variables.SA_TO_SU)), OneTime.class,
@@ -59,6 +61,8 @@ public class RunOneTime {
        new SAtoSU(mongoTemplate, uniformLogger).run();
      }
 
+     System.out.println("22222222222222222222222222");
+
     //  try {
     //    if (!(mongoTemplate.findOne(
     //        new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)), OneTime.class,
@@ -67,6 +71,9 @@ public class RunOneTime {
     //  } catch (NullPointerException e) {
     //    new SimpleServiceFix(mongoTemplate, retrieveService).run();
     //  }
+
+
+    
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.PWD_RESET)), OneTime.class,
@@ -75,6 +82,8 @@ public class RunOneTime {
     } catch (NullPointerException e) {
       new PWDreset(ldapTemplate, mongoTemplate, uniformLogger).run();
     }
+
+    System.out.println("44444444444444444");
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.DUPLICATE_USER)), OneTime.class,
@@ -84,25 +93,31 @@ public class RunOneTime {
       new RemoveDuplicateExtraInfo(mongoTemplate).run();
     }
 
-    try {
-      if (!(mongoTemplate.findOne(
-          new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
-          Variables.col_OneTime).isRun()))
-        new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    } catch (NullPointerException e) {
-      new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    }
+    System.out.println("55555555555555555");
 
     // try {
     //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.MOBILE_TO_MONGO)), OneTime.class,
+    //       new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
     //       Variables.col_OneTime).isRun()))
-    //     new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
-    //         new UserAttributeMapper(mongoTemplate)).run();
+    //     new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
     // } catch (NullPointerException e) {
-    //   new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
-    //       new UserAttributeMapper(mongoTemplate)).run();
+    //   new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
     // }
+
+    //System.out.println("66666666666666666666");
+
+    try {
+      if (!(mongoTemplate.findOne(
+          new Query(Criteria.where("_id").is(Variables.MOBILE_TO_MONGO)), OneTime.class,
+          Variables.col_OneTime).isRun()))
+        new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
+            new UserAttributeMapper(mongoTemplate)).run();
+    } catch (NullPointerException e) {
+      new MongoUserDocumentFix(mongoTemplate, usersOpRetrieve, ldapTemplate,
+          new UserAttributeMapper(mongoTemplate)).run();
+    }
+
+    System.out.println("77777777777777777777777777");
 
     // try {
     //   if (!(mongoTemplate.findOne(
@@ -113,6 +128,8 @@ public class RunOneTime {
     //   new RoleFix(mongoTemplate).run();
     // }
 
+    System.out.println("888888888888888888888");
+
     // try {
     //   if (!(mongoTemplate.findOne(
     //       new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)), OneTime.class,
@@ -121,6 +138,10 @@ public class RunOneTime {
     // } catch (NullPointerException e) {
     //   new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
     // }
+
+    System.out.println("999999999999999");
+
+
     System.out.println(Variables.PARSSO_IDMAN);
   }
 }

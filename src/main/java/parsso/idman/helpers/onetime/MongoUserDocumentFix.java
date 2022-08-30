@@ -55,7 +55,12 @@ public class MongoUserDocumentFix {
             new UserAttributeMapper(mongoTemplate));
 
         Update update = new Update();
-        update.set("mobile", people.get(0).getMobile());
+      
+        try {
+          update.set("mobile", people.get(0).getMobile());
+        } catch (Exception e) {
+          update.set("mobile", 0);
+        }
 
         mongoTemplate.updateFirst(new Query(Criteria.where("userId").is(usersExtraInfo.getUserId())), update,
             Variables.col_usersExtraInfo);
