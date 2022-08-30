@@ -12,6 +12,7 @@ import parsso.idman.helpers.user.UserAttributeMapper;
 import parsso.idman.impls.services.RetrieveService;
 import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.models.other.OneTime;
+import parsso.idman.repos.SettingsRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
@@ -22,11 +23,13 @@ public class RunOneTime {
   final UsersRetrieveRepo usersOpRetrieve;
   final UsersUpdateRepo usersOpUpdate;
   final RetrieveService retrieveService;
+  final SettingsRepo settingsRepo;
 
   public RunOneTime(LdapTemplate ldapTemplate,
       MongoTemplate mongoTemplate, UsersRetrieveRepo usersOpRetrieve,
       UniformLogger uniformLogger, UsersUpdateRepo usersOpUpdate,
-      UserAttributeMapper userAttributeMapper, RetrieveService retrieveService) {
+      UserAttributeMapper userAttributeMapper, RetrieveService retrieveService, SettingsRepo settingsRepo) {
+        this.settingsRepo = settingsRepo;
     this.ldapTemplate = ldapTemplate;
     this.mongoTemplate = mongoTemplate;
     this.uniformLogger = uniformLogger;
@@ -37,7 +40,7 @@ public class RunOneTime {
 
   public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
     
-    new PreferenceSettings(mongoTemplate).run(BASE_URL,BASE_DN);
+    new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.USERID_TO_ID)), OneTime.class,

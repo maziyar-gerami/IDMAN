@@ -26,6 +26,7 @@ import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.impls.users.oprations.update.helper.*;
 import parsso.idman.models.other.OneTime;
 import parsso.idman.models.users.User;
+import parsso.idman.repos.SettingsRepo;
 import parsso.idman.repos.users.oprations.sub.UsersRetrieveRepo;
 import parsso.idman.repos.users.oprations.sub.UsersUpdateRepo;
 
@@ -35,6 +36,7 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
   protected final BuildAttributes buildAttributes;
   private final RetrieveService retrieveService;
   private final PostSettings postSettings;
+  private final SettingsRepo settingsRepo;
 
   @Value("${base.url}")
   private String BASE_URL;
@@ -43,8 +45,9 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   @Autowired
   public UpdateUser(LdapTemplate ldapTemplate, MongoTemplate mongoTemplate, UniformLogger uniformLogger,
-      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService, PostSettings postSettings) {
+      UsersRetrieveRepo userOpRetrieve, BuildAttributes buildAttributes, RetrieveService retrieveService, PostSettings postSettings, SettingsRepo settingsRepo) {
     super(ldapTemplate, mongoTemplate, uniformLogger, userOpRetrieve);
+    this.settingsRepo = settingsRepo;
     this.buildAttributes = buildAttributes;
     this.retrieveService = retrieveService;
     this.postSettings = postSettings;
@@ -101,8 +104,8 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
     
     new RunOneTime(ldapTemplate, mongoTemplate, userOpRetrieve, uniformLogger, this,
-        new UserAttributeMapper(mongoTemplate), retrieveService).postConstruct(BASE_URL,BASE_DN);
-    new PreferenceSettings(mongoTemplate).run(BASE_URL,BASE_DN);
+        new UserAttributeMapper(mongoTemplate), retrieveService, settingsRepo).postConstruct(BASE_URL,BASE_DN);
+
   }
 
 }

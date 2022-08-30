@@ -1,5 +1,6 @@
 package parsso.idman.helpers;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -24,17 +25,19 @@ public class Settings {
 
   }
 
+
   public Setting retrieve(String settingName) {
     Setting s = null;
     try {
-          String value = Prefs.get(settingName);
-          s = new Setting(settingName , value);
+      String value = Prefs.get(settingName);
+      s = new Setting(settingName, value);
     } catch (Exception e) {
-      try{
-      s = mongoTemplate.findOne(new Query(Criteria.where("_id").is(settingName)), Setting.class,
-          Variables.col_properties);
-      }catch(NullPointerException ne){
-        uniformLogger.error("System", new ReportMessage(Variables.MODEL_SETTINGS, settingName, Variables.ACTION_GET, Variables.RESULT_FAILED));
+      try {
+        s = mongoTemplate.findOne(new Query(Criteria.where("_id").is(settingName)), Setting.class,
+            Variables.col_properties);
+      } catch (NullPointerException ne) {
+        uniformLogger.error("System",
+            new ReportMessage(Variables.MODEL_SETTINGS, settingName, Variables.ACTION_GET, Variables.RESULT_FAILED));
       }
     }
     return s;
