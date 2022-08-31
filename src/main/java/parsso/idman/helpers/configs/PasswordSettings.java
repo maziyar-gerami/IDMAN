@@ -2,6 +2,7 @@ package parsso.idman.helpers.configs;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.filter.EqualsFilter;
 import org.springframework.ldap.support.LdapNameBuilder;
@@ -24,6 +25,9 @@ public class PasswordSettings {
   private final LdapTemplate ldapTemplate;
   final UniformLogger uniformLogger;
 
+  @Value("${spring.ldap.base.dn}")
+  private String BASE_DN;
+
   @Autowired
   public PasswordSettings(UniformLogger uniformLogger, LdapTemplate ldapTemplate) {
     this.uniformLogger = uniformLogger;
@@ -31,7 +35,7 @@ public class PasswordSettings {
   }
 
   private Name buildDn() {
-    return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + Prefs.get(Variables.PREFS_BASE_DN)).build();
+    return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + Prefs.get(BASE_DN)).build();
   }
 
   public boolean update(String doer, List<Property> settings) {
