@@ -22,6 +22,7 @@ public class RetrieveSettings {
   public List<Setting> retrieve() {
 
     List<Setting> settings = retrieveALL();
+    System.out.println("***************");
     Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SMS_SDK)), Setting.class,
         Variables.col_properties);
 
