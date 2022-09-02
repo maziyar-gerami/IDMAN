@@ -22,7 +22,6 @@ public class RetrieveSettings {
   public List<Setting> retrieve() {
 
     List<Setting> settings = retrieveALL();
-    System.out.println("***************");
     Setting sms_sdk = mongoTemplate.findOne(new Query(Criteria.where("_id").is(Variables.SMS_SDK)), Setting.class,
         Variables.col_properties);
 
@@ -58,6 +57,7 @@ public class RetrieveSettings {
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
     PWD pwd = passwordSettings.retrieve();
     for (Setting setting : settings) {
+      System.out.println(setting.get_id());
       if (setting.get_id().equals("pwdFailureCountInterval") ||
       setting.get_id().equals("pwdInHistory") ||
       setting.get_id().equals("pwdLockout") ||
