@@ -58,6 +58,7 @@ public class RetrieveSettings {
     for (Setting setting : settings) {
       System.out.println(setting.get_id());
     }
+    System.out.println("*****************************************************************");
     PWD pwd = passwordSettings.retrieve();
     for (Setting setting : settings) {
 
