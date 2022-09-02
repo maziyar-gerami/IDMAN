@@ -25,6 +25,8 @@ public class PasswordSettings {
   private final LdapTemplate ldapTemplate;
   final UniformLogger uniformLogger;
 
+  @Value("${base.url}")
+  private String BASE_URL;
   @Value("${spring.ldap.base.dn}")
   private String BASE_DN;
 
@@ -35,7 +37,7 @@ public class PasswordSettings {
   }
 
   private Name buildDn() {
-    return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + Prefs.get(BASE_DN)).build();
+    return LdapNameBuilder.newInstance("cn=DefaultPPolicy,ou=Policies," + Prefs.get(Variables.PREFS_BASE_DN)).build();
   }
 
   public boolean update(String doer, List<Property> settings) {

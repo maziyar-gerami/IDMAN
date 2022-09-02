@@ -20,6 +20,10 @@ public class PreferenceSettings {
   }
 
   public void run(String BASE_URL,String BASE_DN) {
+    System.out.println(mongoTemplate);
+    System.out.println(settingsRepo);
+    System.out.println(BASE_DN);
+    System.out.println(BASE_URL);
     List<Setting> settings = settingsRepo.retrieve();
     systemPreferences.put(Variables.PREFS_BASE_URL, BASE_URL);
     systemPreferences.put(Variables.PREFS_BASE_DN, BASE_DN);

@@ -41,6 +41,7 @@ public class RunOneTime {
   public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
     
     new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
+    
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.USERID_TO_ID)), OneTime.class,
@@ -63,14 +64,14 @@ public class RunOneTime {
 
      System.out.println("22222222222222222222222222");
 
-    //  try {
-    //    if (!(mongoTemplate.findOne(
-    //        new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)), OneTime.class,
-    //        Variables.col_OneTime).isRun()))
-    //      new SimpleServiceFix(mongoTemplate, retrieveService).run();
-    //  } catch (NullPointerException e) {
-    //    new SimpleServiceFix(mongoTemplate, retrieveService).run();
-    //  }
+     try {
+       if (!(mongoTemplate.findOne(
+           new Query(Criteria.where("_id").is(Variables.SIMPLESERVICE_FIX)), OneTime.class,
+           Variables.col_OneTime).isRun()))
+         new SimpleServiceFix(mongoTemplate, retrieveService).run();
+     } catch (NullPointerException e) {
+       new SimpleServiceFix(mongoTemplate, retrieveService).run();
+     }
 
 
     
