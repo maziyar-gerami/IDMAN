@@ -55,9 +55,12 @@ public class RetrieveSettings {
   public List<Setting> retrieveALL() {
 
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
+    for (Setting setting : settings) {
+      setting.get_id();
+    }
     PWD pwd = passwordSettings.retrieve();
     for (Setting setting : settings) {
-      System.out.println(setting.get_id());
+
       if (setting.get_id().equals("pwdFailureCountInterval") ||
       setting.get_id().equals("pwdInHistory") ||
       setting.get_id().equals("pwdLockout") ||
