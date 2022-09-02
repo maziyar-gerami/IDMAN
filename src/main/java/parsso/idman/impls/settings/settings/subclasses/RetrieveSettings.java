@@ -56,7 +56,7 @@ public class RetrieveSettings {
 
     List<Setting> settings = mongoTemplate.find(new Query(), Setting.class, Variables.col_properties);
     for (Setting setting : settings) {
-      setting.get_id();
+      System.out.println(setting.get_id());
     }
     PWD pwd = passwordSettings.retrieve();
     for (Setting setting : settings) {
