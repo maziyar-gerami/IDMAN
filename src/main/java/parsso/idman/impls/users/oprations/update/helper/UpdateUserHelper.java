@@ -92,6 +92,7 @@ public class UpdateUserHelper {
             p.get_id().toString());
         p.setStatus("disable");
       }
+      System.out.println(usersExtraInfo);
       Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
     } else {
       Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
