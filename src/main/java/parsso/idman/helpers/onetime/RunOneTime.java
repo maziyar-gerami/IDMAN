@@ -135,14 +135,14 @@ public class RunOneTime {
 
     System.out.println("888888888888888888888");
 
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
-    // } catch (NullPointerException e) {
-    //   new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
-    // }
+    try {
+      if (!(mongoTemplate.findOne(
+          new Query(Criteria.where("_id").is(Variables.PWD_LOCKOUT)), OneTime.class,
+          Variables.col_OneTime).isRun()))
+        new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
+    } catch (NullPointerException e) {
+      new PWDlockout(ldapTemplate, mongoTemplate, uniformLogger).run();
+    }
 
     System.out.println("999999999999999");
 
