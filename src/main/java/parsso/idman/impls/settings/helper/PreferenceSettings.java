@@ -2,6 +2,8 @@ package parsso.idman.impls.settings.helper;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import com.captcha.botdetect.internal.core.a.a.P;
+
 import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Setting;
@@ -23,6 +25,12 @@ public class PreferenceSettings {
     List<Setting> settings = settingsRepo.retrieve();
     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+
+    System.out.println("********************");
+     System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
+     System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
+
+    System.out.println("********************");
 
     for (Setting setting : settings) {
 
