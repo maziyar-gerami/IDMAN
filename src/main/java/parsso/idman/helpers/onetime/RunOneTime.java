@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -38,6 +39,16 @@ public class RunOneTime {
   }
 
   public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
+
+        
+    new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+    new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
+    
+    System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
+    System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
+
+   System.out.println("********************");
+   System.out.println("********************");
     
     new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
 
