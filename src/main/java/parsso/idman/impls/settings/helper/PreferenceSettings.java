@@ -2,8 +2,6 @@ package parsso.idman.impls.settings.helper;
 
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.captcha.botdetect.internal.core.a.a.P;
-
 import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.Variables;
 import parsso.idman.models.other.Setting;
