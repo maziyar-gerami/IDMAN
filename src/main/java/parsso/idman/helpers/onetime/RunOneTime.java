@@ -124,14 +124,14 @@ public class RunOneTime {
 
     System.out.println("77777777777777777777777777");
 
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.ROLE_CORRECTION)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new RoleFix(mongoTemplate).run();
-    // } catch (NullPointerException e) {
-    //   new RoleFix(mongoTemplate).run();
-    // }
+    try {
+      if (!(mongoTemplate.findOne(
+          new Query(Criteria.where("_id").is(Variables.ROLE_CORRECTION)), OneTime.class,
+          Variables.col_OneTime).isRun()))
+        new RoleFix(mongoTemplate).run();
+    } catch (NullPointerException e) {
+      new RoleFix(mongoTemplate).run();
+    }
 
     System.out.println("888888888888888888888");
 
