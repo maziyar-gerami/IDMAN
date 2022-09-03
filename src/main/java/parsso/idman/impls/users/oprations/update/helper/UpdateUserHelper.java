@@ -92,8 +92,13 @@ public class UpdateUserHelper {
             p.get_id().toString());
         p.setStatus("disable");
       }
-      System.out.println(usersExtraInfo);
-      Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
+      try{
+        Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
+      }catch(Exception e){
+        usersExtraInfo.setStatus("true");
+        mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo)
+      }
+      
     } else {
       Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
     }
