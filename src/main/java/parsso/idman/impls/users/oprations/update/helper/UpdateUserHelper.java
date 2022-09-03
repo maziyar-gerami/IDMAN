@@ -96,7 +96,7 @@ public class UpdateUserHelper {
         Objects.requireNonNull(usersExtraInfo).setStatus(p.getStatus());
       }catch(Exception e){
         usersExtraInfo.setStatus("true");
-        mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo)
+        mongoTemplate.save(usersExtraInfo, Variables.col_usersExtraInfo);
       }
       
     } else {
