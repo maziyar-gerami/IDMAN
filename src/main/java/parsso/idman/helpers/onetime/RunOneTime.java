@@ -44,12 +44,6 @@ public class RunOneTime {
     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     
-    System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
-    System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
-
-   System.out.println("********************");
-   System.out.println("********************");
-    
     new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
 
     try {
@@ -106,16 +100,16 @@ public class RunOneTime {
 
     System.out.println("55555555555555555");
 
-    // try {
-    //   if (!(mongoTemplate.findOne(
-    //       new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
-    //       Variables.col_OneTime).isRun()))
-    //     new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    // } catch (NullPointerException e) {
-    //   new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
-    // }
+    try {
+      if (!(mongoTemplate.findOne(
+          new Query(Criteria.where("_id").is(Variables.DISPLAY_NAME_CORRECTION)), OneTime.class,
+          Variables.col_OneTime).isRun()))
+        new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
+    } catch (NullPointerException e) {
+      new DisplayName(mongoTemplate, usersOpRetrieve, usersOpUpdate).run();
+    }
 
-    //System.out.println("66666666666666666666");
+    System.out.println("66666666666666666666");
 
     try {
       if (!(mongoTemplate.findOne(

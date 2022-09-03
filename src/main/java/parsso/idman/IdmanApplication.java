@@ -57,10 +57,6 @@ public class IdmanApplication extends SpringBootServletInitializer implements Co
   public static void main(String[] args) {
 
     try {
-          
-     System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
-     System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
-
 
       SpringApplication.run(IdmanApplication.class, args);
     } catch (Exception e) {
