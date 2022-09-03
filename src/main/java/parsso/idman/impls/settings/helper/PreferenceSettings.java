@@ -23,8 +23,7 @@ public class PreferenceSettings {
     List<Setting> settings = settingsRepo.retrieve();
     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
-
-    System.out.println("********************");
+    
      System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
      System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
 
