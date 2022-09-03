@@ -2,7 +2,6 @@ package parsso.idman.impls.settings.settings;
 
 import java.io.IOException;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.configs.PasswordSettings;
-import parsso.idman.impls.settings.helper.PreferenceSettings;
 import parsso.idman.impls.settings.settings.subclasses.BackupSettings;
 import parsso.idman.impls.settings.settings.subclasses.BackupSettings.Backup;
 import parsso.idman.impls.settings.settings.subclasses.ResetSettings;

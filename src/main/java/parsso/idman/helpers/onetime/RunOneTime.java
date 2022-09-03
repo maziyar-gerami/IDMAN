@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.ldap.core.LdapTemplate;
 
-import lombok.val;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.user.UserAttributeMapper;
@@ -41,7 +40,7 @@ public class RunOneTime {
   public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
     
     new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
-    
+
     try {
       if (!(mongoTemplate.findOne(
           new Query(Criteria.where("_id").is(Variables.USERID_TO_ID)), OneTime.class,
