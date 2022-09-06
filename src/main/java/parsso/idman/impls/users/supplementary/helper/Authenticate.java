@@ -25,6 +25,7 @@ public class Authenticate {
     AndFilter andFilter = new AndFilter();
     andFilter.and(new EqualsFilter("objectclass", "person"));
     andFilter.and(new EqualsFilter("uid", userId));
+    System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
 
     if (ldapTemplate.authenticate("ou=People," + Prefs.get(Variables.PREFS_BASE_DN), andFilter.toString(), password)) {
       if (usersOpRetrieve.retrieveUserMain(userId).isLoggedIn())
