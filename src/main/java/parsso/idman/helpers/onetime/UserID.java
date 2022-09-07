@@ -24,7 +24,7 @@ public class UserID {
 
     int c, p;
 
-    for (int i = 0; i < limit; i++) {
+    for (int i = 0; i < pages; i++) {
       if (i == pages)
         limit = count % limit;
       c = i * limit;
@@ -48,6 +48,9 @@ public class UserID {
       System.out.print("Processing userId: " + p + "% " + animationChars[p % 4] + "\r");
 
     }
+
+    if (!mongoTemplate.getCollectionNames().contains(Variables.col_OneTime))
+    mongoTemplate.createCollection(Variables.col_OneTime);
 
     mongoTemplate.save(new OneTime(Variables.USERID_TO_ID, true, new Date().getTime()), Variables.col_OneTime);
 
