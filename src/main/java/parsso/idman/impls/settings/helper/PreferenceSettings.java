@@ -24,13 +24,9 @@ public class PreferenceSettings {
     new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
     
-     System.out.println(Prefs.get(Variables.PREFS_BASE_DN));
-     System.out.println(Prefs.get(Variables.PREFS_BASE_URL));
-
-    System.out.println("********************");
 
     for (Setting setting : settings) {
-
+      System.out.println(setting.get_id());
       new Prefs(setting.get_id(), setting.getValue());
     }
 
