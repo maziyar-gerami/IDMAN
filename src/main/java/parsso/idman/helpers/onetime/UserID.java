@@ -34,6 +34,7 @@ public class UserID {
       char[] animationChars = new char[] { '|', '/', '-', '\\' };
       for (UsersExtraInfo usersExtraInfo : usersExtraInfoList) {
 
+        System.out.println(usersExtraInfo.get_id());
         String userId = usersExtraInfo.getUserId().toString();
 
         usersExtraInfo.setUserId(null);
