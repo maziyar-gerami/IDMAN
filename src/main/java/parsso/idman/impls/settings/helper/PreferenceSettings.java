@@ -26,7 +26,6 @@ public class PreferenceSettings {
     
 
     for (Setting setting : settings) {
-      System.out.println(setting.get_id());
       new Prefs(setting.get_id(), setting.getValue());
     }
 
