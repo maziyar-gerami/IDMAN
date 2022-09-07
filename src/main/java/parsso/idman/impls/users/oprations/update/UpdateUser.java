@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import parsso.idman.configs.Prefs;
 import parsso.idman.helpers.UniformLogger;
 import parsso.idman.helpers.Variables;
 import parsso.idman.helpers.onetime.PostSettings;
@@ -91,6 +93,9 @@ public class UpdateUser extends Parameters implements UsersUpdateRepo {
 
   @PostConstruct
   public void postConstruct() throws InterruptedException, IOException {
+
+    new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
+    new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
 
      try {
       if (!(mongoTemplate.findOne(

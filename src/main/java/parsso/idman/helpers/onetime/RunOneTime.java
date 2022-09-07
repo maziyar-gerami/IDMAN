@@ -40,9 +40,6 @@ public class RunOneTime {
 
   public void postConstruct(String BASE_URL, String BASE_DN) throws InterruptedException {
 
-        
-    new Prefs(Variables.PREFS_BASE_DN, BASE_DN);
-    new Prefs(Variables.PREFS_BASE_URL, BASE_URL);
     
     new PreferenceSettings(mongoTemplate,settingsRepo).run(BASE_URL,BASE_DN);
 
