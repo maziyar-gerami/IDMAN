@@ -365,7 +365,7 @@ export default {
                   label: this.$t("resetPassword"), icon: "bx bx-fw bxs-key", to: "/resetpassword"
                 },
                 {
-                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy", target: "_blank"
+                  label: this.$t("privacy"), icon: "bx bx-fw bxs-lock-alt", to: "/privacy"
                 },
                 {
                   label: this.$t("guide"), icon: "bx bx-fw bxs-info-circle", url: "/Parsso-User-Guide.pdf", target: "_blank"

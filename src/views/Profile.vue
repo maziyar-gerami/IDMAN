@@ -340,6 +340,8 @@ export default {
         }).then((res) => {
           if (res.data !== "Problem" && res.data !== "NotExist") {
             vm.userAvatar = "/api/user/photo"
+          } else {
+            vm.userAvatar = "images/avatarPlaceholder.png"
           }
         })
       } else if (command === "editUserAvatar") {
