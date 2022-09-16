@@ -57,7 +57,10 @@ public class MongoUserDocumentFix {
         Update update = new Update();
       
         try {
-          update.set("mobile", people.get(0).getMobile());
+          String m = people.get(0).getMobile();
+          if (m.charAt(0) != ('0'))
+            m = "0"+m;
+          update.set("mobile", m);
         } catch (Exception e) {
           update.set("mobile", 0);
         }
