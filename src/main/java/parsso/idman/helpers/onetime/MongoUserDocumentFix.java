@@ -62,7 +62,7 @@ public class MongoUserDocumentFix {
           update.set("mobile", 0);
         }
 
-        mongoTemplate.updateFirst(new Query(Criteria.where("userId").is(usersExtraInfo.getUserId())), update,
+        mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(usersExtraInfo.get_id().toString())), update,
             Variables.col_usersExtraInfo);
       }
       System.out.print("Adding mobile's user Mongo: " + i / it * 100 + "% " + animationChars[i % 4] + "\r");
