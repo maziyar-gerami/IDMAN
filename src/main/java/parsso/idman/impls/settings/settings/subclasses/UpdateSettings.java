@@ -43,32 +43,32 @@ public class UpdateSettings {
           property.get_id().equals("pwdLockoutDuration")) {
         switch (property.get_id()) {
           case "pwdFailureCountInterval":
-            storedSetting.setValue(ldapPasswords.getPwdFailureCountInterval());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdInHistory":
-            storedSetting.setValue(ldapPasswords.getPwdInHistory());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdLockout":
-            storedSetting.setValue(ldapPasswords.getPwdLockout());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdMaxFailure":
-            storedSetting.setValue(ldapPasswords.getPwdMaxFailure());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdMaxAge":
-            storedSetting.setValue(ldapPasswords.getPwdMaxAge());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdLockoutDuration":
-            storedSetting.setValue(ldapPasswords.getPwdLockoutDuration());
+            storedSetting.setValue(property.getValue().toString());
             ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
