@@ -51,7 +51,7 @@ public class MongoUserDocumentFix {
         searchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
 
         List<User> people = ldapTemplate.search("ou=People," + Prefs.get(Variables.PREFS_BASE_DN),
-            new EqualsFilter("uid", usersExtraInfo.getUserId()).encode(), searchControls,
+            new EqualsFilter("uid", usersExtraInfo.get_id().toString()).encode(), searchControls,
             new UserAttributeMapper(mongoTemplate));
 
         Update update = new Update();
