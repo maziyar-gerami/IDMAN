@@ -79,7 +79,9 @@ public class PasswordSettings {
           items[5] = new ModificationItem(DirContext.REPLACE_ATTRIBUTE, attrs[5]);
       }
 
+      System.out.println(setting.toString());
     }
+
 
     try {
       ldapTemplate.modifyAttributes(buildDn(), items);
