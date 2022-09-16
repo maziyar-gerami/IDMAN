@@ -44,30 +44,35 @@ public class UpdateSettings {
         switch (property.get_id()) {
           case "pwdFailureCountInterval":
             storedSetting.setValue(ldapPasswords.getPwdFailureCountInterval());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdInHistory":
             storedSetting.setValue(ldapPasswords.getPwdInHistory());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdLockout":
             storedSetting.setValue(ldapPasswords.getPwdLockout());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdMaxFailure":
             storedSetting.setValue(ldapPasswords.getPwdMaxFailure());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdMaxAge":
             storedSetting.setValue(ldapPasswords.getPwdMaxAge());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
           case "pwdLockoutDuration":
             storedSetting.setValue(ldapPasswords.getPwdLockoutDuration());
+            ldapProperties.add(new Property(storedSetting, "en"));
             break;
 
         }
-        ldapProperties.add(property);
       } else if (storedSetting != null && !storedSetting.getValue().equalsIgnoreCase(property.getValue().toString()))
         mongoProperties.add(property);
     }
